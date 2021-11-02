@@ -1,6 +1,6 @@
 
   
-function MemberDashboard() {
+const MemberDashboard = () => {
     return (
       <div>
           <h1>MANAGEMENT PORTAL DASHBOARD</h1>

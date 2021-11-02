@@ -6,9 +6,10 @@ import {
 } from "react-router-dom";
 
 import CandidateApply from './pages/CandidateApply';
-import EventOverview from './pages/EventOverview';
+import EventRouter from "./routers/EventRouter";
 import Home from './pages/Home';
-import MemberDashboard from './pages/MemberDashboard';
+import MemberDashboard from "./pages/MemberDashboard";
+import NoRoute from "./pages/errors/NoRoute";
 
 function App() {
   return (
@@ -22,10 +23,19 @@ function App() {
             <CandidateApply />
           </Route>
           <Route path="/dashboard">
+            {/* Will integrate protected routes once Firebase App is created. */}
+            { /* <ProtectedRoute component={MemberDashboard} /> */}
             <MemberDashboard />
           </Route>
           <Route path="/event">
-            <EventOverview/>
+            { /* <ProtectedRoute component={EventRouter} /> */}
+            <EventRouter />
+          </Route>
+          <Route path="/createEvent">
+            {/* <ProtectedRoute component={EventRouter} /> */}
+          </Route>
+          <Route path="*">
+            <NoRoute />
           </Route>
         </Switch>
       </Router>

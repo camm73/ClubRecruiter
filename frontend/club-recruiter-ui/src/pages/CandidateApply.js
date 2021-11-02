@@ -1,6 +1,6 @@
 
   
-function CandidateApply() {
+const CandidateApply = () => {
     return (
       <div>
           <h1>CANDIDATE APPLICATION PORTAL PAGE</h1>
