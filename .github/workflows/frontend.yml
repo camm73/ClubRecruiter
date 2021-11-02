@@ -10,6 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install packages
+        working-directory: ./frontend/club-recruiter-ui
         run: yarn
       - name: Lint
+        working-directory: ./frontend/club-recruiter-ui
         run: yarn lint
