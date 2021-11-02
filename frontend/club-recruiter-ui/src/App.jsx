@@ -1,15 +1,15 @@
-import React from "react";
+import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
-  Route
-} from "react-router-dom";
+  Route,
+} from 'react-router-dom';
 
 import CandidateApply from './pages/CandidateApply';
-import EventRouter from "./routers/EventRouter";
+import EventRouter from './routers/EventRouter';
 import Home from './pages/Home';
-import MemberDashboard from "./pages/MemberDashboard";
-import NoRoute from "./pages/errors/NoRoute";
+import MemberDashboard from './pages/MemberDashboard';
+import NoRoute from './pages/errors/NoRoute';
 
 function App() {
   return (
