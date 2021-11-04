@@ -5,9 +5,11 @@ import {
   Route,
 } from 'react-router-dom';
 
+// import ProtectedRoute from './components/ProtectedRoute';
 import CandidateApply from './pages/CandidateApply';
 import EventRouter from './routers/EventRouter';
 import Home from './pages/Home';
+import Login from './pages/Login';
 import MemberDashboard from './pages/MemberDashboard';
 import NoRoute from './pages/errors/NoRoute';
 
@@ -16,6 +18,9 @@ function App() {
     <div>
       <Router>
         <Switch>
+          <Route exact path="/login">
+            <Login />
+          </Route>
           <Route exact path="/">
             <Home />
           </Route>

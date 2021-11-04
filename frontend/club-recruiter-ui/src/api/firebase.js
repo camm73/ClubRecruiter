@@ -1,47 +1,37 @@
 import { initializeApp } from 'firebase/app';
 import {
-  getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider,
+  getAuth, signInWithPopup, GoogleAuthProvider,
 } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: '',
-  authDomain: '',
-  projectId: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  appId: '',
-  measurementId: '',
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID,
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
 const googleProvider = new GoogleAuthProvider();
-const facebookProvider = new FacebookAuthProvider();
 const auth = getAuth(firebaseApp);
 
-// Generic provider sign in
-const providerSignIn = async (provider) => {
+const signInWithGoogle = async () => {
   try {
-    const response = await signInWithPopup(auth, provider);
-    const { user } = response;
-    return user;
+    const res = await signInWithPopup(auth, googleProvider);
+    console.log(res);
   } catch (err) {
     console.log(err);
-    alert('Sign in failed!');
-    return null;
   }
 };
 
-// "Sign in With X" support
-const googleSignIn = providerSignIn(googleProvider);
-const facebookSignIn = providerSignIn(facebookProvider);
-
 const logout = () => {
+  console.log('Logging out');
   auth.signOut();
 };
 
 export {
   auth,
-  googleSignIn,
-  facebookSignIn,
+  signInWithGoogle,
   logout,
 };

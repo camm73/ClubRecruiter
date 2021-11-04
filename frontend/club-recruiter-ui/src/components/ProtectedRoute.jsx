@@ -2,7 +2,7 @@ import { React } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../api/firebase';
 
-const ProtectedRoute = ({ component }) => {
+const ProtectedRoute = ({ children }) => {
   const [user, loading, error] = useAuthState(auth);
 
   // Placeholder for login pending
@@ -27,13 +27,15 @@ const ProtectedRoute = ({ component }) => {
   if (user) {
     return (
       <>
-        {component}
+        {children}
       </>
     );
   }
 
   return (
-    <div />
+    <div>
+      <h1> Logged out </h1>
+    </div>
   );
 };
 
