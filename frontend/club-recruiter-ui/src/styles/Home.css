@@ -1,0 +1,25 @@
+.home {
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+}
+  
+.column {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100vw;
+    justify-content: center;
+    outline: auto;
+    align-items: center;
+}
+
+.button {
+    width: auto;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.candidate-textbox {
+    width: 300px;
+}
