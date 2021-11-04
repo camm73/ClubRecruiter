@@ -1,28 +1,44 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from 'react-router-dom';
+
+import CandidateApply from './pages/CandidateApply';
+import EventRouter from './routers/EventRouter';
+import Home from './pages/Home';
+import MemberDashboard from './pages/MemberDashboard';
+import NoRoute from './pages/errors/NoRoute';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit
-          {' '}
-          <code>src/App.js</code>
-          {' '}
-          and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route path="/apply">
+            <CandidateApply />
+          </Route>
+          <Route path="/dashboard">
+            {/* Will integrate protected routes once Firebase App is created. */}
+            { /* <ProtectedRoute component={MemberDashboard} /> */}
+            <MemberDashboard />
+          </Route>
+          <Route path="/event">
+            { /* <ProtectedRoute component={EventRouter} /> */}
+            <EventRouter />
+          </Route>
+          <Route path="/createEvent">
+            {/* <ProtectedRoute component={EventRouter} /> */}
+          </Route>
+          <Route path="*">
+            <NoRoute />
+          </Route>
+        </Switch>
+      </Router>
     </div>
   );
 }
