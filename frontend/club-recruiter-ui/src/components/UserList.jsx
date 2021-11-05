@@ -35,8 +35,8 @@ function generate(list) {
 }
 
 const UserList = ({ nameList, title }) => (
-  <Grid item sx={{ padding: 2 }}>
-    <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
+  <Grid item>
+    <Typography sx={{ mt: 4, mb: 2 }} align="center" variant="h6" component="div">
       {title}
     </Typography>
     <List>
