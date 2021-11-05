@@ -12,7 +12,7 @@ const Home = () => {
     // TODO: Verify candidate code with backend
     if (await validateCandidateCode(candidateCode)) {
       console.log('Candidate code verified!');
-      history.push('/dashboard');
+      history.push(`/apply/${candidateCode}`);
     } else {
       console.log('Candidate code invalid!');
       setCandidateCode('');
