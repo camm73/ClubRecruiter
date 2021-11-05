@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import {
   getAuth, signInWithPopup, GoogleAuthProvider,
 } from 'firebase/auth';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -15,6 +16,8 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const googleProvider = new GoogleAuthProvider();
 const auth = getAuth(firebaseApp);
+
+const db = getFirestore();
 
 const signInWithGoogle = async () => {
   try {
@@ -30,8 +33,32 @@ const logout = () => {
   auth.signOut();
 };
 
+// TODO: Check whether (eventCode, email) pair exists in database
+const addEventCandidate = async (
+  eventCandidate,
+) => {
+  try {
+    const {
+      eventCode, email, name, phoneNumber, biography, resumeLink,
+    } = eventCandidate;
+    const docRef = await addDoc(collection(db, 'candidates'), {
+      eventCode,
+      email,
+      name,
+      phoneNumber,
+      biography,
+      applicationStatus: 'pending',
+      resumeLink,
+    });
+    console.log('Document written with ID: ', docRef.id);
+  } catch (e) {
+    console.error('Error adding document: ', e);
+  }
+};
+
 export {
   auth,
   signInWithGoogle,
   logout,
+  addEventCandidate,
 };
