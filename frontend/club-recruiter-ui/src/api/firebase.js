@@ -33,30 +33,22 @@ const logout = () => {
   auth.signOut();
 };
 
-/*
-const eventCandidate = {
-  eventCode: 'asdf',
-  email: 'em',
-  name: 'nama',
-  phoneNumber: '123456789',
-  biography: 'I am happy',
-  resumeLink: 'none',
-};
-*/
-
 // TODO: Check whether (eventCode, email) pair exists in database
 const addEventCandidate = async (
   eventCandidate,
 ) => {
   try {
+    const {
+      eventCode, email, name, phoneNumber, biography, resumeLink,
+    } = eventCandidate;
     const docRef = await addDoc(collection(db, 'candidates'), {
-      eventCode: eventCandidate.eventCode,
-      email: eventCandidate.email,
-      name: eventCandidate.name,
-      phoneNumber: eventCandidate.phoneNumber,
-      biography: eventCandidate.biography,
+      eventCode,
+      email,
+      name,
+      phoneNumber,
+      biography,
       applicationStatus: 'pending',
-      resumeLink: eventCandidate.resumeLink,
+      resumeLink,
     });
     console.log('Document written with ID: ', docRef.id);
   } catch (e) {
