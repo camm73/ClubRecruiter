@@ -46,7 +46,7 @@ const Home = () => {
           <p className="intro-text">
             RecruitMe is a recruitment pipeline management platform for student organizations.
             RecruitMe empowers event organizers to provide a single hub for club applications,
-            event details and updates, candidate profile consolidation, and acceptance status
+            event details and updates, candidate profile consolidation, and candidate status
             tracking.
           </p>
           <h3>Features</h3>
@@ -63,12 +63,15 @@ const Home = () => {
           <ImageCarousel imageList={imageList} captionList={captionList} imageHeight="280" cardSize={500} />
         </div>
       </div>
+      <div className="get-started">
+        <h1>Get Started</h1>
+      </div>
       <div className="login-apply">
         <div className="column left-column">
           <h2>Candidate Application Portal</h2>
           <p>Interested in joining a student organization? Enter your Candidate Code below.</p>
           <div className="candidate-textbox">
-            <TextField fullWidth id="outlined-basic" value={candidateCode} label="Candidate Code" variant="outlined" onChange={(e) => setCandidateCode(e.target.value)} />
+            <TextField className="candidate-code-field" fullWidth id="outlined-basic" value={candidateCode} label="Candidate Code" variant="outlined" onChange={(e) => setCandidateCode(e.target.value)} />
           </div>
           <div className="button">
             <Button variant="contained" startIcon={<AssignmentIcon />} disabled={candidateCode.length === 0} onClick={handleApplySubmit}>Apply to Club</Button>

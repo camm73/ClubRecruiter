@@ -14,6 +14,14 @@
     padding-right: 20px;
 }
 
+.get-started {
+    text-align: center;
+}
+
+.candidate-code-field {
+    background-color: white;
+}
+
 h1,h2,h3 {
     margin: 0;
 }
