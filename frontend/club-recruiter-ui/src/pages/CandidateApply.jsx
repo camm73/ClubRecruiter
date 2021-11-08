@@ -1,6 +1,7 @@
 import { Container, Button } from '@mui/material';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import FormFileField from '../components/FormFileField';
 import FormTextField from '../components/FormTextField';
 import Header from '../components/Header';
 
@@ -25,7 +26,7 @@ const CandidateApply = () => {
           <FormTextField name="email" label="Email address" control={control} required />
           <FormTextField name="phone" label="Phone number" control={control} required />
           <FormTextField name="additional" label="Tell us more about yourself :)" control={control} required />
-          <FormTextField name="resume" label="Link to your resume" control={control} />
+          <FormFileField name="resume" label="Resume/CV (optional)" control={control} />
           <FormTextField name="misc" label="Anything else you would like to share :)" control={control} />
           <Button
             variant="contained"
