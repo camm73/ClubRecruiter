@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions'
 import * as express from 'express'
 
 import * as admin from 'firebase-admin'
-import * as serviceAccount from '../config/serviceAccountKey.json'
+import * as serviceAccount from './config/serviceAccountKey.json'
 
 const params = {
   type: serviceAccount.type,
