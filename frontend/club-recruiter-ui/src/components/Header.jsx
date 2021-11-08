@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 const Header = ({ pageName }) => (
   <div position="sticky">
     <AppBar
-      sx={{ bgcolor: '#FCDDEC', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
     >
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Typography variant="h6" component="div" sx={{ color: 'black', fontWeight: 'bold' }}>
