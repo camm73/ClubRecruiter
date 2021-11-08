@@ -1,8 +1,7 @@
-import * as functions from 'firebase-functions'
-import * as express from 'express'
+const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
+const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 
-import * as admin from 'firebase-admin'
-import * as serviceAccount from './config/serviceAccountKey.json'
+const serviceAccount = require('./config/serviceAccountKey.json')
 
 const params = {
   type: serviceAccount.type,
@@ -17,10 +16,13 @@ const params = {
   clientC509CertUrl: serviceAccount.client_x509_cert_url
 }
 
-admin.initializeApp({
-  credential: admin.credential.cert(params),
+
+// initialize Firebase admin
+initializeApp({
+  credential: cert(params),
 });
 
-const app = express()
-app.get('/', (req, res) => res.status(200).send('Hey there!'))
-exports.app = functions.https.onRequest(app)
+// create Firestore instance
+db = getFirestore();
+
+exports.db = this.db;
