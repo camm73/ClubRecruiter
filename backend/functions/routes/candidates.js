@@ -42,9 +42,7 @@ router.post('/add', async (req, res) => {
  * @returns all candidates if event_code is not specified, otherwise all
  * candidates given the event_code
  */
-router.get('/', async (req, res) => {
-  var { event_code } = req.params;
-
+router.get('/:event_code', async (req, res) => {
   var db = admin.firestore();
   try {
     // if no event_code is specified
