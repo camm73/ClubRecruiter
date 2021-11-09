@@ -1,0 +1,63 @@
+.login-apply {
+    display: flex;
+    height: 400px;
+    justify-content: center;
+}
+
+.intro {
+    display: flex;
+    height: 500px;
+}
+
+.intro-text {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.get-started {
+    text-align: center;
+}
+
+.candidate-code-field {
+    background-color: white;
+}
+
+h1,h2,h3 {
+    margin: 0;
+}
+
+.ul {
+    margin: 0;
+}
+
+.feature-item {
+    padding-bottom: 8px;
+}
+  
+.column {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100vw;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.left-column {
+    background-color: lightblue;
+}
+
+.right-column {
+    background-color: lightgray;
+}
+
+.button {
+    width: auto;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.candidate-textbox {
+    width: 300px;
+}
