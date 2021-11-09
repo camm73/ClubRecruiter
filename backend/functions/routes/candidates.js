@@ -1,6 +1,6 @@
 
-var express = require('express');
-const { db } = require('../db');
+const express = require('express');
+const admin = require('firebase-admin')
 var router = express.Router();
 
 /**
@@ -10,25 +10,27 @@ var router = express.Router();
  * @returns a status of 200 if the candidate insertion is successful, 404 if
  * not.
  */
-router.post('/add', function (req, res, next) {
+router.post('/add', async (req, res) => {
+  var {
+    event_code, email, name, phone_number, biography, resume_link,
+  } = req.body;
+
+  var db = admin.firestore();
   try {
-    var {
-      eventCode, email, name, phoneNumber, biography, resumeLink,
-    } = req.body;
-    // const docRef = await addDoc(collection(db, 'candidates'), {
     const docRef = await db.collection("candidates").add({
-      eventCode,
+      event_code,
       email,
       name,
-      phoneNumber,
+      phone_number,
       biography,
       applicationStatus: 'pending',
-      resumeLink,
+      resume_link,
     });
     res.status(200).send(`Document written with ID: ${docRef.id}`);
   } catch (e) {
-    res.status(404).send(`Error adding document with ID: ${docRef.id}`);
+    res.status(404).send(`Error adding new candidate: ${e}`);
   }
+
 });
 
 module.exports = router;
