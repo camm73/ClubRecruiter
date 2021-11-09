@@ -2,6 +2,8 @@ var admin = require('firebase-admin');
 var express = require('express');
 var router = express.Router();
 
+const { EVENTS_COLLECTION } = require('../constants')
+
 /**
  * This function adds a new event candidate to the candidates database
  * @param {req} contains a memberID
@@ -12,7 +14,12 @@ router.get('/list', async function (req, res) {
     var { member_id } = req.params;
 
     var db = admin.firestore();
-    const eventListRes = await db.collection("events").where("member_id", "==", member_id).get();
+    const eventListRes = await db.collection(EVENTS_COLLECTION).where("member_id", "==", member_id).get();
+
+    if (eventListRes.empty()) {
+      console.log("No matching documents!");
+      res.status(404).send(`Can't find member with member_id == ${member_id}`);
+    }
 
     var eventList = [];
     eventListRes.forEach(doc => {
@@ -57,44 +64,5 @@ router.post('/add', async (req, res) => {
 router.delete('/delete', async (req, res) => {
   res.status(200).send(`Ok`);
 });
-
-
-/**
- * This function adds a member to an event
- * @param {req} contains memberID and an eventID
- * @returns a status of 200 if the event delete is successful, else 404
- */
-router.post('/member/add', async (req, res) => {
-  res.status(200).send(`Ok`);
-});
-
-
-/**
- * This function deletes a member from an event
- * @param {req} contains memberID and an eventID
- * @returns a status of 200 if the member delete is successful, else 404
- */
-router.delete('/member/delete', async (req, res) => {
-  res.status(200).send(`Ok`);
-});
-
-/**
- * This function promotes an existing member of an event to organizer
- * @param {req} contains memberID and an eventID
- * @returns a status of 200 if the promotion is successful, else 404
- */
-router.put('/member/promote', async (req, res) => {
-  res.status(200).send(`Ok`);
-});
-
-/**
- * This function demotes an existing member of an event to regular member
- * @param {req} contains memberID and an eventID
- * @returns a status of 200 if the demotion is successful, else 404
- */
-router.put('/member/demote', async (req, res) => {
-  res.status(200).send(`Ok`);
-});
-
 
 module.exports = router;

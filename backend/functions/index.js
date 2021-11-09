@@ -10,6 +10,7 @@ const { validateFirebaseIdToken } = require('./auth')
 const candidateRouter = require('./routes/candidates')
 const eventRouter = require('./routes/events')
 const commentRouter = require('./routes/comments')
+const memberRouter = require('./routes/members')
 
 // initialize firestore app
 admin.initializeApp();
@@ -28,6 +29,7 @@ app.use("/candidate", candidateRouter);
 // app.use("/event", validateFirebaseIdToken, eventRouter);
 app.use("/event", eventRouter);
 app.use("/comment", commentRouter);
+app.use("/member", memberRouter);
 
 
 exports.app = functions.https.onRequest(app)
