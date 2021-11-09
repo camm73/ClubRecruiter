@@ -25,6 +25,19 @@ router.get('/list', async function (req, res) {
   }
 });
 
+
+/**
+ * This function returns full details of an event
+ * @param {req} contains eventID
+ * @returns event details containing eventName, eventDescription,
+ * eventCoverPictureUrl, eventCode, accessCode, list[members], list[organizers],
+ * list[candidates]
+ */
+router.get('/:eventid', async (req, res) => {
+  res.status(200).send(`Ok: ` + req.params.eventid);
+});
+
+
 /**
  * This function adds an event to the events database
  * @param {req} contains memberID, eventName, eventDescription,
