@@ -9,6 +9,7 @@ const { validateFirebaseIdToken } = require('./auth')
 // routers
 const candidateRouter = require('./routes/candidates')
 const eventRouter = require('./routes/events')
+const commentRouter = require('./routes/comments')
 
 // initialize firestore app
 admin.initializeApp();
@@ -26,6 +27,7 @@ app.use("/candidate", candidateRouter);
 // auth protected version below, uncomment when testing is finished
 // app.use("/event", validateFirebaseIdToken, eventRouter);
 app.use("/event", eventRouter);
+app.use("/comment", commentRouter);
 
 
 exports.app = functions.https.onRequest(app)
