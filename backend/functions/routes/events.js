@@ -7,7 +7,7 @@ var router = express.Router();
  * @param {req} contains a memberID
  * @returns a list of events the ClubMember is a *member* of
  */
-router.get('/events/list', async function (req, res) {
+router.get('/list', async function (req, res) {
   try {
     var { member_id } = req.params;
 
@@ -31,7 +31,7 @@ router.get('/events/list', async function (req, res) {
  * eventCoverPictureUrl, eventCode, accessCode
  * @returns a status of 200 if the event create is successful, else 404
  */
-router.post('/events/add', async (req, res) => {
+router.post('/add', async (req, res) => {
   res.status(200).send(`Ok`);
 });
 
@@ -41,7 +41,7 @@ router.post('/events/add', async (req, res) => {
  * @param {req} contains memberID and an eventID
  * @returns a status of 200 if the event delete is successful, else 404
  */
-router.delete('/events/delete', async (req, res) => {
+router.delete('/delete', async (req, res) => {
   res.status(200).send(`Ok`);
 });
 
@@ -51,7 +51,7 @@ router.delete('/events/delete', async (req, res) => {
  * @param {req} contains memberID and an eventID
  * @returns a status of 200 if the event delete is successful, else 404
  */
-router.post('/events/member/add', async (req, res) => {
+router.post('/member/add', async (req, res) => {
   res.status(200).send(`Ok`);
 });
 
@@ -61,7 +61,7 @@ router.post('/events/member/add', async (req, res) => {
  * @param {req} contains memberID and an eventID
  * @returns a status of 200 if the member delete is successful, else 404
  */
-router.delete('/events/member/delete', async (req, res) => {
+router.delete('/member/delete', async (req, res) => {
   res.status(200).send(`Ok`);
 });
 
@@ -70,7 +70,7 @@ router.delete('/events/member/delete', async (req, res) => {
  * @param {req} contains memberID and an eventID
  * @returns a status of 200 if the promotion is successful, else 404
  */
-router.put('/events/member/promote', async (req, res) => {
+router.put('/member/promote', async (req, res) => {
   res.status(200).send(`Ok`);
 });
 
@@ -79,7 +79,7 @@ router.put('/events/member/promote', async (req, res) => {
  * @param {req} contains memberID and an eventID
  * @returns a status of 200 if the demotion is successful, else 404
  */
-router.put('/events/member/demote', async (req, res) => {
+router.put('/member/demote', async (req, res) => {
   res.status(200).send(`Ok`);
 });
 
