@@ -3,8 +3,7 @@
  * @requires express
  * @requires firebase-admin
  */
-
-const express = require('express');
+const express = require('express')
 const admin = require('firebase-admin')
 
 /**

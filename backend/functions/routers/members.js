@@ -5,6 +5,8 @@
  */
 
 const express = require('express');
+const { firestore } = require('firebase-admin');
+const { CLUB_MEMBERS_COLLECTION } = require('../constants');
 
 /**
  * Express router to mount member related functions on.
@@ -13,21 +15,6 @@ const express = require('express');
  * @namespace membersRouter
  */
 var router = express.Router();
-
-/**
- * Adds a member to an event
- * @name post/add
- * @function
- * @memberof module:routers/members~membersRouter
- * @inner
- * @param { string } member_id 
- * @param { string } event_id
- * @returns { string } a success message if member is successfully added, an
- * error message otherwise
- */
-router.post('/add', async (req, res) => {
-  res.status(200).send(`Ok`);
-});
 
 
 /**
