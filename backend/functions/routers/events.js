@@ -1,11 +1,29 @@
+/** Express router providing events related routes
+ * @module routers/events
+ * @requires express
+ * @requires firebase-admin
+ */
+
 var admin = require('firebase-admin');
+
 var express = require('express');
+
+/**
+ * Express router to mount event related functions on.
+ * @type {object}
+ * @const
+ * @namespace eventsRouter
+ */
 var router = express.Router();
 
 const { EVENTS_COLLECTION } = require('../constants')
 
 /**
  * Lists all events a ClubMember is a member of
+ * @name get/list/:member_id
+ * @function
+ * @memberof module:routers/routes~eventsRouter
+ * @inner
  * @param {string} member_id
  * @returns { Object[] } a list of events the ClubMember is a member of
  */
@@ -35,7 +53,11 @@ router.get('/list/:member_id', async function (req, res) {
 
 /**
  * Retrieves full detail of an event given an event_id
- * @param {req} contains eventID
+ * @name get/:eventid
+ * @function
+ * @memberof module:routers/events~eventsRouter
+ * @inner
+ * @param {string} event_id
  * @returns { Object } event details containing eventName, eventDescription,
  * eventCoverPictureUrl, eventCode, accessCode, list[members], list[organizers],
  * list[candidates]
@@ -47,6 +69,10 @@ router.get('/:eventid', async (req, res) => {
 
 /**
  * Adds an event to the events database
+ * @name post/add
+ * @function
+ * @memberof module:routers/events~eventsRouter
+ * @inner
  * @param { string } member_id
  * @param {string} event_name
  * @param {string } event_description
@@ -61,6 +87,10 @@ router.post('/add', async (req, res) => {
 
 /**
  * Deletes an event from Events database
+ * @name delete/delete
+ * @function
+ * @memberof module:routers/events~eventsRouter
+ * @inner
  * @param { string } member_id and 
  * @param {string} event_id
  * @returns { string } a success message if the event delete is successful, an
