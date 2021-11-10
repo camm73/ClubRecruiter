@@ -6,15 +6,20 @@ var router = express.Router();
 var { CLUB_MEMBERS_COLLECTION } = require('../constants')
 
 /**
- * This function adds a new event candidate to the candidates database
- * @param {req} contains the candidates's eventCode, email, name, phoneNumber,
- * biography, resumeLink and other basic info.
- * @returns a status of 200 if the candidate insertion is successful, 404 if
- * not.
+ * Adds a new event candidate to the candidates database along
+ * with their basic information
+ * @param { string } event_code
+ * @param { string } email
+ * @param { string } name
+ * @param { string } phone_number
+ * @param { string } biography
+ * @param { string } resume_id
+ * @returns { string } unique candidate ID if the new candidate is inserted
+ * properly, an error message otherwise
  */
 router.post('/add', async (req, res) => {
   var {
-    event_code, email, name, phone_number, biography, resume_link,
+    event_code, email, name, phone_number, biography, resume_id,
   } = req.body;
 
   var db = admin.firestore();
@@ -26,7 +31,7 @@ router.post('/add', async (req, res) => {
       phone_number,
       biography,
       applicationStatus: 'pending',
-      resume_link,
+      resume_id,
     });
     res.status(200).send(`Document written with ID: ${docRef.id}`);
   } catch (e) {
@@ -37,12 +42,14 @@ router.post('/add', async (req, res) => {
 
 
 /**
- * This endpoint retrieves all event candidates from the candidates database
- * @param {req.params} contains an event_code
- * @returns all candidates if event_code is not specified, otherwise all
+ * This endpoint retrieves a list of candidate IDs from the
+ * Candidates database
+ * @param {string} event_code
+ * @returns {String[]} all candidates if event_code is not specified, otherwise
  * candidates given the event_code
  */
 router.get('/:event_code', async (req, res) => {
+  var { event_code } = req.params;
   var db = admin.firestore();
   try {
     // if no event_code is specified

@@ -2,9 +2,11 @@ const express = require('express');
 var router = express.Router();
 
 /**
- * This function adds a member to an event
- * @param {req} contains memberID and an eventID
- * @returns a status of 200 if the event delete is successful, else 404
+ * Adds a member to an event
+ * @param { string } member_id 
+ * @param { string } event_id
+ * @returns { string } a success message if member is successfully added, an
+ * error message otherwise
  */
 router.post('/add', async (req, res) => {
   res.status(200).send(`Ok`);
@@ -12,9 +14,11 @@ router.post('/add', async (req, res) => {
 
 
 /**
- * This function deletes a member from an event
- * @param {req} contains memberID and an eventID
- * @returns a status of 200 if the member delete is successful, else 404
+ * Deletes a member from an event
+ * @param { string } member_id 
+ * @param { string } event_id
+ * @returns a success message if member is successfully deleted, an
+ * error message otherwise
  */
 router.delete('/delete', async (req, res) => {
   res.status(200).send(`Ok`);
@@ -22,8 +26,10 @@ router.delete('/delete', async (req, res) => {
 
 /**
  * This function promotes an existing member of an event to organizer
- * @param {req} contains memberID and an eventID
- * @returns a status of 200 if the promotion is successful, else 404
+ * @param { string } member_id
+ * @param {string } event_id
+ * @returns a success message if member is successfully promoted, an
+ * error message otherwise
  */
 router.put('/promote', async (req, res) => {
   res.status(200).send(`Ok`);
@@ -31,8 +37,10 @@ router.put('/promote', async (req, res) => {
 
 /**
  * This function demotes an existing member of an event to regular member
- * @param {req} contains memberID and an eventID
- * @returns a status of 200 if the demotion is successful, else 404
+ * @param { string } member_id
+ * @param {string } event_id
+ * @returns a success message if member is successfully demoted, an
+ * error message otherwise
  */
 router.put('/demote', async (req, res) => {
   res.status(200).send(`Ok`);

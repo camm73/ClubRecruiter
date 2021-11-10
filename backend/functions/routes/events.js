@@ -5,11 +5,11 @@ var router = express.Router();
 const { EVENTS_COLLECTION } = require('../constants')
 
 /**
- * This function adds a new event candidate to the candidates database
- * @param {req} contains a memberID
- * @returns a list of events the ClubMember is a *member* of
+ * Lists all events a ClubMember is a member of
+ * @param {string} member_id
+ * @returns { Object[] } a list of events the ClubMember is a member of
  */
-router.get('/list', async function (req, res) {
+router.get('/list/:member_id', async function (req, res) {
   try {
     var { member_id } = req.params;
 
@@ -34,9 +34,9 @@ router.get('/list', async function (req, res) {
 
 
 /**
- * This function returns full details of an event
+ * Retrieves full detail of an event given an event_id
  * @param {req} contains eventID
- * @returns event details containing eventName, eventDescription,
+ * @returns { Object } event details containing eventName, eventDescription,
  * eventCoverPictureUrl, eventCode, accessCode, list[members], list[organizers],
  * list[candidates]
  */
@@ -46,10 +46,13 @@ router.get('/:eventid', async (req, res) => {
 
 
 /**
- * This function adds an event to the events database
- * @param {req} contains memberID, eventName, eventDescription,
- * eventCoverPictureUrl, eventCode, accessCode
- * @returns a status of 200 if the event create is successful, else 404
+ * Adds an event to the events database
+ * @param { string } member_id
+ * @param {string} event_name
+ * @param {string } event_description
+ * @param {string} event_cover_picture_url
+ * @returns { [string, string] } event_code and access_code to the frontend to
+ * be distributed to ClubMembers as well as Candidates
  */
 router.post('/add', async (req, res) => {
   res.status(200).send(`Ok`);
@@ -57,9 +60,11 @@ router.post('/add', async (req, res) => {
 
 
 /**
- * This function deletes an event from events database
- * @param {req} contains memberID and an eventID
- * @returns a status of 200 if the event delete is successful, else 404
+ * Deletes an event from Events database
+ * @param { string } member_id and 
+ * @param {string} event_id
+ * @returns { string } a success message if the event delete is successful, an
+ * error message otherwise
  */
 router.delete('/delete', async (req, res) => {
   res.status(200).send(`Ok`);

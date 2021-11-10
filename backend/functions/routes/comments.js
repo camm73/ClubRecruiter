@@ -3,18 +3,24 @@ var express = require('express');
 var router = express.Router();
 
 /**
- * This function lists all the comments associated with a candidate for a particular event
- * @param {req} contains eventID, candidateID
- * @returns a list of all comments for candidateID for the particular eventID
+ * Lists all the comments associated with a candidate for a particular event
+ * @param { string } event_id
+ * @param { string } candidate_id
+ * @returns { Object[] } a list of all comments for candidateID for the
+ * particular eventID 
  */
 router.get('/list', async function (req, res) {
   res.status(200).send(`comments list`);
 });
 
 /**
- * This function adds a comment to a candidate for a particular event
- * @param {req} contains memberID, eventID, candidateID, comment string
- * @returns a status of 200 if the comment is successfully added, else 404
+ * Adds a comment to a candidate for a particular event
+ * @param { string } member_id
+ * @param { string } event_id
+ * @param { string } candidate_id
+ * @param { string } comment
+ * @returns { string } unique comment ID if the new comment is inserted
+ * properly, an error message otherwise
  */
 router.post('/add', async (req, res) => {
   res.status(200).send(`Ok`);
@@ -22,9 +28,10 @@ router.post('/add', async (req, res) => {
 
 
 /**
- * This function deletes a comment from comments database
- * @param {req} contains commentID
- * @returns a status of 200 if the comment delete is successful, else 404
+ * Deletes a comment from comments database
+ * @param { string } comment_id
+ * @returns { string } a success status message if the comment is deleted
+ * successfully, an error message otherwise
  */
 router.delete('/delete', async (req, res) => {
   res.status(200).send(`Ok`);
