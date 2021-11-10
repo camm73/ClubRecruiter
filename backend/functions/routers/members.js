@@ -1,8 +1,25 @@
+/** Express router providing members related routes
+ * @module routers/members
+ * @requires express
+ * @requires firebase-admin
+ */
+
 const express = require('express');
+
+/**
+ * Express router to mount member related functions on.
+ * @type {object}
+ * @const
+ * @namespace membersRouter
+ */
 var router = express.Router();
 
 /**
  * Adds a member to an event
+ * @name post/add
+ * @function
+ * @memberof module:routers/members~membersRouter
+ * @inner
  * @param { string } member_id 
  * @param { string } event_id
  * @returns { string } a success message if member is successfully added, an
@@ -15,6 +32,10 @@ router.post('/add', async (req, res) => {
 
 /**
  * Deletes a member from an event
+ * @name delete/delete
+ * @function
+ * @memberof module:routers/members~membersRouter
+ * @inner
  * @param { string } member_id 
  * @param { string } event_id
  * @returns a success message if member is successfully deleted, an
@@ -26,23 +47,31 @@ router.delete('/delete', async (req, res) => {
 
 /**
  * This function promotes an existing member of an event to organizer
+ * @name post/promote
+ * @function
+ * @memberof module:routers/members~membersRouter
+ * @inner
  * @param { string } member_id
  * @param {string } event_id
  * @returns a success message if member is successfully promoted, an
  * error message otherwise
  */
-router.put('/promote', async (req, res) => {
+router.post('/promote', async (req, res) => {
   res.status(200).send(`Ok`);
 });
 
 /**
  * This function demotes an existing member of an event to regular member
+ * @name post/demote
+ * @function
+ * @memberof module:routers/members~membersRouter
+ * @inner
  * @param { string } member_id
  * @param {string } event_id
  * @returns a success message if member is successfully demoted, an
  * error message otherwise
  */
-router.put('/demote', async (req, res) => {
+router.post('/demote', async (req, res) => {
   res.status(200).send(`Ok`);
 });
 
