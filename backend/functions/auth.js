@@ -1,3 +1,5 @@
+var admin = require('firebase-admin')
+
 // NOTE: below method is adopted from https://github.com/firebase/functions-samples
 // Express middleware that validates Firebase ID Tokens passed in the Authorization HTTP header.
 // The Firebase ID token needs to be passed as a Bearer token in the Authorization HTTP header like this:

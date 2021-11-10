@@ -81,7 +81,6 @@ router.get('/:eventid', async (req, res) => {
  * be distributed to ClubMembers as well as Candidates
  */
 router.post('/add', async (req, res) => {
-  res.status(200).send(`Ok`);
 });
 
 
