@@ -7,10 +7,10 @@ const cors = require('cors');
 const { validateFirebaseIdToken } = require('./auth')
 
 // routers
-const candidateRouter = require('./routes/candidates')
-const eventRouter = require('./routes/events')
-const commentRouter = require('./routes/comments')
-const memberRouter = require('./routes/members')
+const candidateRouter = require('./routers/candidates')
+const eventRouter = require('./routers/events')
+const commentRouter = require('./routers/comments')
+const memberRouter = require('./routers/members')
 
 // initialize firestore app
 admin.initializeApp();
