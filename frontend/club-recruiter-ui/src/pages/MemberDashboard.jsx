@@ -2,6 +2,7 @@ import { TextField, Button } from '@mui/material';
 import React, { useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import Header from '../components/Header';
+import EventCard from '../components/EventCard';
 
 import '../styles/MemberDashboard.css';
 
@@ -22,7 +23,7 @@ const MemberDashboard = () => {
         <Button variant="contained" startIcon={<AddIcon />} disabled={eventCode.length === 0} onClick={handleJoinEvent}>Join Event</Button>
       </div>
       <div className="event-list">
-        <h2>Events</h2>
+        <EventCard clickAction={() => {}} />
       </div>
     </div>
   );
