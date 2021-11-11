@@ -22,7 +22,8 @@
   },
   "devDependencies": {
     "@types/node": "^16.11.7",
-    "firebase-functions-test": "^0.2.0"
+    "firebase-functions-test": "^0.2.0",
+    "jsdoc-to-markdown": "^7.1.0"
   },
   "private": true
 }

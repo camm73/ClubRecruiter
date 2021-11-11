@@ -102,7 +102,7 @@ router.post('/add', async (req, res) => {
 
 /**
  * Adds a member to an event
- * @name post/event/member/:event_id
+ * @name POST/event/member/:event_id
  * @function
  * @param { string } member_id 
  * @param { string } event_id
