@@ -16,7 +16,7 @@ var express = require('express');
  */
 var router = express.Router();
 
-const { EVENTS_COLLECTION, CANDIDATES_COLLECTION, CLUB_MEMBERS_COLLECTION } = require('../constants')
+const { EVENTS_COLLECTION, CANDIDATES_COLLECTION, CLUB_MEMBERS_COLLECTION, MEMBERS_EVENTS_COLLECTION, ADMIN_EVENTS_COLLECTION } = require('../constants')
 
 /**
  * Lists all events a ClubMember is a member of
@@ -25,25 +25,30 @@ const { EVENTS_COLLECTION, CANDIDATES_COLLECTION, CLUB_MEMBERS_COLLECTION } = re
  * @memberof module:routers/routes~eventsRouter
  * @inner
  * @param {string} member_id
- * @returns { Object[] } a list of events the ClubMember is a member of
+ * @returns { Object[] } a list of events the ClubMember is a member or admin of
  */
 router.get('/list/:member_id', async function (req, res) {
   try {
     var { member_id } = req.params;
 
     var db = firestore();
-    const eventListRes = await db.collection(EVENTS_COLLECTION).where("member_id", "==", member_id).get();
+    const membersEventsRes = await db.collection(MEMBERS_EVENTS_COLLECTION).where("member_id", "==", member_id).get();
+    const adminsEventsRes = await db.collection(ADMIN_EVENTS_COLLECTION).where("member_id", "==", member_id).get();
 
-    if (eventListRes.empty()) {
+    if (eventListRes.empty() && adminsEventsRes.empty()) {
       console.log("No matching documents!");
       res.status(404).send(`Can't find member with member_id == ${member_id}`);
     }
 
     var eventList = [];
-    eventListRes.forEach(doc => {
-      eventList.push(doc.data());
-      console.log(doc.id, '=>', doc.data());
+    membersEventsRes.forEach(doc => {
+      eventList.push(doc.data().event_id);
     });
+
+    adminsEventsRes.forEach(doc => {
+      eventList.push(doc.data().event_id);
+    });
+
     res.status(200).send(eventList);
   } catch (e) {
     res.status(404).send(`Error adding document with ID: ${docRef.id}`);
@@ -68,7 +73,7 @@ router.get('/:event_id', async (req, res) => {
   try {
     var docRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
     if (docRef.exists()) {
-      res.status(200).send(data);
+      res.status(200).send(docRef.data());
     } else {
       res.status(404).send(`Event with event_id: ${event_id} doesn't exist!`)
     }
@@ -104,13 +109,10 @@ router.post('/add', async (req, res) => {
       event_cover_picture_url
     });
 
-    // update Members db
-    var memberDocRef = await db.collection(CLUB_MEMBERS_COLLECTION).doc(member_id).update({
-      // add the new event's unique id to the list of administrative events list
-      admin_events: firestore.FieldValue.arrayUnion(eventDocRef.id),
-      // add the new event's unique id to the list of member events list
-      member_events: firestore.FieldValue.arrayUnion(eventDocRef.id)
-    });
+    await db.collection(ADMIN_EVENTS_COLLECTION).add({
+      member_id: member_id,
+      event_id: eventDocRef.id
+    })
 
     res.status(200).send(`New event added with id: ${eventDocRef.id}`);
   } catch (e) {
@@ -138,9 +140,14 @@ router.post('/add/member/:event_id', async (req, res) => {
     var eventDocRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
 
     if (eventDocRef.exists()) {
-      var memberDocRef = await db.collection(CLUB_MEMBERS_COLLECTION).doc(member_id).update({
-        member_events: firestore.FieldValue.arrayUnion(event_id),
-      });
+      await db.collection(MEMBERS_EVENTS_COLLECTION).set({
+        member_id: member_id,
+        event_id: event_id
+      },
+        // the merge: true option essentially specifies the table to add the
+        // relationship if it doesn't exist in the collection already
+        { merge: true });
+
       res.status(200).send(`Member with id ${member_id} added to even with id: ${event_id}`);
     } else {
       res.status(404).send(`Event with id ${event_id} doesn't exist!`)
