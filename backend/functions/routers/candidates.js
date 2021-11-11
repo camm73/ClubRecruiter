@@ -1,17 +1,5 @@
-/** Express router providing candidates related routes
- * @module routers/candidates
- * @requires express
- * @requires firebase-admin
- */
 const express = require('express')
 const admin = require('firebase-admin')
-
-/**
- * Express router to mount candidate related functions on.
- * @type {object}
- * @const
- * @namespace candidatesRouter
- */
 var router = express.Router();
 
 var { CLUB_MEMBERS_COLLECTION } = require('../constants')
@@ -19,10 +7,8 @@ var { CLUB_MEMBERS_COLLECTION } = require('../constants')
 /**
  * Adds a new event candidate to the candidates database along
  * with their basic information
- * @name post/add
+ * @name POST/candidate/add
  * @function
- * @memberof module:routers/candidates~candidatesRouter
- * @inner
  * @param { string } event_code
  * @param { string } email
  * @param { string } name
@@ -59,10 +45,8 @@ router.post('/add', async (req, res) => {
 /**
  * This endpoint retrieves a list of candidate IDs from the
  * Candidates database
- * @name get/:event_code
+ * @name GET/candidate/:event_code
  * @function
- * @memberof module:routers/candidates~candidatesRouter
- * @inner
  * @param {string} event_code
  * @returns {String[]} all candidates if event_code is not specified, otherwise
  * candidates given the event_code
