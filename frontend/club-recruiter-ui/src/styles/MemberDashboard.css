@@ -3,7 +3,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    margin-top: 100px;
 }
 
 
@@ -21,4 +21,9 @@
 .event-code-wrapper {
     width: 350px;
     margin-right: 10px;
+}
+
+.event-list {
+    display: flex;
+    flex-direction: column;
 }

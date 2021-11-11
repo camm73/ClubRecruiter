@@ -7,9 +7,13 @@ import CardActionArea from '@mui/material/CardActionArea';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 
-const EventCard = ({ clickAction }) => (
-  <Card sx={{ display: 'flex', margin: 3, bgcolor: '#E5E5E5' }}>
-    <CardActionArea disabled={clickAction === undefined} onClick={clickAction}>
+const EventCard = ({ clickAction, eventID }) => (
+  <Card sx={{
+    display: 'flex', margin: 3, bgcolor: '#E5E5E5',
+  }}
+  >
+    {console.log(`Loaded card for ${eventID}`)}
+    <CardActionArea sx={{ display: 'flex', flexDirection: 'row' }} disabled={clickAction === undefined} onClick={clickAction}>
       <CardMedia
         component="img"
         sx={{ width: 200 }}

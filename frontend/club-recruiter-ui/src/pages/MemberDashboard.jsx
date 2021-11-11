@@ -1,17 +1,30 @@
 import { TextField, Button } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import Header from '../components/Header';
 import EventCard from '../components/EventCard';
+
+import { listMemberEvents } from '../api/events';
 
 import '../styles/MemberDashboard.css';
 
 const MemberDashboard = () => {
   const [eventCode, setEventCode] = useState('');
+  const [events, setEvents] = useState([]);
+
+  const loadEvents = async () => {
+    // TODO: Replace with member id from cookie
+    const memberEvents = await listMemberEvents('member_id');
+    setEvents(memberEvents);
+    console.log('Loaded list of events for user');
+  };
 
   const handleJoinEvent = () => {
 
   };
+
+  // Load events at page mount
+  useEffect(loadEvents, []);
 
   return (
     <div className="dashboard">
@@ -23,7 +36,11 @@ const MemberDashboard = () => {
         <Button variant="contained" startIcon={<AddIcon />} disabled={eventCode.length === 0} onClick={handleJoinEvent}>Join Event</Button>
       </div>
       <div className="event-list">
-        <EventCard clickAction={() => {}} />
+        {
+          events.map(
+            (eventID) => (<EventCard clickAction={() => {}} key={eventID} eventID={eventID} />),
+          )
+        }
       </div>
     </div>
   );
