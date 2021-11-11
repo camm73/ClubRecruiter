@@ -32,7 +32,31 @@ This folder contains CSS styling documents for various pages and React component
 This contains public resources such as the website icon and `index.html` files.
 
 
-## backend
+## backend/functions
+all import files are under the functions/ directory
+
+#### **index.js**
+This file contains the express.js and Firebase Cloud functions initialization as
+well as the API routes definitions.
+
+#### **auth.js**
+This file contains the Firebase ID Token validation method.
+
+#### **constants.js**
+This file contains the constants including data table names that we use
+throughout backend development.
+
+#### **routers**
+This folder contains the 4 main API routers including Events, Candidates,
+Comments, and Members. Each file contains the concrete implementation of each
+API endpoint.
+
+#### **docs**
+This folder contains the auto-generated HTML API documentation of our backend
+code. 
+
+#### **config**
+This folder contains the configuration including Firebase API key and more.
 
 
 ## .github/workflows
