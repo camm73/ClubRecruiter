@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom';
 import Header from '../components/Header';
 import EventCard from '../components/EventCard';
 
-import { listMemberEvents } from '../api/events';
+import { listMemberEvents, joinEvent } from '../api/events';
 
 import '../styles/MemberDashboard.css';
 
@@ -24,8 +24,10 @@ const MemberDashboard = () => {
     console.log('Loaded list of events for user');
   };
 
-  const handleJoinEvent = () => {
-
+  const handleJoinEvent = async () => {
+    await joinEvent(eventCode, 'member_id');
+    console.log('Joined new event');
+    history.push(`/event/${eventCode}`);
   };
 
   const handleCreateEvent = () => {
