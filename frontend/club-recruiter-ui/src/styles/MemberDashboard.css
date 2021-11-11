@@ -1,0 +1,42 @@
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100px;
+}
+
+
+.join-event {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100vw;
+}
+
+.event-code-field {
+    background-color: white;
+}
+
+.create-event-button {
+    position: fixed;
+    transform: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    left: 80%;
+    top: 80vh;
+    border-radius: 50%;
+    background: white;
+    z-index: 100;
+}
+
+.event-code-wrapper {
+    width: 350px;
+    margin-right: 10px;
+}
+
+.event-list {
+    display: flex;
+    flex-direction: column;
+}
