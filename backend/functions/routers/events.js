@@ -54,7 +54,7 @@ router.get('/:event_id', async (req, res) => {
   var db = firestore();
   try {
     var docRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
-    if (docRef.exists()) {
+    if (docRef.exists) {
       res.status(200).send(docRef.data());
     } else {
       res.status(404).send(`Event with event_id: ${event_id} doesn't exist!`)
@@ -102,7 +102,7 @@ router.post('/add', async (req, res) => {
 
 /**
  * Adds a member to an event
- * @name post/event/member/:event_id
+ * @name POST/event/member/:event_id
  * @function
  * @param { string } member_id 
  * @param { string } event_id
@@ -117,7 +117,7 @@ router.post('/member/:event_id', async (req, res) => {
   try {
     var eventDocRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
 
-    if (eventDocRef.exists()) {
+    if (eventDocRef.exists) {
       await db.collection(MEMBERS_EVENTS_COLLECTION).set({
         member_id: member_id,
         event_id: event_id
