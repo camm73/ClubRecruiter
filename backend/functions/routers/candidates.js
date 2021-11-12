@@ -2,7 +2,7 @@ const express = require('express')
 const { firestore } = require('firebase-admin')
 var router = express.Router();
 
-var { CLUB_MEMBERS_COLLECTION, EVENTS_COLLECTION } = require('../constants')
+var { CLUB_MEMBERS_COLLECTION, EVENTS_COLLECTION, CANDIDATES_COLLECTION } = require('../constants')
 
 /**
  * Adds a new event candidate to the candidates database along
@@ -54,9 +54,17 @@ router.get('/:event_id', async (req, res) => {
   var { event_id } = req.params;
   try {
     var db = firestore();
-    var eventDocRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
+    const eventDocRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
+    const candidate_ids = eventDocRef.data().candidates;
+    
+    const candidates = []
+    for (var idx in candidate_ids) {
+      let candidate_id = candidate_ids[idx];
+      const candidatesDocRef = await db.collection(CANDIDATES_COLLECTION).doc(candidate_id).get();
+      candidates.push(candidatesDocRef.data());
+    };
 
-    res.status(200).send(eventDocRef.data().candidates);
+    res.status(200).send(candidates);
   } catch (e) {
     res.status(404).send(`Error retrieving candidates: ${e}`);
   }
