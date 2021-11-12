@@ -2,7 +2,7 @@ var { firestore } = require('firebase-admin');
 var express = require('express');
 var router = express.Router();
 
-const { EVENTS_COLLECTION, CANDIDATES_COLLECTION, CLUB_MEMBERS_COLLECTION, MEMBERS_EVENTS_COLLECTION, ADMIN_EVENTS_COLLECTION } = require('../constants')
+const { EVENTS_COLLECTION, MEMBERS_EVENTS_COLLECTION } = require('../constants')
 
 /**
  * Lists all events a ClubMember is a member of
@@ -17,19 +17,15 @@ router.get('/list/:member_id', async function (req, res) {
 
     var db = firestore();
     const membersEventsRes = await db.collection(MEMBERS_EVENTS_COLLECTION).where("member_id", "==", member_id).get();
-    const adminsEventsRes = await db.collection(ADMIN_EVENTS_COLLECTION).where("member_id", "==", member_id).get();
 
-    if (eventListRes.empty() && adminsEventsRes.empty()) {
+    if (eventListRes.empty()) {
       console.log("No matching documents!");
       res.status(404).send(`Can't find member with member_id == ${member_id}`);
+      return;
     }
 
     var eventList = [];
     membersEventsRes.forEach(doc => {
-      eventList.push(doc.data().event_id);
-    });
-
-    adminsEventsRes.forEach(doc => {
       eventList.push(doc.data().event_id);
     });
 
@@ -89,9 +85,10 @@ router.post('/add', async (req, res) => {
       event_cover_picture_url
     });
 
-    await db.collection(ADMIN_EVENTS_COLLECTION).add({
+    await db.collection(MEMBERS_EVENTS_COLLECTION).add({
       member_id: member_id,
-      event_id: eventDocRef.id
+      event_id: eventDocRef.id,
+      is_admin: true,
     })
 
     res.status(200).send(`New event added with id: ${eventDocRef.id}`);
