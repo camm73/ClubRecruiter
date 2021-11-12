@@ -1,8 +1,8 @@
 const express = require('express')
-const admin = require('firebase-admin')
+const { firestore } = require('firebase-admin')
 var router = express.Router();
 
-var { CLUB_MEMBERS_COLLECTION } = require('../constants')
+var { CLUB_MEMBERS_COLLECTION, EVENTS_COLLECTION } = require('../constants')
 
 /**
  * Adds a new event candidate to the candidates database along
@@ -23,7 +23,7 @@ router.post('/add', async (req, res) => {
     event_code, email, name, phone_number, biography, resume_id,
   } = req.body;
 
-  var db = admin.firestore();
+  var db = firestore();
   try {
     const docRef = await db.collection(CLUB_MEMBERS_COLLECTION).add({
       event_code,
@@ -45,25 +45,21 @@ router.post('/add', async (req, res) => {
 /**
  * This endpoint retrieves a list of candidate IDs from the
  * Candidates database
- * @name GET/candidate/:event_code
+ * @name GET/candidate/:event_id
  * @function
- * @param {string} event_code
- * @returns {String[]} all candidates if event_code is not specified, otherwise
- * candidates given the event_code
+ * @param {string} event_id
+ * @returns {String[]} candidates for an event_id
  */
-router.get('/:event_code', async (req, res) => {
-  var { event_code } = req.params;
-  var db = admin.firestore();
+router.get('/:event_id', async (req, res) => {
+  var { event_id } = req.params;
   try {
-    // if no event_code is specified
-    if (!event_code) {
-      // TODO: finish
-    }
-    res.status(200).send(`Document written with ID: ${docRef.id}`);
-  } catch (e) {
-    res.status(404).send(`Error adding new candidate: ${e}`);
-  }
+    var db = firestore();
+    var eventDocRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
 
+    res.status(200).send(eventDocRef.data().candidates);
+  } catch (e) {
+    res.status(404).send(`Error retrieving candidates: ${e}`);
+  }
 });
 
 module.exports = router;
