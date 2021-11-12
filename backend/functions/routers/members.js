@@ -1,9 +1,21 @@
 const express = require('express');
 const { firestore } = require('firebase-admin');
-const { EVENTS_COLLECTION, EVENT_ADMINS_COLLECTION, EVENT_MEMBERS_COLLECTION } = require('../constants');
+const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION } = require('../constants');
 
 var router = express.Router();
 
+function isAdmin(member_id, event_id) {
+  var db = firestore()
+  const currUserRef = await db.collection(EVENT_MEMBERS_COLLECTION)
+    .where("member_id", "==", member_id).where("event_id", "==", event_id).get();
+  if (!currUserRef.exists)
+    return false;
+
+  if (!currUserRef.docs[0].get("is_admin"))
+    return false;
+
+  return true;
+}
 
 /**
  * This function promotes an existing member of an event to organizer
@@ -22,19 +34,21 @@ router.post('/promote/:target_id', async (req, res) => {
   var db = firestore();
 
   try {
+
+    if (!isAdmin(member_id, event_id)) {
+      res.status(404).send(`Current user is not authorized to promote members!`);
+      return;
+    }
+
     const eventMemberDocRef = await db.collection(EVENT_MEMBERS_COLLECTION).where(
-                              "member_id", "==", target_id).where("event_id", "==", event_id).get();
+      "member_id", "==", target_id).where("event_id", "==", event_id).get();
 
     if (!eventMemberDocRef.empty) {
-      const delete_id = eventMemberDocRef.docs[0].id;
-
-      // Remove member from event members
-      var deleteRes = await db.collection(EVENT_MEMBERS_COLLECTION).doc(delete_id).delete()
+      const eventMemberID = eventMemberDocRef.docs[0].id;
 
       // Add member to event admins
-      var addRes = await db.collection(EVENT_ADMINS_COLLECTION).add({
-        event_id,
-        member_id: target_id
+      await db.collection(EVENT_MEMBERS_COLLECTION).doc(eventMemberID).update({
+        is_admin: true
       })
 
       res.status(200).send(`Promoted ${target_id} in event ${event_id}`);
@@ -43,7 +57,7 @@ router.post('/promote/:target_id', async (req, res) => {
     }
 
   } catch (e) {
-      res.status(404).send(`Failed to promote ${target_id} in event ${event_id}: ${e}`);
+    res.status(404).send(`Failed to promote ${target_id} in event ${event_id}: ${e}`);
   }
 });
 
@@ -64,19 +78,20 @@ router.post('/demote/:target_id', async (req, res) => {
   var db = firestore();
 
   try {
-    const eventAdminDocRef = await db.collection(EVENT_ADMINS_COLLECTION).where(
-                              "member_id", "==", target_id).where("event_id", "==", event_id).get();
+    if (!isAdmin(member_id, event_id)) {
+      res.status(404).send(`Current user is not authorized to promote members!`);
+      return;
+    }
 
-    if (!eventAdminDocRef.empty) {
-      const delete_id = eventAdminDocRef.docs[0].id;
+    const eventMemberDocRef = await db.collection(EVENT_MEMBERS_COLLECTION).where(
+      "member_id", "==", target_id).where("event_id", "==", event_id).get();
 
-      // Remove member from event admins
-      var deleteRes = await db.collection(EVENT_ADMINS_COLLECTION).doc(delete_id).delete()
+    if (!eventMemberDocRef.empty) {
+      const eventMemberID = eventMemberDocRef.docs[0].id;
 
-      // Add member to event members
-      var addRes = await db.collection(EVENT_MEMBERS_COLLECTION).add({
-        event_id,
-        member_id: target_id
+      // Add member to event admins
+      await db.collection(EVENT_MEMBERS_COLLECTION).doc(eventMemberID).update({
+        is_admin: false
       })
 
       res.status(200).send(`Demoted ${target_id} in event ${event_id}`);
@@ -85,7 +100,7 @@ router.post('/demote/:target_id', async (req, res) => {
     }
 
   } catch (e) {
-      res.status(404).send(`Failed to demote ${target_id} in event ${event_id}: ${e}`);
+    res.status(404).send(`Failed to demote ${target_id} in event ${event_id}: ${e}`);
   }
 });
 
@@ -105,6 +120,11 @@ router.post('/add', async (req, res) => {
   var db = firestore();
 
   try {
+    if (!isAdmin(member_id, event_id)) {
+      res.status(404).send(`Current user is not authorized to add members!`);
+      return;
+    }
+
     var eventDocRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
 
     if (eventDocRef.exists) {
@@ -144,30 +164,27 @@ router.post('/delete/:target_id', async (req, res) => {
   var db = firestore();
 
   try {
-    const eventMemberDocRef = await db.collection(EVENT_MEMBERS_COLLECTION).where(
-                              "member_id", "==", target_id).where("event_id", "==", event_id).get();
-
-    if (!eventMemberDocRef.empty) {
-      const delete_id = eventMemberDocRef.docs[0].id;
-
-      // Remove member from event members
-      var deleteRes = await db.collection(EVENT_MEMBERS_COLLECTION).doc(delete_id).delete()
-      res.status(200).send(`Deleted ${target_id} in event ${event_id} from members`);
+    if (!isAdmin(member_id, event_id)) {
+      res.status(404).send(`Current user is not authorized to delete members!`);
+      return;
     }
 
-   const eventAdminDocRef = await db.collection(EVENT_ADMINS_COLLECTION).where(
-                              "member_id", "==", target_id).where("event_id", "==", event_id).get();
+    var deleteRef = await db.collection(EVENT_MEMBERS_COLLECTION)
+      .where("member_id", "==", target_id).where("event_id", "==", event_id).get();
 
-    if (!eventAdminDocRef.empty) {
-      const delete_id = eventAdminDocRef.docs[0].id;
-
-      // Remove member from event admins
-      var deleteRes = await db.collection(EVENT_ADMINS_COLLECTION).doc(delete_id).delete()
-      res.status(200).send(`Deleted ${target_id} in event ${event_id} from admins`);
+    if (deleteRef.empty) {
+      res.status(404).send(`No relationship with member id: ${member_id} and event id: ${event_id} exists!`);
+      return;
     }
+
+    deleteRef.forEach((member) => {
+      member.ref.delete();
+    });
+
+    res.status(200).send(`Successfully deleted member with id: ${member_id} from event: ${event_id}`)
 
   } catch (e) {
-      res.status(404).send(`Failed to delete ${target_id} in event ${event_id}: ${e}`);
+    res.status(404).send(`Failed to delete ${target_id} in event ${event_id}: ${e}`);
   }
 });
 
