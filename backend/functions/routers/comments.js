@@ -35,8 +35,7 @@ router.get('/list/:candidate_id', async function (req, res) {
  * properly, an error message otherwise
  */
 router.post('/add/:candidate_id', async (req, res) => {
-  // var { member_id } = req.user.uid;
-  var member_id = "amem";
+  var { member_id } = req.user.uid;
   var { candidate_id } = req.params;
   var { comment } = req.body;
   try {
@@ -63,7 +62,7 @@ router.post('/add/:candidate_id', async (req, res) => {
  * successfully, an error message otherwise
  */
 router.post('/delete/:comment_id', async (req, res) => {
-  // var member_id = req.user.uid;
+  var { member_id } = req.user.uid;
   var { comment_id } = req.params;
 
   try {
