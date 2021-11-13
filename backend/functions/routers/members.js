@@ -4,7 +4,7 @@ const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION } = require('../constants');
 
 var router = express.Router();
 
-function isAdmin(member_id, event_id) {
+async function isAdmin(member_id, event_id) {
   var db = firestore()
   const currUserRef = await db.collection(EVENT_MEMBERS_COLLECTION)
     .where("member_id", "==", member_id).where("event_id", "==", event_id).get();
