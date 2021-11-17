@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import {
-  Dialog, DialogTitle, Card, CardContent, Typography, Button, CardActions,
+  Dialog, Card, CardContent, Typography, Button, CardActions,
 } from '@mui/material';
 
 import '../styles/CandidateProfile.css';
@@ -53,12 +53,14 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
 
   return (
     <Dialog fullWidth sx={{ textAlign: 'center' }} maxWidth="sm" open={open} onBackdropClick={closeHandler}>
-      <DialogTitle sx={{ textAlign: 'center' }}>
+      <Typography variant="h5" sx={{ padding: 1 }}>
         {candidateName}
-      </DialogTitle>
+      </Typography>
       <DialogContent>
         <DetailCard />
-        <h2>Comments</h2>
+        <Typography variant="h6" sx={{ paddingTop: 1 }}>
+          Comments
+        </Typography>
       </DialogContent>
     </Dialog>
   );
