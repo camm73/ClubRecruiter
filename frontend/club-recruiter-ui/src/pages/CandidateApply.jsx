@@ -26,7 +26,7 @@ const CandidateApply = () => {
           <FormTextField name="email" label="Email address" control={control} required />
           <FormTextField name="phone" label="Phone number" control={control} required />
           <FormTextField name="additional" label="Tell us more about yourself :)" control={control} required />
-          <FormFileField name="resume" label="Resume/CV (optional)" control={control} />
+          <FormFileField name="resume" label="Resume/CV (optional)" control={control} accept=".doc,.docx,.pdf" />
           <FormTextField name="misc" label="Anything else you would like to share :)" control={control} />
           <Button
             variant="contained"

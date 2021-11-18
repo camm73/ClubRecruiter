@@ -4,7 +4,6 @@ import { auth } from '../api/firebase';
 
 const ProtectedRoute = ({ children }) => {
   const [user, loading, error] = useAuthState(auth);
-
   // Placeholder for login pending
   if (loading) {
     return (
