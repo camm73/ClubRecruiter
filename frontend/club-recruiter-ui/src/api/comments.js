@@ -11,8 +11,13 @@ const getCommentList = async (candidateID) => {
   return ['123', '456', '789', '000'];
 };
 
+const postComment = async (candidateID, commentText, memberID) => {
+  console.log(`Posting comment by ${memberID} for ${candidateID}: ${commentText}`);
+};
+
 export {
   // eslint-disable-next-line import/prefer-default-export
   getComment,
   getCommentList,
+  postComment,
 };

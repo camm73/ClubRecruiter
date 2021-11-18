@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 
 import {
-  Dialog, Card, CardContent, Typography, Button, CardActions, IconButton,
+  Dialog, Card, CardContent, Typography, Button, CardActions, TextField,
 } from '@mui/material';
 
 import '../styles/CandidateProfile.css';
 import { DialogContent } from '@material-ui/core';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import Close from '@mui/icons-material/Close';
 
 import { getCandidate } from '../api/candidate';
-import { getCommentList } from '../api/comments';
+import { getCommentList, postComment } from '../api/comments';
 import CommentBubble from './CommentBubble';
 
 const CandidateProfile = ({ open, candidateID, closeHandler }) => {
@@ -18,8 +17,12 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
   const [candidatePhoneNumber, setCandidatePhoneNumber] = useState('');
   const [candidateEmail, setCandidateEmail] = useState('');
   const [candidateApplicationStatus, setCandidateApplicationStatus] = useState('');
+  const [candidateResumeID, setCandidateResumeID] = useState('');
   const [commentIDList, setCommentIDList] = useState([]);
-  const [commentIndex, setCommentIndex] = useState(0);
+  const [commentText, setCommentText] = useState('');
+
+  // Max length of 200 characters
+  const MAX_COMMENT_LENGTH = 200;
 
   // Query for candidate details upon load
   useEffect(async () => {
@@ -29,8 +32,24 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
     setCandidatePhoneNumber(currentCandidate.phoneNumber);
     setCandidateEmail(currentCandidate.email);
     setCandidateApplicationStatus(currentCandidate.applicationStatus);
+    setCandidateResumeID(currentCandidate.resumeID);
     setCommentIDList(commentList);
   }, []);
+
+  const updateCommentList = async () => {
+    const commentList = await getCommentList(candidateID);
+    setCommentIDList(commentList);
+  };
+
+  const downloadResume = (resumeID) => {
+    console.log(`Downloading resume: ${resumeID}`);
+  };
+
+  const handleSubmitComment = async () => {
+    await postComment(candidateID, commentText, 'memberID');
+    setCommentText('');
+    await updateCommentList();
+  };
 
   const DetailCard = () => (
     <Card sx={{ minWidth: 275, backgroundColor: '#FCDDEC' }}>
@@ -54,37 +73,64 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
         </div>
       </CardContent>
       <CardActions sx={{ backgroundColor: 'lightgrey', display: 'flex', justifyContent: 'center' }}>
-        <Button size="small" sx={{ minWidth: '100vw', minHeight: '30px' }}>Download Resume</Button>
+        <Button size="small" sx={{ minWidth: '100vw', minHeight: '30px' }} onClick={() => downloadResume(candidateResumeID)}>Download Resume</Button>
       </CardActions>
     </Card>
   );
 
   return (
     <Dialog fullWidth sx={{ textAlign: 'center' }} maxWidth="sm" open={open} onBackdropClick={closeHandler}>
-      <Typography variant="h5" sx={{ padding: 1 }}>
-        {candidateName}
-      </Typography>
+      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+        <div style={{ position: 'absolute', left: '10px', top: '10px' }}>
+          <Button startIcon={<Close />} onClick={closeHandler} />
+        </div>
+        <Typography variant="h5" sx={{ padding: 1 }}>
+          {candidateName}
+        </Typography>
+      </div>
       <DialogContent>
         <DetailCard />
         <Typography variant="h6" sx={{ paddingTop: 1 }}>
           Comments
         </Typography>
-        {commentIndex < commentIDList.length
-          ? <CommentBubble commentID={commentIDList[commentIndex]} />
-          : <div />}
-        {commentIndex + 1 < commentIDList.length
-          ? <CommentBubble commentID={commentIDList[commentIndex + 1]} />
-          : <div />}
-        {commentIndex + 2 < commentIDList.length
-          ? <CommentBubble commentID={commentIDList[commentIndex + 2]} />
-          : <div />}
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
-          <IconButton variant="contained" onClick={() => setCommentIndex(commentIndex - 3)} disabled={commentIndex <= 0}>
-            <ArrowBackIosIcon />
-          </IconButton>
-          <IconButton variant="contained" onClick={() => setCommentIndex(commentIndex + 3)} disabled={commentIndex + 2 > commentIDList.length}>
-            <ArrowForwardIosIcon />
-          </IconButton>
+        <div style={{
+          overflowX: 'hidden', overflowY: 'auto', height: '200px', paddingTop: '5px',
+        }}
+        >
+          {commentIDList.map((currID) => (
+            <CommentBubble commentID={currID} />
+          ))}
+        </div>
+        <div style={{
+          display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px',
+        }}
+        >
+          <TextField
+            fullWidth
+            multiline
+            id="outlined-basic"
+            label="Outlined"
+            value={commentText}
+            variant="outlined"
+            onChange={(e) => {
+              if (e.target.value.length <= MAX_COMMENT_LENGTH) {
+                setCommentText(e.target.value);
+              }
+            }}
+          />
+          <Button
+            style={{
+              display: 'flex',
+              borderRadius: '20px',
+              backgroundColor: 'lightgray',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginLeft: '10px',
+            }}
+            onClick={handleSubmitComment}
+          >
+            Post
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

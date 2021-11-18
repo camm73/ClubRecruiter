@@ -30,7 +30,10 @@ const CommentBubble = ({ commentID }) => {
       alignItems: 'center',
       borderRadius: '20px',
       outline: 'auto',
-      marginBottom: '20px',
+      marginBottom: '15px',
+      marginLeft: '5px',
+      marginRight: '5px',
+      martinTop: '5px',
     }}
     >
       <Typography variant="subtitle1" sx={{ paddingLeft: '20px', minWidth: '100px' }}>
