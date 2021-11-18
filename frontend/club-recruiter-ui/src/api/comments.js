@@ -6,7 +6,13 @@ const getComment = async (commentID) => {
   };
 };
 
+const getCommentList = async (candidateID) => {
+  console.log(`Get comment list: ${candidateID}`);
+  return ['123', '456', '789', '000'];
+};
+
 export {
   // eslint-disable-next-line import/prefer-default-export
   getComment,
+  getCommentList,
 };

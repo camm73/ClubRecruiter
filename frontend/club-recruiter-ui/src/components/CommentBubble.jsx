@@ -29,6 +29,8 @@ const CommentBubble = ({ commentID }) => {
       justifyContent: 'space-between',
       alignItems: 'center',
       borderRadius: '20px',
+      outline: 'auto',
+      marginBottom: '20px',
     }}
     >
       <Typography variant="subtitle1" sx={{ paddingLeft: '20px', minWidth: '100px' }}>
