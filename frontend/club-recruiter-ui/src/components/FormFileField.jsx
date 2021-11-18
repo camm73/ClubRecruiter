@@ -5,7 +5,7 @@ import {
 import { Controller } from 'react-hook-form';
 
 const FormFileField = ({
-  name, label, control, required,
+  name, label, control, required, accept,
 }) => {
   const ref = useRef();
   const [attachment, setAttachment] = useState(null);
@@ -50,7 +50,7 @@ const FormFileField = ({
               <input
                 ref={ref}
                 type="file"
-                accept=".doc,.docx,.pdf"
+                accept={accept}
                 hidden
                 onChange={handleChange}
               />

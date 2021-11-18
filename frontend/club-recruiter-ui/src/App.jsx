@@ -12,6 +12,8 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import MemberDashboard from './pages/MemberDashboard';
 import NoRoute from './pages/errors/NoRoute';
+import CreateEvent from './pages/CreateEvent';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const theme = createTheme({
   palette: {
@@ -39,16 +41,22 @@ function App() {
               <CandidateApply />
             </Route>
             <Route path="/dashboard">
-              {/* Will integrate protected routes once Firebase App is created. */}
-              { /* <ProtectedRoute component={MemberDashboard} /> */}
-              <MemberDashboard />
+              <ProtectedRoute>
+                <MemberDashboard />
+              </ProtectedRoute>
+              {/* <MemberDashboard /> */}
             </Route>
             <Route path="/event">
-              { /* <ProtectedRoute component={EventRouter} /> */}
-              <EventRouter />
+              <ProtectedRoute>
+                <EventRouter />
+              </ProtectedRoute>
+              {/* <EventRouter /> */}
             </Route>
             <Route path="/createEvent">
-              {/* <ProtectedRoute component={EventRouter} /> */}
+              <ProtectedRoute>
+                <CreateEvent />
+              </ProtectedRoute>
+              {/* <CreateEvent /> */}
             </Route>
             <Route path="*">
               <NoRoute />
