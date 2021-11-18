@@ -1,0 +1,6 @@
+.bubble {
+    display: flex;
+    flex-direction: row;
+    background-color: red;
+    border-radius: 20px;
+};

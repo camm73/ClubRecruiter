@@ -8,6 +8,7 @@ import '../styles/CandidateProfile.css';
 import { DialogContent } from '@material-ui/core';
 
 import { getCandidate } from '../api/candidate';
+import CommentBubble from './CommentBubble';
 
 const CandidateProfile = ({ open, candidateID, closeHandler }) => {
   const [candidateName, setCandidateName] = useState('');
@@ -46,7 +47,7 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
         </div>
       </CardContent>
       <CardActions sx={{ backgroundColor: 'lightgrey', display: 'flex', justifyContent: 'center' }}>
-        <Button size="small" sx={{ minWidth: '100vw' }}>Download Resume</Button>
+        <Button size="small" sx={{ minWidth: '100vw', minHeight: '30px' }}>Download Resume</Button>
       </CardActions>
     </Card>
   );
@@ -61,6 +62,7 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
         <Typography variant="h6" sx={{ paddingTop: 1 }}>
           Comments
         </Typography>
+        <CommentBubble commentID="12345" />
       </DialogContent>
     </Dialog>
   );
