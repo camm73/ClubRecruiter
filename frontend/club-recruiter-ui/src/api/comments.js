@@ -1,7 +1,7 @@
 const getComment = async (commentID) => {
   console.log(commentID);
   return {
-    commentText: 'This is a test comment. Test comment. Testing.',
+    commentText: 'This is a test comment. Test comment. Testing comment bubbles for profile page.',
     memberID: '',
   };
 };
