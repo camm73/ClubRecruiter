@@ -1,4 +1,5 @@
 const express = require('express');
+const admin = require('firebase-admin');
 const { firestore } = require('firebase-admin');
 const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CLUB_MEMBERS_COLLECTION } = require('../constants');
 
@@ -29,10 +30,9 @@ router.get('/:member_id', async function (req, res) {
   var { member_id } = req.params;
 
   try {
-    var db = firestore();
-    const memberRes = await db.collection(CLUB_MEMBERS_COLLECTION).doc(member_id).get();
+    const memberRecord = await admin.auth().getUser(member_id);
 
-    res.status(200).send(memberRes.data());
+    res.status(200).send(memberRecord);
   } catch (e) {
     res.status(404).send(`Error retrieving member: ${e}`);
   }
