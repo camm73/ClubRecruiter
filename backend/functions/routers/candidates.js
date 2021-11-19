@@ -17,11 +17,11 @@ router.get('/:candidate_id', async function (req, res) {
 
   try {
     var db = firestore();
-    const commentsRes = await db.collection(CANDIDATES_COLLECTION).doc(candidate_id).get();
+    const candidateRes = await db.collection(CANDIDATES_COLLECTION).doc(candidate_id).get();
 
-    res.status(200).send(commentsRes.data());
+    res.status(200).send(candidateRes.data());
   } catch (e) {
-    res.status(404).send(`Error retrieving comment: ${e}`);
+    res.status(404).send(`Error retrieving candidate: ${e}`);
   }
 });
 
