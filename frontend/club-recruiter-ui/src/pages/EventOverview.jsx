@@ -38,7 +38,7 @@ const EventOverview = () => {
     setOrganizers(eventOrganizers);
     console.log('Loaded list of organizers for event');
   };
-  
+
   const handleOpenCandidateProfile = (candidateID) => {
     setProfileCandidateID(candidateID);
     setProfileVisible(true);
