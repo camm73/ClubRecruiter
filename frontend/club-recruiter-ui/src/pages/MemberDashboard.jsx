@@ -65,7 +65,15 @@ const MemberDashboard = () => {
         <div className="event-list">
           {
             events.map(
-              (eventID) => (<EventCard clickAction={() => {}} key={eventID} eventID={eventID} />),
+              (eventID) => (
+                <EventCard
+                  clickAction={() => {
+                    history.push(`/event/${eventID}`);
+                  }}
+                  key={eventID}
+                  eventID={eventID}
+                />
+              ),
             )
           }
         </div>
