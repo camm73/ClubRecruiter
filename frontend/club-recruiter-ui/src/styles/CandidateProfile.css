@@ -1,0 +1,13 @@
+.detail-column {
+    display: flex;
+    flex-direction: column;
+};
+
+.resume-button {
+    background-color: gray;
+    outline: auto;
+};
+
+.profile-modal {
+    text-align: center;
+};

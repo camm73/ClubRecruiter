@@ -42,19 +42,21 @@ const sampleCandidates = [
   },
 ];
 
-export default function DataTable() {
-  return (
-    <Container sx={{ height: 400, width: '100%' }}>
-      <Typography sx={{ mt: 4, mb: 2, margin: 2 }} align="center" variant="h6" component="div">
-        Candidate List
-      </Typography>
-      <DataGrid
-        rows={sampleCandidates}
-        columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
-        checkboxSelection
-      />
-    </Container>
-  );
-}
+const CandidateList = ({ profileOpenHandler }) => (
+  <Container sx={{ height: 400, width: '100%' }}>
+    <Typography sx={{ mt: 4, mb: 2, margin: 2 }} align="center" variant="h6" component="div">
+      Candidate List
+    </Typography>
+    <DataGrid
+      rows={sampleCandidates}
+      columns={columns}
+      pageSize={5}
+      rowsPerPageOptions={[5]}
+      onCellClick={() => {
+        profileOpenHandler('candidateID');
+      }}
+    />
+  </Container>
+);
+
+export default CandidateList;

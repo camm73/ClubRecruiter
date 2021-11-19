@@ -11,6 +11,7 @@ import Header from '../components/Header';
 import UserList from '../components/UserList';
 import EventCard from '../components/EventCard';
 import CandidateList from '../components/CandidateList';
+import CandidateProfile from '../components/CandidateProfile';
 
 import { listEventMembers, listEventOrganizers } from '../api/events';
 
@@ -21,6 +22,8 @@ const EventOverview = () => {
 
   const [members, setMembers] = useState([]);
   const [organizers, setOrganizers] = useState([]);
+  const [profileVisible, setProfileVisible] = useState(false);
+  const [profileCandidateID, setProfileCandidateID] = useState('');
 
   const loadMembers = async () => {
     // TODO: Replace event_id, add member_id
@@ -34,6 +37,11 @@ const EventOverview = () => {
     const eventOrganizers = await listEventOrganizers('event_id');
     setOrganizers(eventOrganizers);
     console.log('Loaded list of organizers for event');
+  };
+  
+  const handleOpenCandidateProfile = (candidateID) => {
+    setProfileCandidateID(candidateID);
+    setProfileVisible(true);
   };
 
   // Load events at page mount
@@ -63,8 +71,13 @@ const EventOverview = () => {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
         <EventCard eventID={eventCode} />
-        <CandidateList />
+        <CandidateList profileOpenHandler={handleOpenCandidateProfile} />
       </Box>
+      <CandidateProfile
+        open={profileVisible}
+        candidateID={profileCandidateID}
+        closeHandler={() => setProfileVisible(false)}
+      />
     </Container>
   );
 };
