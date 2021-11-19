@@ -25,6 +25,29 @@ router.get('/by_candidate/:candidate_id', async function (req, res) {
 });
 
 /**
+ * Gets a comment's detail given its id
+ * @name GET/comment/:comment_id
+ * @function
+ * @param { string } comment_id
+ * @returns { Object } comment detail with comment_id
+ * 
+ */
+router.get('/:comment_id', async function (req, res) {
+  var { comment_id } = req.params;
+
+  try {
+    var db = firestore();
+    const commentsRes = await db.collection(COMMENTS_COLLECTION).doc(comment_id).get();
+
+    res.status(200).send(commentsRes.data());
+  } catch (e) {
+    res.status(404).send(`Error retrieving comment: ${e}`);
+  }
+});
+
+
+
+/**
  * Adds a comment to a candidate for a particular event
  * @name POST/comment/add
  * @function
