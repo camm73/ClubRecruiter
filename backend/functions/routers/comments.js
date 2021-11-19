@@ -5,20 +5,20 @@ var router = express.Router();
 
 /**
  * Lists all the comments associated with a candidate for a particular event
- * @name GET/comment/list
+ * @name GET/comment/by_candidate/:candidate_id
  * @function
  * @param { string } candidate_id
  * @returns { Object[] } a list of all comments for candidateID 
  * 
  */
-router.get('/list/:candidate_id', async function (req, res) {
+router.get('/by_candidate/:candidate_id', async function (req, res) {
   var { candidate_id } = req.params;
 
   try {
     var db = firestore();
     const commentsRes = await db.collection(COMMENTS_COLLECTION).where("candidate_id", "==", candidate_id).get()
 
-    res.status(200).send(commentsRes.docs.map(doc => Object.assign(doc.data(), {id: doc.id})));
+    res.status(200).send(commentsRes.docs.map(doc => Object.assign(doc.data(), { id: doc.id })));
   } catch (e) {
     res.status(404).send(`Error retrieving comments: ${e}`);
   }
@@ -41,11 +41,11 @@ router.post('/add/:candidate_id', async (req, res) => {
   try {
     var db = firestore();
     const addRes = await db.collection(COMMENTS_COLLECTION).add({
-            member_id,
-            candidate_id,
-            comment,
-            timestamp: Date.now(),
-          });
+      member_id,
+      candidate_id,
+      comment,
+      timestamp: Date.now(),
+    });
     res.status(200).send(`Successfully added comment`);
   } catch (e) {
     res.status(404).send(`Error: ${e}`);

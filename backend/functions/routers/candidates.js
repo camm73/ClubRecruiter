@@ -45,18 +45,18 @@ router.post('/add', async (req, res) => {
 /**
  * This endpoint retrieves a list of candidate IDs from the
  * Candidates database
- * @name GET/candidate/:event_id
+ * @name GET/by_event/:event_id
  * @function
  * @param {string} event_id
  * @returns {String[]} candidates for an event_id
  */
-router.get('/:event_id', async (req, res) => {
+router.get('/by_event/:event_id', async (req, res) => {
   var { event_id } = req.params;
   try {
     var db = firestore();
     const eventDocRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
     const candidate_ids = eventDocRef.data().candidates;
-    
+
     const candidates = []
     for (var idx in candidate_ids) {
       let candidate_id = candidate_ids[idx];
