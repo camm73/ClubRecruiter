@@ -18,11 +18,34 @@ router.get('/list/:candidate_id', async function (req, res) {
     var db = firestore();
     const commentsRes = await db.collection(COMMENTS_COLLECTION).where("candidate_id", "==", candidate_id).get()
 
-    res.status(200).send(commentsRes.docs.map(doc => Object.assign(doc.data(), {id: doc.id})));
+    res.status(200).send(commentsRes.docs.map(doc => Object.assign(doc.data(), { id: doc.id })));
   } catch (e) {
     res.status(404).send(`Error retrieving comments: ${e}`);
   }
 });
+
+/**
+ * Gets a comment's detail given its id
+ * @name GET/comment/:comment_id
+ * @function
+ * @param { string } comment_id
+ * @returns { Object } comment detail with comment_id
+ * 
+ */
+router.get('/:comment_id', async function (req, res) {
+  var { comment_id } = req.params;
+
+  try {
+    var db = firestore();
+    const commentsRes = await db.collection(COMMENTS_COLLECTION).doc(comment_id).get();
+
+    res.status(200).send(commentsRes.data());
+  } catch (e) {
+    res.status(404).send(`Error retrieving comment: ${e}`);
+  }
+});
+
+
 
 /**
  * Adds a comment to a candidate for a particular event
@@ -41,11 +64,11 @@ router.post('/add/:candidate_id', async (req, res) => {
   try {
     var db = firestore();
     const addRes = await db.collection(COMMENTS_COLLECTION).add({
-            member_id,
-            candidate_id,
-            comment,
-            timestamp: Date.now(),
-          });
+      member_id,
+      candidate_id,
+      comment,
+      timestamp: Date.now(),
+    });
     res.status(200).send(`Successfully added comment`);
   } catch (e) {
     res.status(404).send(`Error: ${e}`);
