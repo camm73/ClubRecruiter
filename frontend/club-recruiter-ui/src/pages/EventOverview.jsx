@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import Drawer from '@mui/material/Drawer';
@@ -13,17 +13,40 @@ import EventCard from '../components/EventCard';
 import CandidateList from '../components/CandidateList';
 import CandidateProfile from '../components/CandidateProfile';
 
+import { listEventMembers, listEventOrganizers } from '../api/events';
+
 const drawerWidth = 300;
 
 const EventOverview = () => {
   const { eventCode } = useParams();
+
+  const [members, setMembers] = useState([]);
+  const [organizers, setOrganizers] = useState([]);
   const [profileVisible, setProfileVisible] = useState(false);
   const [profileCandidateID, setProfileCandidateID] = useState('');
+
+  const loadMembers = async () => {
+    // TODO: Replace event_id, add member_id
+    const eventMembers = await listEventMembers('event_id');
+    setMembers(eventMembers);
+    console.log('Loaded list of members for event');
+  };
+
+  const loadOrganizers = async () => {
+    // TODO: Replace event_id, add member_id
+    const eventOrganizers = await listEventOrganizers('event_id');
+    setOrganizers(eventOrganizers);
+    console.log('Loaded list of organizers for event');
+  };
 
   const handleOpenCandidateProfile = (candidateID) => {
     setProfileCandidateID(candidateID);
     setProfileVisible(true);
   };
+
+  // Load events at page mount
+  useEffect(loadMembers, []);
+  useEffect(loadOrganizers, []);
 
   return (
     <Container sx={{ display: 'flex' }}>
@@ -38,16 +61,16 @@ const EventOverview = () => {
       >
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
-          <UserList nameList={['Tian Yu Liu', 'Wen Hong Lam']} title="Organizers" />
+          <UserList nameList={organizers} title="Organizers" />
 
           <Divider />
-          <UserList nameList={['Zachary', 'Jackson', 'Rex']} title="Members" />
+          <UserList nameList={members} title="Members" />
 
         </Box>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
-        <EventCard />
+        <EventCard eventID={eventCode} />
         <CandidateList profileOpenHandler={handleOpenCandidateProfile} />
       </Box>
       <CandidateProfile
