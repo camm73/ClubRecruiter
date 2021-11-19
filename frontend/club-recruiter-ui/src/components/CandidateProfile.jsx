@@ -109,7 +109,7 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
             fullWidth
             multiline
             id="outlined-basic"
-            label="Outlined"
+            label="Type a comment"
             value={commentText}
             variant="outlined"
             onChange={(e) => {
