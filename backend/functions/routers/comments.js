@@ -37,9 +37,9 @@ router.get('/:comment_id', async function (req, res) {
 
   try {
     var db = firestore();
-    const commentsRes = await db.collection(COMMENTS_COLLECTION).doc(comment_id).get();
+    const commentRes = await db.collection(COMMENTS_COLLECTION).doc(comment_id).get();
 
-    res.status(200).send(commentsRes.data());
+    res.status(200).send(commentRes.data());
   } catch (e) {
     res.status(404).send(`Error retrieving comment: ${e}`);
   }

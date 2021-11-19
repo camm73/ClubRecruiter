@@ -1,6 +1,6 @@
 const express = require('express');
 const { firestore } = require('firebase-admin');
-const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION } = require('../constants');
+const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CLUB_MEMBERS_COLLECTION } = require('../constants');
 
 var router = express.Router();
 
@@ -16,6 +16,27 @@ async function isAdmin(member_id, event_id) {
 
   return true;
 }
+
+/**
+ * Gets a member's detail given its id
+ * @name GET/member/:member_id
+ * @function
+ * @param { string } member_id
+ * @returns { Object } member detail with member_id
+ * 
+ */
+router.get('/:member_id', async function (req, res) {
+  var { member_id } = req.params;
+
+  try {
+    var db = firestore();
+    const memberRes = await db.collection(CLUB_MEMBERS_COLLECTION).doc(member_id).get();
+
+    res.status(200).send(memberRes.data());
+  } catch (e) {
+    res.status(404).send(`Error retrieving member: ${e}`);
+  }
+});
 
 /**
  * This function promotes an existing member of an event to organizer
