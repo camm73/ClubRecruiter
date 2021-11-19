@@ -5,6 +5,27 @@ var router = express.Router();
 var { CLUB_MEMBERS_COLLECTION, EVENTS_COLLECTION, CANDIDATES_COLLECTION } = require('../constants')
 
 /**
+ * Gets a candidate's detail given its id
+ * @name GET/candidate/:candidate_id
+ * @function
+ * @param { string } candidate_id
+ * @returns { Object } candidate detail with candidate_id
+ * 
+ */
+router.get('/:candidate_id', async function (req, res) {
+  var { candidate_id } = req.params;
+
+  try {
+    var db = firestore();
+    const commentsRes = await db.collection(CANDIDATES_COLLECTION).doc(candidate_id).get();
+
+    res.status(200).send(commentsRes.data());
+  } catch (e) {
+    res.status(404).send(`Error retrieving comment: ${e}`);
+  }
+});
+
+/**
  * Adds a new event candidate to the candidates database along
  * with their basic information
  * @name POST/candidate/add
@@ -45,18 +66,18 @@ router.post('/add', async (req, res) => {
 /**
  * This endpoint retrieves a list of candidate IDs from the
  * Candidates database
- * @name GET/candidate/:event_id
+ * @name GET/by_event/:event_id
  * @function
  * @param {string} event_id
  * @returns {String[]} candidates for an event_id
  */
-router.get('/:event_id', async (req, res) => {
+router.get('/by_event/:event_id', async (req, res) => {
   var { event_id } = req.params;
   try {
     var db = firestore();
     const eventDocRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
     const candidate_ids = eventDocRef.data().candidates;
-    
+
     const candidates = []
     for (var idx in candidate_ids) {
       let candidate_id = candidate_ids[idx];

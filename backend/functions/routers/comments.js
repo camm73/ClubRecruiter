@@ -5,13 +5,13 @@ var router = express.Router();
 
 /**
  * Lists all the comments associated with a candidate for a particular event
- * @name GET/comment/list
+ * @name GET/comment/by_candidate/:candidate_id
  * @function
  * @param { string } candidate_id
  * @returns { Object[] } a list of all comments for candidateID 
  * 
  */
-router.get('/list/:candidate_id', async function (req, res) {
+router.get('/by_candidate/:candidate_id', async function (req, res) {
   var { candidate_id } = req.params;
 
   try {
