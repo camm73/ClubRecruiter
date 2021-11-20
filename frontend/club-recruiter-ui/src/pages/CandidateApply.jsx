@@ -1,6 +1,7 @@
 import { Container, Button } from '@mui/material';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
 import FormFileField from '../components/FormFileField';
 import FormTextField from '../components/FormTextField';
 import Header from '../components/Header';
@@ -8,6 +9,8 @@ import Header from '../components/Header';
 const CandidateApply = () => {
   // const [name, setName] = useState('');
   const { control, handleSubmit } = useForm();
+  const { candidateCode } = useParams();
+  console.log(`FOUND IT: ${candidateCode}`);
   const onSubmit = (data) => {
     // todo: call the API endpoint
     console.log(data);
@@ -21,7 +24,7 @@ const CandidateApply = () => {
           display: 'flex', flexDirection: 'column', padding: 5, alignItems: 'center',
         }}
         >
-          <FormTextField name="code" label="Candidate code" control={control} required />
+          <FormTextField name="code" label="Candidate code" disabled defaultValue={candidateCode} control={control} required />
           <FormTextField name="name" label="Name" control={control} required />
           <FormTextField name="email" label="Email address" control={control} required />
           <FormTextField name="phone" label="Phone number" control={control} required />
