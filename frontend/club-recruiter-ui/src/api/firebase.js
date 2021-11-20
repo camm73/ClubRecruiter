@@ -35,16 +35,16 @@ const logout = () => {
   auth.signOut();
 };
 
-// TODO: Check whether (eventCode, email) pair exists in database
+// TODO: Check whether (candidateCode, email) pair exists in database
 const addEventCandidate = async (
   eventCandidate,
 ) => {
   try {
     const {
-      eventCode, email, name, phoneNumber, biography, resumeLink,
+      candidateCode, email, name, phoneNumber, biography, resumeLink,
     } = eventCandidate;
     const docRef = await addDoc(collection(db, 'candidates'), {
-      eventCode,
+      candidateCode,
       email,
       name,
       phoneNumber,

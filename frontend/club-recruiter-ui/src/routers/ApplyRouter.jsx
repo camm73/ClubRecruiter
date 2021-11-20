@@ -2,17 +2,17 @@ import React from 'react';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import NoRoute from '../pages/errors/NoRoute';
 
-import EventOverview from '../pages/EventOverview';
+import CandidateApply from '../pages/CandidateApply';
 
-const EventRouter = () => {
+const ApplyRouter = () => {
   const match = useRouteMatch();
 
   return (
     <>
       <Switch>
         <Route path={`${match.path}/:candidateCode`}>
-          {/* Event overview page for a specific event */}
-          <EventOverview />
+          {/* Candidate application page for specific event */}
+          <CandidateApply />
         </Route>
         <Route path={match.path}>
           {/* TODO: Route to 404 page or error page */}
@@ -23,4 +23,4 @@ const EventRouter = () => {
   );
 };
 
-export default EventRouter;
+export default ApplyRouter;

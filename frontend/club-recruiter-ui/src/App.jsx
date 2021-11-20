@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-import CandidateApply from './pages/CandidateApply';
 import EventRouter from './routers/EventRouter';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -14,6 +13,7 @@ import MemberDashboard from './pages/MemberDashboard';
 import NoRoute from './pages/errors/NoRoute';
 import CreateEvent from './pages/CreateEvent';
 import ProtectedRoute from './components/ProtectedRoute';
+import ApplyRouter from './routers/ApplyRouter';
 
 const theme = createTheme({
   palette: {
@@ -38,7 +38,7 @@ function App() {
               <Home />
             </Route>
             <Route path="/apply">
-              <CandidateApply />
+              <ApplyRouter />
             </Route>
             <Route path="/dashboard">
               <ProtectedRoute>

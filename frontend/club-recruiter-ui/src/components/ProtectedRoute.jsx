@@ -1,23 +1,27 @@
 import { React } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { useHistory } from 'react-router-dom';
 import { auth } from '../api/firebase';
 
 const ProtectedRoute = ({ children }) => {
   const [user, loading, error] = useAuthState(auth);
+  const history = useHistory();
+
   // Placeholder for login pending
   if (loading) {
     return (
-      <div>
-        <h1>Logging in user...</h1>
-      </div>
+      <div />
     );
   }
 
   // Show error if login fails
   if (error) {
+    setTimeout(() => {
+      history.push('/');
+    }, 2500);
     return (
       <div>
-        <h1>Failed to login user!</h1>
+        <h1>Failed to login user! Redirecting to homepage...</h1>
       </div>
     );
   }
@@ -31,6 +35,8 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
+  // Redirect to homepage
+  history.push('/');
   return (
     <div>
       <h1> Logged out </h1>

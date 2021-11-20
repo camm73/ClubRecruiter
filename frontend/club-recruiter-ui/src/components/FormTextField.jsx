@@ -3,7 +3,7 @@ import { Controller } from 'react-hook-form';
 import React from 'react';
 
 const FormTextField = ({
-  name, label, control, required, multiline,
+  name, label, control, required, multiline, defaultValue, disabled,
 }) => (
   <Controller
     name={name}
@@ -14,9 +14,10 @@ const FormTextField = ({
       <TextField
         label={`${label}${required ? ' *' : ''}`}
         variant="outlined"
-        value={value || ''}
+        value={defaultValue !== undefined ? defaultValue : (value || '')}
         onChange={onChange}
         error={!!error}
+        disabled={disabled}
         helperText={error ? 'Empty field!' : ' '}
         multiline={multiline}
         minRows={12}
