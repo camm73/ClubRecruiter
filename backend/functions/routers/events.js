@@ -1,8 +1,11 @@
 var { firestore } = require('firebase-admin');
+var admin = require('firebase-admin');
 var express = require('express');
 var router = express.Router();
+var crypto = require('crypto')
+var shasum = crypto.createHash("sha1")
 
-const { EVENTS_COLLECTION, MEMBERS_EVENTS_COLLECTION } = require('../constants')
+const { EVENTS_COLLECTION, MEMBERS_EVENTS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE } = require('../constants')
 
 /**
  * Lists all events a ClubMember is a member of
@@ -68,21 +71,30 @@ router.get('/:event_id', async (req, res) => {
  * @param { string } member_id
  * @param {string} event_name
  * @param {string } event_description
- * @param {string} event_cover_picture_url
- * @returns { [string, string] } event_code and access_code to the frontend to
+ * @param {string} event_cover_pic_url
+ * @returns { [string, string] } candidate_code and member_code to the frontend to
  * be distributed to ClubMembers as well as Candidates
  */
 router.post('/add', async (req, res) => {
   var member_id = req.user.uid;
-  var { event_name, event_description, event_cover_picture_url } = req.body;
+  var { event_name, event_description, event_cover_pic_url } = req.body;
   var db = firestore();
 
   try {
+    var curr_timestamp = Date.now().toString();
+    var hash = shasum.update(curr_timestamp, "utf-8").digest("hex");
+    var candidate_code = hash.substr(0, CODE_LENGTH);
+    var member_code = hash.substr(hash.length - CODE_LENGTH);
+
+
     // create new event in Events db
     var eventDocRef = await db.collection(EVENTS_COLLECTION).add({
-      event_name,
-      event_description,
-      event_cover_picture_url
+      name: event_name,
+      description: event_description,
+      cover_pic_url: event_cover_pic_url,
+      member_code: member_code,
+      candidate_code: candidate_code,
+      candidates: [], // list of empty candidates
     });
 
     await db.collection(MEMBERS_EVENTS_COLLECTION).add({
@@ -91,30 +103,36 @@ router.post('/add', async (req, res) => {
       is_admin: true,
     })
 
-    res.status(200).send(`New event added with id: ${eventDocRef.id}`);
+    res.status(200).send({
+      event_name: event_name,
+      event_id: eventDocRef.id,
+      member_code: member_code,
+      candidate_code: candidate_code
+    });
   } catch (e) {
     res.status(404).send(`Error adding new event: ${e}`);
   }
 });
 
 /**
- * Adds a member to an event
- * @name POST/event/member/:event_id
+ * A member joins an event given the member_code
+ * @name POST/event/member_join
  * @function
  * @param { string } member_id 
- * @param { string } event_id
- * @returns { string } a success message if member is successfully added, an
+ * @returns { string } a the candidate code of the event if successful, an
  * error message otherwise
  */
-router.post('/member/:event_id', async (req, res) => {
+router.post('/member_join', async (req, res) => {
   var member_id = req.user.uid;
-  var { event_id } = req.params;
+  var { member_code } = req.body;
   var db = firestore();
 
   try {
-    var eventDocRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
+    var eventDocRef = await db
+      .collection(EVENTS_COLLECTION)
+      .where(MEMBER_CODE, "==", member_code).get();
 
-    if (eventDocRef.exists) {
+    if (!eventDocRef.empty) {
       await db.collection(MEMBERS_EVENTS_COLLECTION).set({
         member_id: member_id,
         event_id: event_id
@@ -123,26 +141,31 @@ router.post('/member/:event_id', async (req, res) => {
         // relationship if it doesn't exist in the collection already
         { merge: true });
 
-      res.status(200).send(`Member with id ${member_id} added to even with id: ${event_id}`);
+      res.status(200).send({
+        candidate_code: eventDocRef.data()[CANDIDATE_CODE]
+      });
+      return;
     } else {
-      res.status(404).send(`Event with id ${event_id} doesn't exist!`)
+      res.status(404).send(`Event with id ${event_id} doesn't exist or Incorrect member code!`)
+      return;
     }
 
   } catch (e) {
     res.status(404).send(e);
+    return;
   }
 });
 
 /**
  * Deletes a member from an event
- * @name DELETE/event/member/:event_id
+ * @name DELETE/event/delete_member
  * @function
- * @param { string } member_id 
+ * @param { string } target_id 
  * @param { string } event_id
  * @returns a success message if member is successfully deleted, an
  * error message otherwise
  */
-router.delete('/member/:event_id', async (req, res) => {
+router.delete('/delete_member', async (req, res) => {
   res.status(200).send(`Ok`);
 });
 
