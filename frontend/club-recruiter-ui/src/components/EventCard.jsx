@@ -9,18 +9,18 @@ import Typography from '@mui/material/Typography';
 
 import { getEventDetails } from '../api/events';
 
-const EventCard = ({ clickAction, eventID }) => {
+const EventCard = ({ clickAction, candidateCode }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [accessCode, setAccessCode] = useState('');
+  const [memberCode, setMemberCode] = useState('');
   const [imageLink, setImageLink] = useState('');
 
   const loadDetails = async () => {
     // TODO: Replace with member id from cookie
-    const details = await getEventDetails(eventID);
+    const details = await getEventDetails(candidateCode);
     setTitle(details.title);
     setDescription(details.description);
-    setAccessCode(details.accessCode);
+    setMemberCode(details.memberCode);
     setImageLink(details.imageLink);
     console.log('Loaded event details on event card');
   };
@@ -34,7 +34,6 @@ const EventCard = ({ clickAction, eventID }) => {
   // eslint-disable-next-line indent
   }}
     >
-      {console.log(`Loaded card for ${eventID}`)}
       <CardActionArea sx={{ display: 'flex', flexDirection: 'row' }} disabled={clickAction === undefined} onClick={clickAction}>
         <CardMedia
           component="img"
@@ -53,14 +52,14 @@ const EventCard = ({ clickAction, eventID }) => {
 
             <Box sx={{ fontWeight: 'bold' }}>
               <h4>
-                Event Code:
+                Candidate Code:
                 {' '}
-                {eventID}
+                {candidateCode}
               </h4>
               <h4>
-                Access Code:
+                Member Code:
                 {' '}
-                {accessCode}
+                {memberCode}
               </h4>
             </Box>
           </CardContent>

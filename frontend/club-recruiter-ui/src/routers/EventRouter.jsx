@@ -10,7 +10,7 @@ const EventRouter = () => {
   return (
     <>
       <Switch>
-        <Route path={`${match.path}/:eventCode`}>
+        <Route path={`${match.path}/:candidateCode`}>
           {/* Event overview page for a specific event */}
           <EventOverview />
         </Route>

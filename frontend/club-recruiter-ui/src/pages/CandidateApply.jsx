@@ -21,7 +21,7 @@ const CandidateApply = () => {
           display: 'flex', flexDirection: 'column', padding: 5, alignItems: 'center',
         }}
         >
-          <FormTextField name="code" label="Event code" control={control} required />
+          <FormTextField name="code" label="Candidate code" control={control} required />
           <FormTextField name="name" label="Name" control={control} required />
           <FormTextField name="email" label="Email address" control={control} required />
           <FormTextField name="phone" label="Phone number" control={control} required />

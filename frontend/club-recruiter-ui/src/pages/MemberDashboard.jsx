@@ -12,7 +12,7 @@ import { listMemberEvents, joinEvent } from '../api/events';
 import '../styles/MemberDashboard.css';
 
 const MemberDashboard = () => {
-  const [eventCode, setEventCode] = useState('');
+  const [memberCode, setMemberCode] = useState('');
   const [events, setEvents] = useState([]);
   const [filterChecked, setFilterChecked] = useState(false);
   const history = useHistory();
@@ -25,9 +25,8 @@ const MemberDashboard = () => {
   };
 
   const handleJoinEvent = async () => {
-    await joinEvent(eventCode, 'member_id');
+    await joinEvent(memberCode, 'member_id');
     console.log('Joined new event');
-    history.push(`/event/${eventCode}`);
   };
 
   const handleCreateEvent = () => {
@@ -46,9 +45,9 @@ const MemberDashboard = () => {
         <Header pageName="Member Dashboard" />
         <div className="join-event">
           <div className="event-code-wrapper">
-            <TextField className="event-code-field" fullWidth id="outlined-basic" value={eventCode} label="Event Code" variant="outlined" onChange={(e) => setEventCode(e.target.value)} />
+            <TextField className="event-code-field" fullWidth id="outlined-basic" value={memberCode} label="Member Code" variant="outlined" onChange={(e) => setMemberCode(e.target.value)} />
           </div>
-          <Button variant="contained" startIcon={<AddIcon />} disabled={eventCode.length === 0} onClick={handleJoinEvent}>Join Event</Button>
+          <Button variant="contained" startIcon={<AddIcon />} disabled={memberCode.length === 0} onClick={handleJoinEvent}>Join Event</Button>
         </div>
         <FormControlLabel
           control={(
@@ -65,13 +64,13 @@ const MemberDashboard = () => {
         <div className="event-list">
           {
             events.map(
-              (eventID) => (
+              (code) => (
                 <EventCard
                   clickAction={() => {
-                    history.push(`/event/${eventID}`);
+                    history.push(`/event/${code}`);
                   }}
-                  key={eventID}
-                  eventID={eventID}
+                  key={code}
+                  candidateCode={code}
                 />
               ),
             )
