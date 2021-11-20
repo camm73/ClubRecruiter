@@ -9,7 +9,7 @@ async function isAdmin(member_id, event_id) {
   var db = firestore()
   const currUserRef = await db.collection(EVENT_MEMBERS_COLLECTION)
     .where("member_id", "==", member_id).where("event_id", "==", event_id).get();
-  if (!currUserRef.exists)
+  if (currUserRef.empty)
     return false;
 
   if (!currUserRef.docs[0].get("is_admin"))

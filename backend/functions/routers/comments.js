@@ -3,6 +3,10 @@ var express = require('express');
 const { COMMENTS_COLLECTION } = require('../constants');
 var router = express.Router();
 
+// TODO: for comments routes, make sure either:
+// 1) the current member created that comment, or
+// 2) the current member is an admin of the event.
+
 /**
  * Lists all the comments associated with a candidate for a particular event
  * @name GET/comment/by_candidate/:candidate_id
