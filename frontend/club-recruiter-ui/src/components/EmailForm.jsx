@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import FormTextField from './FormTextField';
 
 const EmailForm = () => {
-  // const [name, setName] = useState('');
+  // todo: form needs to take in information of the target candidates
   const { control, handleSubmit } = useForm();
   const onSubmit = (data) => {
     // todo: call the API endpoint
