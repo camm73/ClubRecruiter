@@ -72,13 +72,13 @@ router.get('/:event_id', async (req, res) => {
  * @param { string } member_id
  * @param {string} event_name
  * @param {string } event_description
- * @param {string} event_cover_pic_url
+ * @param {string} event_cover_pic_id
  * @returns { [string, string] } candidate_code and member_code to the frontend to
  * be distributed to ClubMembers as well as Candidates
  */
-router.post('/add', async (req, res) => {
+router.post('/add', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
-  var { event_name, event_description, event_cover_pic_url } = req.body;
+  var { event_name, event_description, event_cover_pic_id } = req.body;
   var db = firestore();
 
   try {
@@ -96,7 +96,7 @@ router.post('/add', async (req, res) => {
     var eventDocRef = await db.collection(EVENTS_COLLECTION).add({
       name: event_name,
       description: event_description,
-      cover_pic_url: event_cover_pic_url,
+      cover_pic_id: event_cover_pic_id,
       member_code: member_code,
       candidate_code: candidate_code,
       candidates: [], // list of empty candidates
@@ -128,7 +128,7 @@ router.post('/add', async (req, res) => {
  * @returns { string } the candidate code of the event if successful, an
  * error message otherwise
  */
-router.post('/member_join', async (req, res) => {
+router.post('/member_join', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { member_code } = req.body;
   var db = firestore();
