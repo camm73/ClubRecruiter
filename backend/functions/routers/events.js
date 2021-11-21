@@ -67,7 +67,7 @@ router.get('/:event_id', async (req, res) => {
 
 /**
  * Adds an event to the events database, and updates the candidates database
- * @name POST/event/add
+ * @name POST/event/create
  * @function
  * @param { string } member_id
  * @param {string} event_name
@@ -76,9 +76,13 @@ router.get('/:event_id', async (req, res) => {
  * @returns { [string, string] } candidate_code and member_code to the frontend to
  * be distributed to ClubMembers as well as Candidates
  */
-router.post('/add', validateFirebaseIdToken, async (req, res) => {
+router.post('/create', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { event_name, event_description, event_cover_pic_id } = req.body;
+
+  if (!event_cover_pic_id)
+    event_cover_pic_id = "";
+
   var db = firestore();
 
   try {
