@@ -79,6 +79,10 @@ router.get('/:event_id', async (req, res) => {
 router.post('/add', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { event_name, event_description, event_cover_pic_id } = req.body;
+
+  if (!event_cover_pic_id)
+    event_cover_pic_id = "";
+
   var db = firestore();
 
   try {

@@ -40,13 +40,17 @@ router.get('/:candidate_id', async function (req, res) {
  * @param { string } phone_number
  * @param { string } biography
  * @param { string } resume_id
+ * @param { string } profile_pic_id
  * @returns { string } unique candidate ID if the new candidate is inserted
  * properly, an error message otherwise
  */
 router.post('/apply', async (req, res) => {
   var {
-    candidate_code, email, name, phone_number, biography, resume_id,
+    candidate_code, email, name, phone_number, biography, resume_id, profile_pic_id,
   } = req.body;
+
+  if (!profile_pic_id)
+    profile_pic_id = "";
 
   var db = firestore();
   try {
@@ -62,6 +66,7 @@ router.post('/apply', async (req, res) => {
         biography: biography,
         application_status: 'pending',
         resume_id: resume_id,
+        profile_pic_id: profile_pic_id,
       }); // creates a new candidate profile
 
       // add the candidate to the respective member
