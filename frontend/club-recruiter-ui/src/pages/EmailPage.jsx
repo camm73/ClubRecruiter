@@ -5,17 +5,17 @@ import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
 
 import Header from '../components/Header';
 import UserList from '../components/UserList';
 import EventCard from '../components/EventCard';
 import EmailForm from '../components/EmailForm';
+import FilterMenu from '../components/FilterMenu';
 
 const drawerWidth = 300;
 
+// these are test examples, to be replaced with
+// actual candidates sent from the backend when integration is done
 const sampleCandidates = [
   {
     name: 'ONE',
@@ -50,54 +50,6 @@ const EmailPage = (candidates) => {
     setDisplayNames(getNames(sampleCandidates.filter((c) => (newFilter !== '' ? c.status === newFilter : c))));
   };
 
-  const FilterMenu = () => {
-    const stateMap = {
-      pending: {
-        color: '#FB9005',
-        text: 'Pending',
-      },
-      accepted: {
-        color: '#34A853',
-        text: 'Accepted',
-      },
-      rejected: {
-        color: '#EA4335',
-        text: 'Rejected',
-      },
-      '': {
-        color: '#000000',
-        text: 'None',
-      },
-    };
-
-    return (
-      <Container sx={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      }}
-      >
-        <Typography>Filter</Typography>
-        <Select
-          onChange={handleChange}
-          value={filter}
-          sx={{
-            backgroundColor: 'FEF8F8',
-            width: 0.7,
-            color: stateMap[filter].color,
-            '&. css-hfutr2-MuiSvgIcon-root-MuiSelect-icon': {
-              color: stateMap[filter].color,
-            },
-          }}
-        >
-          {Object.entries(stateMap).map(([k, v]) => (
-            <MenuItem value={k} key={k} sx={{ color: v.color }}>
-              {v.text}
-            </MenuItem>
-          ))}
-        </Select>
-      </Container>
-    );
-  };
-
   return (
     <Container sx={{ display: 'flex' }}>
       <Header pageName="Email Page" />
@@ -112,7 +64,7 @@ const EmailPage = (candidates) => {
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
           <UserList nameList={displayNames} title="Email Candidates" canDelete={false}>
-            <FilterMenu />
+            <FilterMenu filter={filter} handleChange={handleChange} />
           </UserList>
         </Box>
       </Drawer>
