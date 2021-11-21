@@ -14,6 +14,7 @@ import NoRoute from './pages/errors/NoRoute';
 import CreateEvent from './pages/CreateEvent';
 import ProtectedRoute from './components/ProtectedRoute';
 import ApplyRouter from './routers/ApplyRouter';
+import EmailPage from './pages/EmailPage';
 
 const theme = createTheme({
   palette: {
@@ -58,6 +59,13 @@ function App() {
               </ProtectedRoute>
               {/* <CreateEvent /> */}
             </Route>
+            <Route path="/email">
+              <ProtectedRoute>
+                <EmailPage />
+              </ProtectedRoute>
+              {/* <CreateEvent /> */}
+            </Route>
+
             <Route path="*">
               <NoRoute />
             </Route>
