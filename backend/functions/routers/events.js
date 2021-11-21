@@ -5,7 +5,8 @@ var router = express.Router();
 var crypto = require('crypto')
 var shasum = crypto.createHash("sha1")
 
-const { EVENTS_COLLECTION, MEMBERS_EVENTS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE } = require('../constants')
+const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE } = require('../constants');
+const { validateFirebaseIdToken } = require('../auth');
 
 /**
  * Lists all events a ClubMember is a member of
@@ -19,7 +20,7 @@ router.get('/list/:member_id', async function (req, res) {
     var { member_id } = req.params;
 
     var db = firestore();
-    const membersEventsRes = await db.collection(MEMBERS_EVENTS_COLLECTION).where("member_id", "==", member_id).get();
+    const membersEventsRes = await db.collection(EVENT_MEMBERS_COLLECTION).where("member_id", "==", member_id).get();
 
     if (membersEventsRes.empty) {
       console.log("No matching documents!");
@@ -71,19 +72,23 @@ router.get('/:event_id', async (req, res) => {
  * @param { string } member_id
  * @param {string} event_name
  * @param {string } event_description
- * @param {string} event_cover_pic_url
+ * @param {string} event_cover_pic_id
  * @returns { [string, string] } candidate_code and member_code to the frontend to
  * be distributed to ClubMembers as well as Candidates
  */
-router.post('/add', async (req, res) => {
+router.post('/add', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
-  var { event_name, event_description, event_cover_pic_url } = req.body;
+  var { event_name, event_description, event_cover_pic_id } = req.body;
   var db = firestore();
 
   try {
     var curr_timestamp = Date.now().toString();
     var hash = shasum.update(curr_timestamp, "utf-8").digest("hex");
+
+    // first 6 characters of the hash
     var candidate_code = hash.substr(0, CODE_LENGTH);
+
+    // last 6 characters of the hash 
     var member_code = hash.substr(hash.length - CODE_LENGTH);
 
 
@@ -91,13 +96,13 @@ router.post('/add', async (req, res) => {
     var eventDocRef = await db.collection(EVENTS_COLLECTION).add({
       name: event_name,
       description: event_description,
-      cover_pic_url: event_cover_pic_url,
+      cover_pic_id: event_cover_pic_id,
       member_code: member_code,
       candidate_code: candidate_code,
       candidates: [], // list of empty candidates
     });
 
-    await db.collection(MEMBERS_EVENTS_COLLECTION).add({
+    await db.collection(EVENT_MEMBERS_COLLECTION).add({
       member_id: member_id,
       event_id: eventDocRef.id,
       is_admin: true,
@@ -119,10 +124,11 @@ router.post('/add', async (req, res) => {
  * @name POST/event/member_join
  * @function
  * @param { string } member_id 
- * @returns { string } a the candidate code of the event if successful, an
+ * @param { string } member_code
+ * @returns { string } the candidate code of the event if successful, an
  * error message otherwise
  */
-router.post('/member_join', async (req, res) => {
+router.post('/member_join', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { member_code } = req.body;
   var db = firestore();
@@ -132,17 +138,30 @@ router.post('/member_join', async (req, res) => {
       .collection(EVENTS_COLLECTION)
       .where(MEMBER_CODE, "==", member_code).get();
 
+    var event = eventDocRef.docs[0];
+    var event_id = eventDocRef.docs[0].id;
+
+    // Check if the database already has an existing document
+    var memberEventRef = await db
+      .collection(EVENT_MEMBERS_COLLECTION)
+      .where("member_id", "==", member_id)
+      .where("event_id", "==", event_id)
+      .get();
+
+    if (!memberEventRef.empty) {
+      res.status(404).send(`Member cannot join an event that they've already joined!`);
+      return;
+    }
+
     if (!eventDocRef.empty) {
-      await db.collection(MEMBERS_EVENTS_COLLECTION).set({
+      await db.collection(EVENT_MEMBERS_COLLECTION).add({
         member_id: member_id,
-        event_id: event_id
-      },
-        // the merge: true option essentially specifies the table to add the
-        // relationship if it doesn't exist in the collection already
-        { merge: true });
+        event_id: event_id,
+        is_admin: false,
+      });
 
       res.status(200).send({
-        candidate_code: eventDocRef.data()[CANDIDATE_CODE]
+        candidate_code: event.data()[CANDIDATE_CODE]
       });
       return;
     } else {
@@ -155,6 +174,8 @@ router.post('/member_join', async (req, res) => {
     return;
   }
 });
+
+
 
 /**
  * Deletes a member from an event
