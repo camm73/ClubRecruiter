@@ -34,6 +34,7 @@ const Home = () => {
       history.push(`/apply/${candidateCode}`);
     } else {
       console.log('Candidate code invalid!');
+      alert('The provided Candidate Code was invalid!');
       setCandidateCode('');
     }
   };

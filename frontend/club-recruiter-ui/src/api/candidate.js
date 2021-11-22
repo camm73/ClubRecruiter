@@ -35,9 +35,27 @@ const submitCandidateApplication = async (
 };
 
 const validateCandidateCode = async (candidateCode) => {
-  // TODO: Verify code with backend
-  console.log(`Validating candidate code: ${candidateCode}`);
-  return true;
+  const user = auth.currentUser;
+  const userToken = await user.getIdToken();
+  try {
+    const response = await fetch(`${cloudFunctionEndpoint}/candidate/validate?candidate_code=${candidateCode}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+    });
+    if (response.status === 200) {
+      const resJson = await response.json();
+      return resJson.valid;
+    }
+    const errorText = await response.text();
+    console.log(errorText);
+    return false;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 };
 
 // Get candidate details using candidateID
