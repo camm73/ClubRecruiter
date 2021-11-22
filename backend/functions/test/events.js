@@ -80,7 +80,7 @@ describe('Events', () => {
   describe('/POST event', () => {
       it('it should create an event', (done) => {
 
-        let evt = {
+        let body = {
             event_name: "The event",
             event_description: "Event desc", 
             event_cover_pic_id: "Coverpic id"
@@ -90,16 +90,35 @@ describe('Events', () => {
             .post('/event/create')
             .set('Authorization', 'Bearer ' + idToken)
             .set('content-type', 'application/json')
-            .send(evt)
+            .send(body)
             .end((err, res) => {
                 if (err) {
+                    res.should.have.status(200);
                     done(err)
                 } else {
                     done()
                 }
-                // res.should.have.status(400);
-                  //res.body.should.be.a('array');
-                  //res.body.length.should.be.eql(0);
+            });
+      });
+
+    it('it should add a member', (done) => {
+
+        let body = {
+            member_code: "12345",
+        }
+
+        chai.request('http://localhost:5001/recruitme-4b479/us-central1/app/')
+            .post('/event/member_join')
+            .set('Authorization', 'Bearer ' + idToken)
+            .set('content-type', 'application/json')
+            .send(body)
+            .end((err, res) => {
+                if (err) {
+                    res.should.have.status(200);
+                    done(err)
+                } else {
+                    done()
+                }
             });
       });
   });
