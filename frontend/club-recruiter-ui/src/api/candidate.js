@@ -76,12 +76,42 @@ const getCandidate = async (candidateID) => {
   };
 };
 
+const setCandidateStatus = async (candidateID, statusValue) => {
+  const user = auth.currentUser;
+  const userToken = await user.getIdToken();
+  const requestBody = {
+    candidate_id: candidateID,
+    status: statusValue,
+  };
+  try {
+    const response = await fetch(`${cloudFunctionEndpoint}/candidate/status`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+    if (response.status === 200) {
+      return true;
+    }
+    const errorText = await response.text();
+    console.log(errorText);
+    return false;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
 const acceptCandidate = async (candidateID) => {
-  console.log(`Accepted candidate: ${candidateID}`);
+  const statusRes = await setCandidateStatus(candidateID, 'accepted');
+  return statusRes;
 };
 
 const rejectCandidate = async (candidateID) => {
-  console.log(`Rejected candidate: ${candidateID}`);
+  const statusRes = await setCandidateStatus(candidateID, 'rejected');
+  return statusRes;
 };
 
 export {
