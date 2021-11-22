@@ -9,11 +9,13 @@ import Typography from '@mui/material/Typography';
 
 import { getEventDetails } from '../api/events';
 
+import { getEventCoverPhotoLink } from '../api/firebase';
+
 const EventCard = ({ clickAction, eventID }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [memberCode, setMemberCode] = useState('');
-  const [imageLink, setImageLink] = useState('');
+  const [coverPhotoLink, setCoverPhotoLink] = useState('');
   const [candidateCode, setCandidateCode] = useState('');
   const [candidates, setCandidates] = useState([]);
 
@@ -23,8 +25,9 @@ const EventCard = ({ clickAction, eventID }) => {
     setCandidateCode(details.candidate_code);
     setDescription(details.description);
     setMemberCode(details.member_code);
-    setImageLink(details.cover_pic_id);
     setCandidates(details.candidates);
+    const imageLink = await getEventCoverPhotoLink(details.cover_pic_id);
+    setCoverPhotoLink(imageLink);
     console.log('Loaded event details on event card');
   };
 
@@ -41,7 +44,7 @@ const EventCard = ({ clickAction, eventID }) => {
         <CardMedia
           component="img"
           sx={{ width: 200 }}
-          image={imageLink}
+          image={coverPhotoLink}
           alt="logo"
         />
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>

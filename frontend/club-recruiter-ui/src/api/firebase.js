@@ -2,7 +2,9 @@ import { initializeApp } from 'firebase/app';
 import {
   getAuth, signInWithPopup, GoogleAuthProvider,
 } from 'firebase/auth';
-import { getStorage, ref, uploadBytes } from 'firebase/storage';
+import {
+  getStorage, ref, uploadBytes, getDownloadURL,
+} from 'firebase/storage';
 import sha1 from 'crypto-js/sha1';
 
 const firebaseConfig = {
@@ -50,10 +52,22 @@ const uploadFile = async (file, folderName) => {
   return fileName;
 };
 
+const getFileLink = async (file, folderName) => {
+  const refName = `${folderName}/${file}`;
+  const url = await getDownloadURL(ref(storage, refName));
+  return url;
+};
+
+const getResumeLink = async (file) => getFileLink(file, 'resume');
+
+const getEventCoverPhotoLink = async (file) => getFileLink(file, 'eventCoverPhoto');
+
 export {
   auth,
   signInWithGoogle,
   logout,
   uploadFile,
   cloudFunctionEndpoint,
+  getResumeLink,
+  getEventCoverPhotoLink,
 };
