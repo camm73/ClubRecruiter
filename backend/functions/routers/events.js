@@ -2,8 +2,7 @@ var { firestore } = require('firebase-admin');
 var admin = require('firebase-admin');
 var express = require('express');
 var router = express.Router();
-var crypto = require('crypto')
-var shasum = crypto.createHash("sha1")
+var crypto = require('crypto');
 
 const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE } = require('../constants');
 const { validateFirebaseIdToken } = require('../auth');
@@ -87,6 +86,7 @@ router.post('/create', validateFirebaseIdToken, async (req, res) => {
 
   try {
     var curr_timestamp = Date.now().toString();
+    var shasum = crypto.createHash("sha1");
     var hash = shasum.update(curr_timestamp, "utf-8").digest("hex");
 
     // first 6 characters of the hash
