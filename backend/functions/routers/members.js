@@ -1,10 +1,8 @@
-const express = require('express');
+const app = require("../express_generator")();
 const admin = require('firebase-admin');
 const { firestore } = require('firebase-admin');
 const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CLUB_MEMBERS_COLLECTION } = require('../constants');
 const { isAdmin } = require('../util');
-
-var router = express.Router();
 
 /**
  * Gets a member's detail given its id
@@ -14,7 +12,7 @@ var router = express.Router();
  * @returns { Object } member detail with member_id
  * 
  */
-router.get('/:member_id', async function (req, res) {
+app.get('/:member_id', async function (req, res) {
   var { member_id } = req.params;
 
   try {
@@ -36,7 +34,7 @@ router.get('/:member_id', async function (req, res) {
  * @returns a success message if member is successfully promoted, an
  * error message otherwise
  */
-router.post('/promote/:target_id', async (req, res) => {
+app.post('/promote/:target_id', async (req, res) => {
   var member_id = req.user.uid;
   var { target_id } = req.params;
   var { event_id } = req.body;
@@ -80,7 +78,7 @@ router.post('/promote/:target_id', async (req, res) => {
  * @returns a success message if member is successfully demoted, an
  * error message otherwise
  */
-router.post('/demote/:target_id', async (req, res) => {
+app.post('/demote/:target_id', async (req, res) => {
   var member_id = req.user.uid;
   var { target_id } = req.params;
   var { event_id } = req.body;
@@ -123,7 +121,7 @@ router.post('/demote/:target_id', async (req, res) => {
  * @returns { string } a success message if member is successfully added, an
  * error message otherwise
  */
-router.post('/add', async (req, res) => {
+app.post('/add', async (req, res) => {
   var member_id = req.user.uid;
   var { event_id } = req.params;
   var db = firestore();
@@ -166,7 +164,7 @@ router.post('/add', async (req, res) => {
  * @returns a success message if member is successfully deleted, an
  * error message otherwise
  */
-router.post('/delete/:target_id', async (req, res) => {
+app.post('/delete/:target_id', async (req, res) => {
   var member_id = req.user.uid;
   var { target_id } = req.params;
   var { event_id } = req.body;
@@ -198,4 +196,4 @@ router.post('/delete/:target_id', async (req, res) => {
 });
 
 
-module.exports = router;
+module.exports = app;
