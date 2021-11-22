@@ -2,7 +2,9 @@ import { initializeApp } from 'firebase/app';
 import {
   getAuth, signInWithPopup, GoogleAuthProvider,
 } from 'firebase/auth';
-import { getStorage, ref, uploadBytes } from 'firebase/storage';
+import {
+  getStorage, ref, uploadBytes, getDownloadURL,
+} from 'firebase/storage';
 import sha1 from 'crypto-js/sha1';
 
 const firebaseConfig = {
@@ -15,6 +17,8 @@ const firebaseConfig = {
 };
 
 const cloudFunctionEndpoint = 'https://us-central1-recruitme-4b479.cloudfunctions.net/app';
+// Endpoint for local testing
+// const cloudFunctionEndpoint = 'http://localhost:5001/recruitme-4b479/us-central1/app';
 
 const firebaseApp = initializeApp(firebaseConfig);
 const googleProvider = new GoogleAuthProvider();
@@ -48,10 +52,22 @@ const uploadFile = async (file, folderName) => {
   return fileName;
 };
 
+const getFileLink = async (file, folderName) => {
+  const refName = `${folderName}/${file}`;
+  const url = await getDownloadURL(ref(storage, refName));
+  return url;
+};
+
+const getResumeLink = async (file) => getFileLink(file, 'resume');
+
+const getEventCoverPhotoLink = async (file) => getFileLink(file, 'eventCoverPhoto');
+
 export {
   auth,
   signInWithGoogle,
   logout,
   uploadFile,
   cloudFunctionEndpoint,
+  getResumeLink,
+  getEventCoverPhotoLink,
 };

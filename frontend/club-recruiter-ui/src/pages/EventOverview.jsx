@@ -14,17 +14,18 @@ import EventCard from '../components/EventCard';
 import CandidateList from '../components/CandidateList';
 import CandidateProfile from '../components/CandidateProfile';
 
-import { listEventMembers, listEventOrganizers } from '../api/events';
+import { listEventMembers, listEventOrganizers, getEventDetails } from '../api/events';
 
 const drawerWidth = 300;
 
 const EventOverview = () => {
-  const { candidateCode } = useParams();
+  const { eventID } = useParams();
 
   const [members, setMembers] = useState([]);
   const [organizers, setOrganizers] = useState([]);
   const [profileVisible, setProfileVisible] = useState(false);
   const [profileCandidateID, setProfileCandidateID] = useState('');
+  const [candidateCode, setCandidateCode] = useState('');
 
   const location = useLocation();
   const history = useHistory();
@@ -46,9 +47,15 @@ const EventOverview = () => {
     setProfileVisible(true);
   };
 
+  const loadEventDetails = async () => {
+    const eventDetails = await getEventDetails(eventID);
+    setCandidateCode(eventDetails.candidate_code);
+    loadMembers();
+    loadOrganizers();
+  };
+
   // Load events at page mount
-  useEffect(loadMembers, []);
-  useEffect(loadOrganizers, []);
+  useEffect(loadEventDetails, []);
 
   return (
     <Container sx={{ display: 'flex' }}>
@@ -87,7 +94,7 @@ const EventOverview = () => {
             Send Email Update
           </Button>
         </div>
-        <EventCard candidateCode={candidateCode} />
+        <EventCard eventID={eventID} />
         <CandidateList profileOpenHandler={handleOpenCandidateProfile} />
       </Box>
       <CandidateProfile

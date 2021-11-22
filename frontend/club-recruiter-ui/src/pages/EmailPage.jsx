@@ -39,9 +39,8 @@ const getNames = (candidates) => Array.from(candidates, (candidate) => candidate
 
 const EmailPage = () => {
   const [filter, setFilter] = useState('');
-  const { candidateCode } = useParams();
+  const { eventID } = useParams();
   const [displayNames, setDisplayNames] = useState(getNames(sampleCandidates));
-  console.log(candidateCode);
 
   const handleChange = (event) => {
     const newFilter = event.target.value;
@@ -69,7 +68,7 @@ const EmailPage = () => {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
-        <EventCard />
+        <EventCard eventID={eventID} />
         <EmailForm />
       </Box>
     </Container>

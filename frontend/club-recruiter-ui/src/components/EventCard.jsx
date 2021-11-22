@@ -9,19 +9,25 @@ import Typography from '@mui/material/Typography';
 
 import { getEventDetails } from '../api/events';
 
-const EventCard = ({ clickAction, candidateCode }) => {
+import { getEventCoverPhotoLink } from '../api/firebase';
+
+const EventCard = ({ clickAction, eventID }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [memberCode, setMemberCode] = useState('');
-  const [imageLink, setImageLink] = useState('');
+  const [coverPhotoLink, setCoverPhotoLink] = useState('');
+  const [candidateCode, setCandidateCode] = useState('');
+  const [candidates, setCandidates] = useState([]);
 
   const loadDetails = async () => {
-    // TODO: Replace with member id from cookie
-    const details = await getEventDetails(candidateCode);
-    setTitle(details.title);
+    const details = await getEventDetails(eventID);
+    setTitle(details.name);
+    setCandidateCode(details.candidate_code);
     setDescription(details.description);
-    setMemberCode(details.memberCode);
-    setImageLink(details.imageLink);
+    setMemberCode(details.member_code);
+    setCandidates(details.candidates);
+    const imageLink = await getEventCoverPhotoLink(details.cover_pic_id);
+    setCoverPhotoLink(imageLink);
     console.log('Loaded event details on event card');
   };
 
@@ -38,7 +44,7 @@ const EventCard = ({ clickAction, candidateCode }) => {
         <CardMedia
           component="img"
           sx={{ width: 200 }}
-          image={imageLink}
+          image={coverPhotoLink}
           alt="logo"
         />
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -60,6 +66,11 @@ const EventCard = ({ clickAction, candidateCode }) => {
                 Member Code:
                 {' '}
                 {memberCode}
+              </h4>
+              <h4>
+                Number of Candidates:
+                {' '}
+                {candidates === undefined ? 0 : candidates.length}
               </h4>
             </Box>
           </CardContent>
