@@ -74,7 +74,7 @@ describe('Events', () => {
         }
 
     }) 
-/*
+  /*
   * Test the /POST route
   */
   describe('/POST event', () => {
@@ -92,8 +92,8 @@ describe('Events', () => {
             .set('content-type', 'application/json')
             .send(body)
             .end((err, res) => {
+                expect(res.statusCode).to.equal(200);
                 if (err) {
-                    res.should.have.status(200);
                     done(err)
                 } else {
                     done()
@@ -113,14 +113,49 @@ describe('Events', () => {
             .set('content-type', 'application/json')
             .send(body)
             .end((err, res) => {
+                expect(res.statusCode).to.equal(200);
                 if (err) {
-                    res.should.have.status(200);
                     done(err)
                 } else {
                     done()
                 }
             });
       });
-  });
+  }),
+  
+  /*
+  * Test the /GET route
+  */
+  describe('/GET event', () => {
+      it('it should fail to get an event', (done) => {
 
+        chai.request('http://localhost:5001/recruitme-4b479/us-central1/app/')
+            .get('/event/asdf')
+            .set('Authorization', 'Bearer ' + idToken)
+            .end((err, res) => {
+                expect(res.statusCode).to.equal(404);
+                if (err) {
+                    done(err)
+                } else {
+                    done()
+                }
+            });
+        });
+
+
+    it('it should successfully get an event', (done) => {
+        chai.request('http://localhost:5001/recruitme-4b479/us-central1/app/')
+            .get('/event/existing_event')
+            .set('Authorization', 'Bearer ' + idToken)
+            .end((err, res) => {
+                expect(res.statusCode).to.equal(200);
+                if (err) {
+                    done(err)
+                } else {
+                    done()
+                }
+            });
+        });
+
+    });
 });
