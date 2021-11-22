@@ -16,7 +16,7 @@ const { isAdmin } = require('../util');
  */
 app.get('/by_member', validateFirebaseIdToken, async function (req, res) {
   try {
-    var { member_id } = req.user.uid;
+    var member_id = req.user.uid;
 
     var db = firestore();
     const membersEventsRes = await db.collection(EVENT_MEMBERS_COLLECTION).where("member_id", "==", member_id).get();
@@ -34,7 +34,7 @@ app.get('/by_member', validateFirebaseIdToken, async function (req, res) {
 
     res.status(200).send(eventList);
   } catch (e) {
-    res.status(404).send(`Error adding document with ID: ${docRef.id}`);
+    res.status(404).send(`Error finding events by member: ${e}`);
   }
 });
 

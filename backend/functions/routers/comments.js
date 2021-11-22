@@ -60,10 +60,9 @@ app.get('/:comment_id', async function (req, res) {
  * @returns { string } unique comment ID if the new comment is inserted
  * properly, an error message otherwise
  */
-app.post('/add/:candidate_id', async (req, res) => {
-  var { member_id } = req.user.uid;
-  var { candidate_id } = req.params;
-  var { comment } = req.body;
+router.post('/add', validateFirebaseIdToken, async (req, res) => {
+  var member_id = req.user.uid;
+  var { candidate_id, comment } = req.body;
   try {
     var db = firestore();
     const addRes = await db.collection(COMMENTS_COLLECTION).add({
@@ -87,8 +86,8 @@ app.post('/add/:candidate_id', async (req, res) => {
  * @returns { string } a success status message if the comment is deleted
  * successfully, an error message otherwise
  */
-app.post('/delete/:comment_id', async (req, res) => {
-  var { member_id } = req.user.uid;
+router.post('/delete/:comment_id', validateFirebaseIdToken, async (req, res) => {
+  var member_id = req.user.uid;
   var { comment_id } = req.params;
 
   try {
