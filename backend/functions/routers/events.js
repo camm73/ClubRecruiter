@@ -187,13 +187,15 @@ router.post('/member_join', validateFirebaseIdToken, async (req, res) => {
  * Deletes a member from an event
  * @name DELETE/event/delete_member
  * @function
- * @param { string } target_id 
+ * @param { string } target_id is the member_id that we wish to delete
  * @param { string } event_id
  * @returns a success message if member is successfully deleted, an
  * error message otherwise
  */
 router.delete('/delete_member', async (req, res) => {
-  res.status(200).send(`Ok`);
+  var member_id = req.user.uid;
+  var { target_id, event_id } = req.body;
+
 });
 
 

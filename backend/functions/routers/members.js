@@ -2,21 +2,9 @@ const express = require('express');
 const admin = require('firebase-admin');
 const { firestore } = require('firebase-admin');
 const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CLUB_MEMBERS_COLLECTION } = require('../constants');
+const { isAdmin } = require('../util');
 
 var router = express.Router();
-
-async function isAdmin(member_id, event_id) {
-  var db = firestore()
-  const currUserRef = await db.collection(EVENT_MEMBERS_COLLECTION)
-    .where("member_id", "==", member_id).where("event_id", "==", event_id).get();
-  if (currUserRef.empty)
-    return false;
-
-  if (!currUserRef.docs[0].get("is_admin"))
-    return false;
-
-  return true;
-}
 
 /**
  * Gets a member's detail given its id
