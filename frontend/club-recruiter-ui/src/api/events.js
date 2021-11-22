@@ -59,15 +59,29 @@ const listEventMembers = async (candidateCode) => ['Tian Yu Liu', 'Wen Hong Lam'
 
 const listEventOrganizers = async (candidateCode) => ['Zacharye', 'Jackson', 'Rex'];
 
-const getEventDetails = async (candidateCode) => {
-  const details = {
-    candidateCode,
-    memberCode: 'WeLoveUSC',
-    title: 'Zeta Zeta Zeta Rush',
-    description: 'Fall 2021 ZZZ Rush.',
-    imageLink: 'https://www.logolynx.com/images/logolynx/6c/6c7854a6d47c80ca417063d1c36fd4e9.jpeg',
-  };
-  return details;
+const getEventDetails = async (eventID) => {
+  const user = auth.currentUser;
+  const userToken = await user.getIdToken();
+  try {
+    const response = await fetch(`${cloudFunctionEndpoint}/event/?event_id=${eventID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+    });
+    if (response.status !== 200) {
+      const errorText = await response.text();
+      console.log(errorText);
+      return {};
+    }
+    const resJson = await response.json();
+    console.log(resJson);
+    return resJson;
+  } catch (error) {
+    console.log(error);
+    return {};
+  }
 };
 
 const createEvent = async (eventName, eventDescription, coverPicName) => {

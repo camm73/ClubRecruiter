@@ -15,6 +15,8 @@ const firebaseConfig = {
 };
 
 const cloudFunctionEndpoint = 'https://us-central1-recruitme-4b479.cloudfunctions.net/app';
+// Endpoint for local testing
+// const cloudFunctionEndpoint = 'http://localhost:5001/recruitme-4b479/us-central1/app';
 
 const firebaseApp = initializeApp(firebaseConfig);
 const googleProvider = new GoogleAuthProvider();

@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import {
   TextField, Button, FormControlLabel, Switch,
 } from '@mui/material';
@@ -7,7 +8,7 @@ import { useHistory } from 'react-router-dom';
 import Header from '../components/Header';
 import EventCard from '../components/EventCard';
 
-import { listMemberEvents, joinEvent } from '../api/events';
+import { listMemberEvents, joinEvent, getEventDetails } from '../api/events';
 
 import '../styles/MemberDashboard.css';
 
@@ -69,13 +70,12 @@ const MemberDashboard = () => {
         <div className="event-list">
           {
             events.map(
-              (code) => (
+              (eventID) => (
                 <EventCard
                   clickAction={() => {
-                    history.push(`/event/${code}`);
+                    history.push(`/event/${eventID}`);
                   }}
-                  key={code}
-                  candidateCode={code}
+                  key={eventID}
                 />
               ),
             )
