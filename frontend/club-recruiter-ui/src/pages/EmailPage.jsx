@@ -37,12 +37,11 @@ const sampleCandidates = [
 
 const getNames = (candidates) => Array.from(candidates, (candidate) => candidate.name);
 
-const EmailPage = (candidates) => {
+const EmailPage = () => {
   const [filter, setFilter] = useState('');
   const { eventCode } = useParams();
   const [displayNames, setDisplayNames] = useState(getNames(sampleCandidates));
   console.log(eventCode);
-  console.log(candidates);
 
   const handleChange = (event) => {
     const newFilter = event.target.value;
