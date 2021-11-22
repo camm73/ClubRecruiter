@@ -2,7 +2,8 @@ import { initializeApp } from 'firebase/app';
 import {
   getAuth, signInWithPopup, GoogleAuthProvider,
 } from 'firebase/auth';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes } from 'firebase/storage';
+import sha1 from 'crypto-js/sha1';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -13,11 +14,13 @@ const firebaseConfig = {
   appId: process.env.REACT_APP_APP_ID,
 };
 
+const cloudFunctionEndpoint = 'https://us-central1-recruitme-4b479.cloudfunctions.net/app';
+
 const firebaseApp = initializeApp(firebaseConfig);
 const googleProvider = new GoogleAuthProvider();
 const auth = getAuth(firebaseApp);
 
-const db = getFirestore();
+const storage = getStorage();
 
 const signInWithGoogle = async () => {
   try {
@@ -35,32 +38,20 @@ const logout = () => {
   auth.signOut();
 };
 
-// TODO: Check whether (candidateCode, email) pair exists in database
-const addEventCandidate = async (
-  eventCandidate,
-) => {
-  try {
-    const {
-      candidateCode, email, name, phoneNumber, biography, resumeLink,
-    } = eventCandidate;
-    const docRef = await addDoc(collection(db, 'candidates'), {
-      candidateCode,
-      email,
-      name,
-      phoneNumber,
-      biography,
-      applicationStatus: 'pending',
-      resumeLink,
-    });
-    console.log('Document written with ID: ', docRef.id);
-  } catch (e) {
-    console.error('Error adding document: ', e);
-  }
+const uploadFile = async (file, folderName) => {
+  const fileExtension = file.name.split('.').pop();
+  const fileHash = sha1(file.name + new Date().getTime().toString());
+  const fileName = `${fileHash}.${fileExtension}`;
+  const fileRef = ref(storage, `${folderName}/${fileName}`);
+  const snapshot = await uploadBytes(fileRef, file);
+  console.log(snapshot);
+  return fileName;
 };
 
 export {
   auth,
   signInWithGoogle,
   logout,
-  addEventCandidate,
+  uploadFile,
+  cloudFunctionEndpoint,
 };
