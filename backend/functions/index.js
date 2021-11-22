@@ -11,6 +11,7 @@ const candidateRouter = require('./routers/candidates')
 const eventRouter = require('./routers/events')
 const commentRouter = require('./routers/comments')
 const memberRouter = require('./routers/members')
+const emailRouter = require('./routers/emails')
 
 // initialize firestore app
 admin.initializeApp();
@@ -30,6 +31,7 @@ app.use("/candidate", candidateRouter);
 app.use("/event", eventRouter);
 app.use("/comment", commentRouter);
 app.use("/member", memberRouter);
+app.use("/email", emailRouter);
 
 
 exports.app = functions
