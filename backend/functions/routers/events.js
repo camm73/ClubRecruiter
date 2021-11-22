@@ -191,7 +191,7 @@ app.post('/member_join', validateFirebaseIdToken, async (req, res) => {
  * @returns a success message if member is successfully deleted, an
  * error message otherwise
  */
-app.delete('/delete_member', async (req, res) => {
+app.delete('/delete_member', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { target_id, event_id } = req.body;
   try {

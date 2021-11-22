@@ -1,6 +1,7 @@
 const app = require("../express_generator")();
 const admin = require('firebase-admin');
 const { firestore } = require('firebase-admin');
+const { validateFirebaseIdToken } = require("../auth");
 const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CLUB_MEMBERS_COLLECTION } = require('../constants');
 const { isAdmin } = require('../util');
 
@@ -34,7 +35,7 @@ app.get('/:member_id', async function (req, res) {
  * @returns a success message if member is successfully promoted, an
  * error message otherwise
  */
-app.post('/promote/:target_id', async (req, res) => {
+app.post('/promote/:target_id', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { target_id } = req.params;
   var { event_id } = req.body;
@@ -78,7 +79,7 @@ app.post('/promote/:target_id', async (req, res) => {
  * @returns a success message if member is successfully demoted, an
  * error message otherwise
  */
-app.post('/demote/:target_id', async (req, res) => {
+app.post('/demote/:target_id', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { target_id } = req.params;
   var { event_id } = req.body;
@@ -121,7 +122,7 @@ app.post('/demote/:target_id', async (req, res) => {
  * @returns { string } a success message if member is successfully added, an
  * error message otherwise
  */
-app.post('/add', async (req, res) => {
+app.post('/add', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { event_id } = req.params;
   var db = firestore();
@@ -164,7 +165,7 @@ app.post('/add', async (req, res) => {
  * @returns a success message if member is successfully deleted, an
  * error message otherwise
  */
-app.post('/delete/:target_id', async (req, res) => {
+app.post('/delete/:target_id', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { target_id } = req.params;
   var { event_id } = req.body;
