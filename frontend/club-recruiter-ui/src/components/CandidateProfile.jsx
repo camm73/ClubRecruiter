@@ -72,8 +72,37 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
           </Typography>
         </div>
       </CardContent>
-      <CardActions sx={{ backgroundColor: 'lightgrey', display: 'flex', justifyContent: 'center' }}>
-        <Button size="small" sx={{ minWidth: '100vw', minHeight: '30px' }} onClick={() => downloadResume(candidateResumeID)}>Download Resume</Button>
+      <CardActions sx={{
+        backgroundColor: 'lightgrey', display: 'flex', justifyContent: 'center', flexDirection: 'row',
+      }}
+      >
+        <Button
+          size="small"
+          style={{
+            minHeight: '30px', backgroundColor: 'gray', borderRadius: '10px', padding: '10px',
+          }}
+          onClick={() => downloadResume(candidateResumeID)}
+        >
+          Download Resume
+        </Button>
+        <Button
+          size="small"
+          style={{
+            minHeight: '30px', backgroundColor: 'red', borderRadius: '10px', padding: '10px',
+          }}
+          onClick={() => downloadResume(candidateResumeID)}
+        >
+          Reject Candidate
+        </Button>
+        <Button
+          size="small"
+          style={{
+            minHeight: '30px', backgroundColor: 'green', borderRadius: '10px', padding: '10px',
+          }}
+          onClick={() => downloadResume(candidateResumeID)}
+        >
+          Accept Candidate
+        </Button>
       </CardActions>
     </Card>
   );
