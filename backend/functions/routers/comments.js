@@ -1,6 +1,8 @@
 const app = require("../express_generator")();
 const { firestore } = require('firebase-admin');
+const { member } = require("..");
 const { COMMENTS_COLLECTION } = require('../constants');
+const { isAdmin } = require("../util");
 
 // TODO: for comments routes, make sure either:
 // 1) the current member created that comment, or
@@ -56,19 +58,21 @@ app.get('/:comment_id', async function (req, res) {
  * @function
  * @param { string } member_id
  * @param { string } candidate_id
+ * @param { string } event_id
  * @param { string } comment
  * @returns { string } unique comment ID if the new comment is inserted
  * properly, an error message otherwise
  */
-router.post('/add', validateFirebaseIdToken, async (req, res) => {
+app.post('/add', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
-  var { candidate_id, comment } = req.body;
+  var { candidate_id, event_id, comment } = req.body;
   try {
     var db = firestore();
-    const addRes = await db.collection(COMMENTS_COLLECTION).add({
-      member_id,
-      candidate_id,
-      comment,
+    await db.collection(COMMENTS_COLLECTION).add({
+      member_id: member_id,
+      candidate_id: candidate_id,
+      event_id: event_id,
+      comment: comment,
       timestamp: Date.now(),
     });
     res.status(200).send(`Successfully added comment`);
@@ -86,14 +90,22 @@ router.post('/add', validateFirebaseIdToken, async (req, res) => {
  * @returns { string } a success status message if the comment is deleted
  * successfully, an error message otherwise
  */
-router.post('/delete/:comment_id', validateFirebaseIdToken, async (req, res) => {
+app.post('/delete/:comment_id', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { comment_id } = req.params;
 
   try {
     var db = firestore();
-    const delRef = await db.collection(COMMENTS_COLLECTION).doc(comment_id).delete();
+    const commentRef = db.collection(COMMENTS_COLLECTION).doc(comment_id);
 
+    var event_id = (await commentRef.get()).data().event_id;
+
+    if (!(await isAdmin(member_id, event_id))) {
+      res.status(404).send(`Non-admin cannot delete comments!`);
+      return;
+    }
+
+    await commentRef.delete();
     res.status(200).send(`Deleted ${comment_id}`);
   } catch (e) {
     res.status(404).send(`Failed to delete: ${e}`)

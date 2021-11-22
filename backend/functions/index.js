@@ -1,7 +1,7 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 
-// routers
+// routes
 const candidateApp = require('./routers/candidates')
 const eventApp = require('./routers/events')
 const commentApp = require('./routers/comments')
