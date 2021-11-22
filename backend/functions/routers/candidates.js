@@ -10,6 +10,7 @@ var { CLUB_MEMBERS_COLLECTION, EVENTS_COLLECTION, CANDIDATES_COLLECTION, CANDIDA
 
 
 async function validateCandidateCode(candidate_code) {
+  candidate_code = candidate_code.toLowerCase();
   var db = firestore()
   var eventDocRef = await db.collection(EVENTS_COLLECTION)
     .where(CANDIDATE_CODE, "==", candidate_code).get();
@@ -82,6 +83,8 @@ router.post('/apply', async (req, res) => {
   var {
     candidate_code, email, name, phone_number, biography, resume_id, profile_pic_id,
   } = req.body;
+
+  candidate_code = candidate_code.toLowerCase();
 
   if (!profile_pic_id)
     profile_pic_id = "";

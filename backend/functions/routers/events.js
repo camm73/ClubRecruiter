@@ -137,6 +137,8 @@ router.post('/member_join', validateFirebaseIdToken, async (req, res) => {
   var { member_code } = req.body;
   var db = firestore();
 
+  member_code = member_code.toLowerCase();
+
   try {
     var eventDocRef = await db
       .collection(EVENTS_COLLECTION)
