@@ -67,7 +67,7 @@ const EventCard = ({ clickAction, eventID }) => {
               <h4>
                 Number of Candidates:
                 {' '}
-                {candidates.length}
+                {candidates === undefined ? 0 : candidates.length}
               </h4>
             </Box>
           </CardContent>

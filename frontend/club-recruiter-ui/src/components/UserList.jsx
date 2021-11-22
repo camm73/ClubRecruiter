@@ -31,7 +31,7 @@ const UserEntry = ({ name, canDelete }) => (
 );
 
 function generate(list, canDelete = true) {
-  return list.map((name) => (<UserEntry name={name} canDelete={canDelete} />));
+  return list.map((name) => (<UserEntry name={name} key={name} canDelete={canDelete} />));
 }
 
 const UserList = ({

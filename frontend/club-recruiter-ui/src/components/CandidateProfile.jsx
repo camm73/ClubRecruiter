@@ -154,7 +154,7 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
           }}
           >
             {commentIDList.map((currID) => (
-              <CommentBubble commentID={currID} />
+              <CommentBubble key={currID} commentID={currID} />
             ))}
           </div>
           <div style={{

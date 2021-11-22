@@ -108,7 +108,7 @@ const createEvent = async (eventName, eventDescription, coverPicName) => {
     }
     const resJson = await response.json();
     console.log(resJson);
-    return resJson.candidate_code;
+    return resJson.event_id;
   } catch (error) {
     console.log(error);
     return '';
