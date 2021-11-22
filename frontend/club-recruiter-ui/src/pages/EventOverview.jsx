@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation, useHistory } from 'react-router-dom';
 
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 import Header from '../components/Header';
 import UserList from '../components/UserList';
@@ -24,6 +25,9 @@ const EventOverview = () => {
   const [organizers, setOrganizers] = useState([]);
   const [profileVisible, setProfileVisible] = useState(false);
   const [profileCandidateID, setProfileCandidateID] = useState('');
+
+  const location = useLocation();
+  const history = useHistory();
 
   const loadMembers = async () => {
     const eventMembers = await listEventMembers(candidateCode);
@@ -68,6 +72,21 @@ const EventOverview = () => {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <Button
+            style={{ backgroundColor: 'lightgray', borderRadius: '5px', padding: '10px' }}
+            onClick={() => {
+              const pathName = location.pathname;
+              if (pathName.charAt(pathName.length - 1) === '/') {
+                history.push(`${pathName}email`);
+              } else {
+                history.push(`${pathName}/email`);
+              }
+            }}
+          >
+            Send Email Update
+          </Button>
+        </div>
         <EventCard candidateCode={candidateCode} />
         <CandidateList profileOpenHandler={handleOpenCandidateProfile} />
       </Box>
