@@ -58,9 +58,19 @@ const getCandidate = async (candidateID) => {
   };
 };
 
+const acceptCandidate = async (candidateID) => {
+  console.log(`Accepted candidate: ${candidateID}`);
+};
+
+const rejectCandidate = async (candidateID) => {
+  console.log(`Rejected candidate: ${candidateID}`);
+};
+
 export {
   // eslint-disable-next-line import/prefer-default-export
   validateCandidateCode,
   getCandidate,
   submitCandidateApplication,
+  acceptCandidate,
+  rejectCandidate,
 };

@@ -8,9 +8,10 @@ import '../styles/CandidateProfile.css';
 import { DialogContent } from '@material-ui/core';
 import Close from '@mui/icons-material/Close';
 
-import { getCandidate } from '../api/candidate';
+import { getCandidate, acceptCandidate, rejectCandidate } from '../api/candidate';
 import { getCommentList, postComment } from '../api/comments';
 import CommentBubble from './CommentBubble';
+import ConfirmationDialog from './ConfirmationDialog';
 
 const CandidateProfile = ({ open, candidateID, closeHandler }) => {
   const [candidateName, setCandidateName] = useState('');
@@ -20,6 +21,8 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
   const [candidateResumeID, setCandidateResumeID] = useState('');
   const [commentIDList, setCommentIDList] = useState([]);
   const [commentText, setCommentText] = useState('');
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [confirmationAction, setConfirmationAction] = useState(async () => {});
 
   // Max length of 200 characters
   const MAX_COMMENT_LENGTH = 200;
@@ -90,7 +93,13 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
           style={{
             minHeight: '30px', backgroundColor: 'red', borderRadius: '10px', padding: '10px',
           }}
-          onClick={() => downloadResume(candidateResumeID)}
+          onClick={() => {
+            setConfirmationAction(() => () => {
+              rejectCandidate(candidateID);
+              return 'Rejected';
+            });
+            setConfirmationOpen(true);
+          }}
         >
           Reject Candidate
         </Button>
@@ -99,7 +108,13 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
           style={{
             minHeight: '30px', backgroundColor: 'green', borderRadius: '10px', padding: '10px',
           }}
-          onClick={() => downloadResume(candidateResumeID)}
+          onClick={() => {
+            setConfirmationAction(() => () => {
+              acceptCandidate(candidateID);
+              return 'Accepted';
+            });
+            setConfirmationOpen(true);
+          }}
         >
           Accept Candidate
         </Button>
@@ -108,61 +123,74 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
   );
 
   return (
-    <Dialog fullWidth sx={{ textAlign: 'center' }} maxWidth="sm" open={open} onBackdropClick={closeHandler}>
-      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-        <div style={{ position: 'absolute', left: '10px', top: '10px' }}>
-          <Button startIcon={<Close />} onClick={closeHandler} />
-        </div>
-        <Typography variant="h5" sx={{ padding: 1 }}>
-          {candidateName}
-        </Typography>
-      </div>
-      <DialogContent>
-        <DetailCard />
-        <Typography variant="h6" sx={{ paddingTop: 1 }}>
-          Comments
-        </Typography>
-        <div style={{
-          overflowX: 'hidden', overflowY: 'auto', height: '200px', paddingTop: '5px',
+    <div>
+      <ConfirmationDialog
+        open={confirmationOpen}
+        closeHandler={() => setConfirmationOpen(false)}
+        yesAction={() => {
+          const newStatus = confirmationAction();
+          setConfirmationOpen(false);
+          setCandidateApplicationStatus(newStatus);
         }}
-        >
-          {commentIDList.map((currID) => (
-            <CommentBubble commentID={currID} />
-          ))}
+        title="Confirm Application Status Change"
+        bodyText={`Are you sure you want to change the application status of candidate: ${candidateName}?`}
+      />
+      <Dialog fullWidth sx={{ textAlign: 'center' }} maxWidth="sm" open={open} onBackdropClick={closeHandler}>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <div style={{ position: 'absolute', left: '10px', top: '10px' }}>
+            <Button startIcon={<Close />} onClick={closeHandler} />
+          </div>
+          <Typography variant="h5" sx={{ padding: 1 }}>
+            {candidateName}
+          </Typography>
         </div>
-        <div style={{
-          display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px',
-        }}
-        >
-          <TextField
-            fullWidth
-            multiline
-            id="outlined-basic"
-            label="Type a comment"
-            value={commentText}
-            variant="outlined"
-            onChange={(e) => {
-              if (e.target.value.length <= MAX_COMMENT_LENGTH) {
-                setCommentText(e.target.value);
-              }
-            }}
-          />
-          <Button
-            style={{
-              display: 'flex',
-              borderRadius: '20px',
-              backgroundColor: 'lightgray',
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginLeft: '10px',
-            }}
-            onClick={handleSubmitComment}
+        <DialogContent>
+          <DetailCard />
+          <Typography variant="h6" sx={{ paddingTop: 1 }}>
+            Comments
+          </Typography>
+          <div style={{
+            overflowX: 'hidden', overflowY: 'auto', height: '200px', paddingTop: '5px',
+          }}
           >
-            Post
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+            {commentIDList.map((currID) => (
+              <CommentBubble commentID={currID} />
+            ))}
+          </div>
+          <div style={{
+            display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px',
+          }}
+          >
+            <TextField
+              fullWidth
+              multiline
+              id="outlined-basic"
+              label="Type a comment"
+              value={commentText}
+              variant="outlined"
+              onChange={(e) => {
+                if (e.target.value.length <= MAX_COMMENT_LENGTH) {
+                  setCommentText(e.target.value);
+                }
+              }}
+            />
+            <Button
+              style={{
+                display: 'flex',
+                borderRadius: '20px',
+                backgroundColor: 'lightgray',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginLeft: '10px',
+              }}
+              onClick={handleSubmitComment}
+            >
+              Post
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 
