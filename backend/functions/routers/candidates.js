@@ -128,12 +128,42 @@ router.post('/apply', async (req, res) => {
 
 
 /**
+ * Updates a candidate's status to either "accepted", "rejected", or "pending"
+ * @name POST/candidate/status
+ * @function
+ * @param { string } status
+ * @param { string } candidate_id
+ * @returns { string } Status 200 success if update is successful, 404 otherwise
+ * 
+ */
+router.post('/status', async function (req, res) {
+  var { candidate_id, status } = req.body;
+  var db = firestore();
+
+  status = status.toLowerCase();
+  if (!(status in ["accepted", "rejected", "pending"])) {
+    res.status(400).send(`Invalid status!`);
+    return;
+  }
+  try {
+    await db.collection(CANDIDATES_COLLECTION).doc(candidate_id).update({
+      "application_status": status
+    });
+    res.status(200).send("Success!");
+  } catch (e) {
+    res.status(404).send(`Error updating candidate status: ${e}`);
+  }
+
+})
+
+
+/**
  * This endpoint retrieves a list of candidate IDs from the
  * Candidates database
  * @name GET/by_event/:event_id
  * @function
  * @param {string} event_id
- * @returns {String[]} candidates for an event_id
+ * @returns {string[]} candidates for an event_id
  */
 router.get('/by_event/:event_id', async (req, res) => {
   var { event_id } = req.params;
