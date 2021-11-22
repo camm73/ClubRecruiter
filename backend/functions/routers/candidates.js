@@ -8,6 +8,40 @@ var { CLUB_MEMBERS_COLLECTION, EVENTS_COLLECTION, CANDIDATES_COLLECTION, CANDIDA
 // TODO: for candidates routes, make sure either:
 // the current member is an admin of the event that the candidate is in.
 
+
+async function validateCandidateCode(candidate_code) {
+  var db = firestore()
+  var eventDocRef = await db.collection(EVENTS_COLLECTION)
+    .where(CANDIDATE_CODE, "==", candidate_code).get();
+
+  if (eventDocRef.empty)
+    return false;
+
+  return true;
+}
+
+/**
+ * Validates a candidate_code submitted to our backend
+ * @name GET/candidate/validate
+ * @function
+ * @param { string } candidate_code
+ * @returns { Object } True if the candidate code is valid, False otherwise
+ * 
+ */
+router.get('/validate', async function (req, res) {
+  var { candidate_code } = req.query;
+
+  try {
+    var valid = await validateCandidateCode(candidate_code);
+    res.status(200).send({
+      valid: valid
+    });
+  } catch (e) {
+    res.status(404).send(`Error retrieving candidate: ${e}`);
+  }
+});
+
+
 /**
  * Gets a candidate's detail given its id
  * @name GET/candidate/:candidate_id
@@ -54,10 +88,9 @@ router.post('/apply', async (req, res) => {
 
   var db = firestore();
   try {
-    var eventDocRef = await db.collection(EVENTS_COLLECTION)
-      .where(CANDIDATE_CODE, "==", candidate_code).get();
+    var is_code_valid = await validateCandidateCode(candidate_code);
 
-    if (!eventDocRef.empty) {
+    if (is_code_valid) {
       const candidateDocRef = await db.collection(CANDIDATES_COLLECTION).add({
         candidate_code: candidate_code,
         email: email,
