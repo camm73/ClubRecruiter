@@ -19,7 +19,7 @@ const MemberDashboard = () => {
 
   const loadEvents = async () => {
     // TODO: Replace with member id from cookie
-    const memberEvents = await listMemberEvents('member_id');
+    const memberEvents = await listMemberEvents();
     setEvents(memberEvents);
     console.log('Loaded list of events for user');
   };
