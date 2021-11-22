@@ -203,11 +203,11 @@ router.delete('/delete_member', async (req, res) => {
     }
 
     var db = firestore();
-    var eventMemberDocRef = db.collection(EVENT_MEMBERS_COLLECTION)
+    var eventMemberDocRef = await db.collection(EVENT_MEMBERS_COLLECTION)
       .where("member_id", "==", target_id)
-      .where("event_id", "==", event_id);
+      .where("event_id", "==", event_id).get();
 
-    (await eventMemberDocRef.get()).forEach((event_member) => {
+    eventMemberDocRef.forEach((event_member) => {
       event_member.ref.delete();
     })
 
