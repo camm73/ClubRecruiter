@@ -144,7 +144,7 @@ router.post('/status', async function (req, res) {
   var db = firestore();
 
   status = status.toLowerCase();
-  if (!(status in ["accepted", "rejected", "pending"])) {
+  if (!(["accepted", "rejected", "pending"].includes(status))) {
     res.status(404).send(`Invalid status!`);
     return;
   }
