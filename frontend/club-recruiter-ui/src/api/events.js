@@ -1,3 +1,5 @@
+import { cloudFunctionEndpoint, auth } from './firebase';
+
 /* eslint-disable no-unused-vars */
 // TODO: Query backend for list of events for a member
 const listMemberEvents = async (memberID) => ['123', '456', '789'];
@@ -19,6 +21,37 @@ const getEventDetails = async (candidateCode) => {
   return details;
 };
 
+const createEvent = async (eventName, eventDescription, coverPicName) => {
+  const user = auth.currentUser;
+  const userToken = await user.getIdToken();
+  const requestBody = {
+    event_name: eventName,
+    event_description: eventDescription,
+    event_cover_pic_id: coverPicName,
+  };
+  try {
+    const response = await fetch(`${cloudFunctionEndpoint}/event/create/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+    if (response.status === 404) {
+      const errorText = await response.text();
+      console.log(errorText);
+      return '';
+    }
+    const resJson = await response.json();
+    console.log(resJson);
+    return resJson.candidate_code;
+  } catch (error) {
+    console.log(error);
+    return '';
+  }
+};
+
 export {
   // eslint-disable-next-line import/prefer-default-export
   listMemberEvents,
@@ -26,4 +59,5 @@ export {
   listEventMembers,
   listEventOrganizers,
   getEventDetails,
+  createEvent,
 };

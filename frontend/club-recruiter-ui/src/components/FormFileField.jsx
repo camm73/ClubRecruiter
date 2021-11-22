@@ -5,7 +5,7 @@ import {
 import { Controller } from 'react-hook-form';
 
 const FormFileField = ({
-  name, label, control, required, accept,
+  name, label, control, required, accept, setFile,
 }) => {
   const ref = useRef();
   const [attachment, setAttachment] = useState(null);
@@ -21,6 +21,7 @@ const FormFileField = ({
           const files = Array.from(event.target.files);
           const [file] = files;
           setAttachment(file);
+          setFile(file);
           onChange(event);
         };
         return (

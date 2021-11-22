@@ -1,3 +1,17 @@
+import { cloudFunctionEndpoint } from './firebase';
+
+
+* @param { string } candidate_code
+* @param { string } email
+* @param { string } name
+* @param { string } phone_number
+* @param { string } biography
+* @param { string } resume_id
+
+const submitCandidateApplication = async (candidateCode, email, name, phoneNumber, biography, resumeID) => {
+
+}
+
 const validateCandidateCode = async (candidateCode) => {
   // TODO: Verify code with backend
   console.log(`Validating candidate code: ${candidateCode}`);
