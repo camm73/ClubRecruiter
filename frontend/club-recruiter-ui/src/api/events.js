@@ -63,7 +63,7 @@ const getEventDetails = async (eventID) => {
   const user = auth.currentUser;
   const userToken = await user.getIdToken();
   try {
-    const response = await fetch(`${cloudFunctionEndpoint}/event/?event_id=${eventID}`, {
+    const response = await fetch(`${cloudFunctionEndpoint}/event/${eventID}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

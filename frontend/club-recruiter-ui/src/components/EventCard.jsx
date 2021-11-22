@@ -9,19 +9,22 @@ import Typography from '@mui/material/Typography';
 
 import { getEventDetails } from '../api/events';
 
-const EventCard = ({ clickAction, candidateCode }) => {
+const EventCard = ({ clickAction, eventID }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [memberCode, setMemberCode] = useState('');
   const [imageLink, setImageLink] = useState('');
+  const [candidateCode, setCandidateCode] = useState('');
+  const [candidates, setCandidates] = useState([]);
 
   const loadDetails = async () => {
-    // TODO: Replace with member id from cookie
-    const details = await getEventDetails(candidateCode);
-    setTitle(details.title);
+    const details = await getEventDetails(eventID);
+    setTitle(details.name);
+    setCandidateCode(details.candidate_code);
     setDescription(details.description);
-    setMemberCode(details.memberCode);
-    setImageLink(details.imageLink);
+    setMemberCode(details.member_code);
+    setImageLink(details.cover_pic_id);
+    setCandidates(details.candidates);
     console.log('Loaded event details on event card');
   };
 
@@ -60,6 +63,11 @@ const EventCard = ({ clickAction, candidateCode }) => {
                 Member Code:
                 {' '}
                 {memberCode}
+              </h4>
+              <h4>
+                Number of Candidates:
+                {' '}
+                {candidates.length}
               </h4>
             </Box>
           </CardContent>
