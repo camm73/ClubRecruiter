@@ -3,23 +3,12 @@ const { firestore } = require('firebase-admin')
 const admin = require('firebase-admin');
 var router = express.Router();
 
-var { CLUB_MEMBERS_COLLECTION, EVENTS_COLLECTION, CANDIDATES_COLLECTION, CANDIDATE_CODE } = require('../constants')
+var { CLUB_MEMBERS_COLLECTION, EVENTS_COLLECTION, CANDIDATES_COLLECTION, CANDIDATE_CODE } = require('../constants');
+const { validateCandidateCode } = require('../util');
 
 // TODO: for candidates routes, make sure either:
 // the current member is an admin of the event that the candidate is in.
 
-
-async function validateCandidateCode(candidate_code) {
-  candidate_code = candidate_code.toLowerCase();
-  var db = firestore()
-  var eventDocRef = await db.collection(EVENTS_COLLECTION)
-    .where(CANDIDATE_CODE, "==", candidate_code).get();
-
-  if (eventDocRef.empty)
-    return false;
-
-  return true;
-}
 
 /**
  * Validates a candidate_code submitted to our backend
