@@ -44,7 +44,7 @@ router.post('/promote/:target_id', async (req, res) => {
 
   try {
 
-    if (!isAdmin(member_id, event_id)) {
+    if (!(await isAdmin(member_id, event_id))) {
       res.status(404).send(`Current user is not authorized to promote members!`);
       return;
     }
@@ -87,7 +87,7 @@ router.post('/demote/:target_id', async (req, res) => {
   var db = firestore();
 
   try {
-    if (!isAdmin(member_id, event_id)) {
+    if (!(await isAdmin(member_id, event_id))) {
       res.status(404).send(`Current user is not authorized to promote members!`);
       return;
     }
@@ -129,7 +129,7 @@ router.post('/add', async (req, res) => {
   var db = firestore();
 
   try {
-    if (!isAdmin(member_id, event_id)) {
+    if (!(await isAdmin(member_id, event_id))) {
       res.status(404).send(`Current user is not authorized to add members!`);
       return;
     }
@@ -173,7 +173,7 @@ router.post('/delete/:target_id', async (req, res) => {
   var db = firestore();
 
   try {
-    if (!isAdmin(member_id, event_id)) {
+    if (!(await isAdmin(member_id, event_id))) {
       res.status(404).send(`Current user is not authorized to delete members!`);
       return;
     }

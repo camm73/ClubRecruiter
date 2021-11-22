@@ -34,11 +34,10 @@ async function validateCandidateCode(candidate_code) {
 async function isAdmin(member_id, event_id) {
   var db = firestore()
   const currUserRef = await db.collection(EVENT_MEMBERS_COLLECTION)
-    .where("member_id", "==", member_id).where("event_id", "==", event_id).get();
+    .where("member_id", "==", member_id)
+    .where("event_id", "==", event_id)
+    .where("is_admin", "==", true).get();
   if (currUserRef.empty)
-    return false;
-
-  if (!currUserRef.docs[0].get("is_admin"))
     return false;
 
   return true;
