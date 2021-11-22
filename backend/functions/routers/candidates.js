@@ -1,9 +1,8 @@
-const express = require('express')
+const app = require("../express_generator")();
 const { firestore } = require('firebase-admin')
 const admin = require('firebase-admin');
-var router = express.Router();
 
-var { CLUB_MEMBERS_COLLECTION, EVENTS_COLLECTION, CANDIDATES_COLLECTION, CANDIDATE_CODE } = require('../constants');
+var { EVENTS_COLLECTION, CANDIDATES_COLLECTION, CANDIDATE_CODE } = require('../constants');
 const { validateCandidateCode } = require('../util');
 
 // TODO: for candidates routes, make sure either:
@@ -18,7 +17,7 @@ const { validateCandidateCode } = require('../util');
  * @returns { Object } True if the candidate code is valid, False otherwise
  * 
  */
-router.get('/validate', async function (req, res) {
+app.get('/validate', async function (req, res) {
   var { candidate_code } = req.query;
 
   try {
@@ -40,7 +39,7 @@ router.get('/validate', async function (req, res) {
  * @returns { Object } candidate detail with candidate_id
  * 
  */
-router.get('/:candidate_id', async function (req, res) {
+app.get('/:candidate_id', async function (req, res) {
   var { candidate_id } = req.params;
 
   try {
@@ -68,7 +67,7 @@ router.get('/:candidate_id', async function (req, res) {
  * @returns { string } unique candidate ID if the new candidate is inserted
  * properly, an error message otherwise
  */
-router.post('/apply', async (req, res) => {
+app.post('/apply', async (req, res) => {
   var {
     candidate_code, email, name, phone_number, biography, resume_id, profile_pic_id,
   } = req.body;
@@ -128,7 +127,7 @@ router.post('/apply', async (req, res) => {
  * @returns { string } Status 200 success if update is successful, 404 otherwise
  * 
  */
-router.post('/status', async function (req, res) {
+app.post('/status', async function (req, res) {
   var { candidate_id, status } = req.body;
   var db = firestore();
 
@@ -157,7 +156,7 @@ router.post('/status', async function (req, res) {
  * @param {string} event_id
  * @returns {string[]} candidates for an event_id
  */
-router.get('/by_event/:event_id', async (req, res) => {
+app.get('/by_event/:event_id', async (req, res) => {
   var { event_id } = req.params;
   try {
     var db = firestore();
@@ -177,4 +176,4 @@ router.get('/by_event/:event_id', async (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = app;

@@ -1,7 +1,6 @@
+const app = require("../express_generator")();
 var { firestore } = require('firebase-admin');
 var admin = require('firebase-admin');
-var express = require('express');
-var router = express.Router();
 var crypto = require('crypto');
 
 const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE } = require('../constants');
@@ -15,7 +14,7 @@ const { isAdmin } = require('../util');
  * @param {string} member_id
  * @returns { string[] } a list of event_id's the ClubMember is a member or admin of
  */
-router.get('/by_member', validateFirebaseIdToken, async function (req, res) {
+app.get('/by_member', validateFirebaseIdToken, async function (req, res) {
   try {
     var member_id = req.user.uid;
 
@@ -49,7 +48,7 @@ router.get('/by_member', validateFirebaseIdToken, async function (req, res) {
  * eventCoverPictureUrl, eventCode, accessCode, list[members], list[organizers],
  * list[candidates]
  */
-router.get('/:event_id', async (req, res) => {
+app.get('/:event_id', async (req, res) => {
   var { event_id } = req.params;
   var db = firestore();
   try {
@@ -76,7 +75,7 @@ router.get('/:event_id', async (req, res) => {
  * @returns { [string, string] } candidate_code and member_code to the frontend to
  * be distributed to ClubMembers as well as Candidates
  */
-router.post('/create', validateFirebaseIdToken, async (req, res) => {
+app.post('/create', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { event_name, event_description, event_cover_pic_id } = req.body;
 
@@ -133,7 +132,7 @@ router.post('/create', validateFirebaseIdToken, async (req, res) => {
  * @returns { string } the candidate code of the event if successful, an
  * error message otherwise
  */
-router.post('/member_join', validateFirebaseIdToken, async (req, res) => {
+app.post('/member_join', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { member_code } = req.body;
   var db = firestore();
@@ -145,7 +144,6 @@ router.post('/member_join', validateFirebaseIdToken, async (req, res) => {
       .collection(EVENTS_COLLECTION)
       .where(MEMBER_CODE, "==", member_code).get();
 
-    var event = eventDocRef.docs[0];
     var event_id = eventDocRef.docs[0].id;
 
     // Check if the database already has an existing document
@@ -168,7 +166,7 @@ router.post('/member_join', validateFirebaseIdToken, async (req, res) => {
       });
 
       res.status(200).send({
-        candidate_code: event.data()[CANDIDATE_CODE]
+        event_id: event_id
       });
       return;
     } else {
@@ -193,7 +191,7 @@ router.post('/member_join', validateFirebaseIdToken, async (req, res) => {
  * @returns a success message if member is successfully deleted, an
  * error message otherwise
  */
-router.delete('/delete_member', async (req, res) => {
+app.delete('/delete_member', async (req, res) => {
   var member_id = req.user.uid;
   var { target_id, event_id } = req.body;
   try {
@@ -229,8 +227,8 @@ router.delete('/delete_member', async (req, res) => {
  * @returns { string } a success message if the event delete is successful, an
  * error message otherwise
  */
-router.delete('/delete', async (req, res) => {
+app.delete('/delete', async (req, res) => {
   res.status(200).send(`Ok`);
 });
 
-module.exports = router;
+module.exports = app;
