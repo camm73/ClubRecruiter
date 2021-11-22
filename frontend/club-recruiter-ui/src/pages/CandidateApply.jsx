@@ -1,23 +1,31 @@
 import { Container, Button } from '@mui/material';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import FormFileField from '../components/FormFileField';
 import FormTextField from '../components/FormTextField';
 import Header from '../components/Header';
 
 import { uploadFile } from '../api/firebase';
+import { submitCandidateApplication } from '../api/candidate';
 
 const CandidateApply = () => {
   const { control, handleSubmit } = useForm();
   const { candidateCode } = useParams();
   const [resumeFile, setResumeFile] = useState(null);
+  const history = useHistory();
 
   const onSubmit = async (data) => {
     // todo: call the API endpoint
     const fileName = await uploadFile(resumeFile, 'resume');
     console.log(data);
     console.log(fileName);
+    console.log(candidateCode);
+    const statusMessage = await submitCandidateApplication(
+      candidateCode, data.email, data.name, data.phone, data.additional, fileName,
+    );
+    alert(statusMessage);
+    history.push('/');
   };
 
   return (
@@ -28,7 +36,6 @@ const CandidateApply = () => {
           display: 'flex', flexDirection: 'column', padding: 5, alignItems: 'center',
         }}
         >
-          <FormTextField name="code" label="Candidate code" disabled defaultValue={candidateCode} control={control} required />
           <FormTextField name="name" label="Name" control={control} required />
           <FormTextField name="email" label="Email address" control={control} required />
           <FormTextField name="phone" label="Phone number" control={control} required />

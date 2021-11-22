@@ -38,7 +38,7 @@ const createEvent = async (eventName, eventDescription, coverPicName) => {
       },
       body: JSON.stringify(requestBody),
     });
-    if (response.status === 404) {
+    if (response.status !== 200) {
       const errorText = await response.text();
       console.log(errorText);
       return '';
