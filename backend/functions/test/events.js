@@ -1,10 +1,13 @@
-let admin = require('firebase-admin');
-let chai = require("chai");
-let chaiHttp = require('chai-http');
+const admin = require('firebase-admin');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
 var expect  = require("chai").expect;
 var request = require("request");
+const rp = require('request-promise');
 var events = require("../routers/events");
-const { RSA_PKCS1_OAEP_PADDING } = require('constants');
+const serviceAccount = require('../config/serviceAccountKey.json')
+
+require('dotenv').config();
 
 const base_api_endpoint = "http://localhost:5001/recruitme-4b479/us-central1/app"
 // var url ="https://semaphoreci.com/community/tutorials/getting-started-with-node-js-and-mocha"
@@ -15,16 +18,10 @@ let idToken = null;
 
 chai.use(chaiHttp);
 
-const firebaseConfig = {
-  apiKey: process.env.REACT_APP_API_KEY,
-  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_APP_ID,
-};
-
-firebaseApp = admin.initializeApp(firebaseConfig);
+// console.log(firebaseConfig)
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
 /*
 const googleProvider = new GoogleAuthProvider();
 const auth = getAuth(firebaseApp);
@@ -58,14 +55,10 @@ describe("Base API", function() {
 describe('Events', () => {
     before(async () => {
         try {
-            customToken = await firebaseApp.auth().createCustomToken(uid);
-            console.log("Custom token");
-            console.log(customToken);
+            customToken = await admin.auth().createCustomToken(uid);
 
             const res = await rp({
-                url: `https://www.googleapis.com/identifytoolkit/v3/relyingparty/verifyCustomToken?key=${
-                    "AIzaSyBaKsRZNo3CNJ2m9mq0IRfDjxdCKsCh1EU"
-                }`,
+                url: `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyCustomToken?key=${process.env.REACT_APP_API_KEY}`,
                 method: 'POST',
                 body: {
                     token: customToken,
@@ -76,6 +69,7 @@ describe('Events', () => {
 
             idToken = res.idToken;
         } catch (error) {
+            console.log("failed!")
             console.log(error);
         }
 
@@ -86,8 +80,8 @@ describe('Events', () => {
   describe('/POST event', () => {
       it('it should create an event', (done) => {
 
-        console.log("idtoken");
-        console.log(idToken);
+        // console.log("idtoken");
+        // console.log(idToken);
         let event = {
             event_name: "The event",
             event_description: "Event desc", 
@@ -96,13 +90,20 @@ describe('Events', () => {
 
         chai.request(events)
             .post('/create')
+            .set('Authorization', 'Bearer ' + idToken)
             .send(event)
             .end((err, res) => {
-                  res.should.have.status(200);
-                  res.body.should.be.a('array');
-                  res.body.length.should.be.eql(0);
-              done();
+                // console.log(res.statusCode)
+                if (err) {
+                    done(err)
+                } else {
+                    done()
+                }
+                // res.should.have.status(400);
+                  //res.body.should.be.a('array');
+                  //res.body.length.should.be.eql(0);
             });
+        // done();
       });
   });
 
