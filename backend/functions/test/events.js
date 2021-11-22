@@ -80,20 +80,18 @@ describe('Events', () => {
   describe('/POST event', () => {
       it('it should create an event', (done) => {
 
-        // console.log("idtoken");
-        // console.log(idToken);
-        let event = {
+        let evt = {
             event_name: "The event",
             event_description: "Event desc", 
             event_cover_pic_id: "Coverpic id"
         }
 
-        chai.request(events)
-            .post('/create')
+        chai.request('http://localhost:5001/recruitme-4b479/us-central1/app/')
+            .post('/event/create')
             .set('Authorization', 'Bearer ' + idToken)
-            .send(event)
+            .set('content-type', 'application/json')
+            .send(evt)
             .end((err, res) => {
-                // console.log(res.statusCode)
                 if (err) {
                     done(err)
                 } else {
@@ -103,7 +101,6 @@ describe('Events', () => {
                   //res.body.should.be.a('array');
                   //res.body.length.should.be.eql(0);
             });
-        // done();
       });
   });
 
