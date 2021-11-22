@@ -5,11 +5,10 @@ var expect = require("chai").expect;
 var request = require("request");
 const rp = require('request-promise');
 const serviceAccount = require('../config/serviceAccountKey.json');
-const { LOCAL_API_ENDPOINT } = require('./constant');
+const { DEV_API_ENDPOINT } = require('./constant');
 
 require('dotenv').config();
 
-const LOCAL_API_ENDPOINT = "http://localhost:5001/recruitme-4b479/us-central1/"
 // var url ="https://semaphoreci.com/community/tutorials/getting-started-with-node-js-and-mocha"
 
 const uid = 'test-uid';
@@ -26,7 +25,7 @@ admin.initializeApp({
 describe("Base API", function () {
     it("returns status 200", function (done) {
         // process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
-        request(LOCAL_API_ENDPOINT, function (error, response, body) {
+        request(DEV_API_ENDPOINT, function (error, response, body) {
             // setTimeout(function(){}, 2000);
             expect(response.statusCode).to.equal(200);
             done();
@@ -68,7 +67,7 @@ describe('Events', () => {
                 event_cover_pic_id: "Coverpic id"
             }
 
-            chai.request(LOCAL_API_ENDPOINT)
+            chai.request(DEV_API_ENDPOINT)
                 .post('/event/create')
                 .set('Authorization', 'Bearer ' + idToken)
                 .set('content-type', 'application/json')
@@ -89,7 +88,7 @@ describe('Events', () => {
                 member_code: "12345",
             }
 
-            chai.request(LOCAL_API_ENDPOINT)
+            chai.request(DEV_API_ENDPOINT)
                 .post('/event/member_join')
                 .set('Authorization', 'Bearer ' + idToken)
                 .set('content-type', 'application/json')
@@ -111,7 +110,7 @@ describe('Events', () => {
         describe('/GET event', () => {
             it('it should fail to get an event', (done) => {
 
-                chai.request(LOCAL_API_ENDPOINT)
+                chai.request(DEV_API_ENDPOINT)
                     .get('/event/asdf')
                     .set('Authorization', 'Bearer ' + idToken)
                     .end((err, res) => {
@@ -126,7 +125,7 @@ describe('Events', () => {
 
 
             it('it should successfully get an event', (done) => {
-                chai.request(LOCAL_API_ENDPOINT)
+                chai.request(DEV_API_ENDPOINT)
                     .get('/event/existing_event')
                     .set('Authorization', 'Bearer ' + idToken)
                     .end((err, res) => {
