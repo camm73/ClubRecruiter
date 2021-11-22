@@ -10,12 +10,12 @@ const { isAdmin } = require('../util');
 
 /**
  * Lists all events a ClubMember is a member of
- * @name GET/event/list/:member_id
+ * @name GET/event/by_member/:member_id
  * @function
  * @param {string} member_id
- * @returns { Object[] } a list of events the ClubMember is a member or admin of
+ * @returns { string[] } a list of event_id's the ClubMember is a member or admin of
  */
-router.get('/list/:member_id', async function (req, res) {
+router.get('/by_member/:member_id', async function (req, res) {
   try {
     var { member_id } = req.params;
 
@@ -24,7 +24,7 @@ router.get('/list/:member_id', async function (req, res) {
 
     if (membersEventsRes.empty) {
       console.log("No matching documents!");
-      res.status(404).send(`Can't find member with member_id == ${member_id}`);
+      res.status(404).send(`Can't find member with member_id ${member_id}`);
       return;
     }
 
