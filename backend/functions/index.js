@@ -32,4 +32,8 @@ app.use("/comment", commentRouter);
 app.use("/member", memberRouter);
 
 
-exports.app = functions.https.onRequest(app)
+exports.app = functions
+  .runWith({
+    memory: "1GB",
+  })
+  .https.onRequest(app)
