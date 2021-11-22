@@ -1,6 +1,7 @@
 const app = require("../express_generator")();
 const { firestore } = require('firebase-admin');
 const { member } = require("..");
+const { validateFirebaseIdToken } = require("../auth");
 const { COMMENTS_COLLECTION } = require('../constants');
 const { isAdmin } = require("../util");
 
