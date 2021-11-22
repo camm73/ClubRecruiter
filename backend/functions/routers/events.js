@@ -17,7 +17,7 @@ const { isAdmin } = require('../util');
  */
 router.get('/by_member', validateFirebaseIdToken, async function (req, res) {
   try {
-    var { member_id } = req.user.uid;
+    var member_id = req.user.uid;
 
     var db = firestore();
     const membersEventsRes = await db.collection(EVENT_MEMBERS_COLLECTION).where("member_id", "==", member_id).get();

@@ -61,10 +61,9 @@ router.get('/:comment_id', async function (req, res) {
  * @returns { string } unique comment ID if the new comment is inserted
  * properly, an error message otherwise
  */
-router.post('/add/:candidate_id', async (req, res) => {
-  var { member_id } = req.user.uid;
-  var { candidate_id } = req.params;
-  var { comment } = req.body;
+router.post('/add', async (req, res) => {
+  var member_id = req.user.uid;
+  var { candidate_id, comment } = req.body;
   try {
     var db = firestore();
     const addRes = await db.collection(COMMENTS_COLLECTION).add({
@@ -89,7 +88,7 @@ router.post('/add/:candidate_id', async (req, res) => {
  * successfully, an error message otherwise
  */
 router.post('/delete/:comment_id', async (req, res) => {
-  var { member_id } = req.user.uid;
+  var member_id = req.user.uid;
   var { comment_id } = req.params;
 
   try {
