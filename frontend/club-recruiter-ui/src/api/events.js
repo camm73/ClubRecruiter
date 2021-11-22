@@ -4,7 +4,33 @@ import { cloudFunctionEndpoint, auth } from './firebase';
 // TODO: Query backend for list of events for a member
 const listMemberEvents = async (memberID) => ['123', '456', '789'];
 
-const joinEvent = async (candidateCode, memberID) => true;
+const joinEvent = async (memberCode) => {
+  const user = auth.currentUser;
+  const userToken = await user.getIdToken();
+  const requestBody = {
+    member_code: memberCode,
+  };
+  try {
+    const response = await fetch(`${cloudFunctionEndpoint}/event/member_join`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+    if (response.status !== 200) {
+      const errorText = await response.text();
+      console.log(errorText);
+      return '';
+    }
+    const resJson = await response.json();
+    return resJson.candidate_code;
+  } catch (error) {
+    console.log(error);
+    return '';
+  }
+};
 
 const listEventMembers = async (candidateCode) => ['Tian Yu Liu', 'Wen Hong Lam'];
 

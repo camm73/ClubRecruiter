@@ -25,8 +25,13 @@ const MemberDashboard = () => {
   };
 
   const handleJoinEvent = async () => {
-    await joinEvent(memberCode, 'member_id');
-    console.log('Joined new event');
+    const joinRes = await joinEvent(memberCode);
+    if (!joinRes.length) {
+      alert('Member code is invalid!');
+      return;
+    }
+    // Returns candidate code
+    history.push(`/event/${joinRes}`);
   };
 
   const handleCreateEvent = () => {
