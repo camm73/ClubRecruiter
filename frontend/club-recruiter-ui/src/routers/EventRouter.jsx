@@ -1,6 +1,7 @@
 import React from 'react';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import NoRoute from '../pages/errors/NoRoute';
+import EmailPage from '../pages/EmailPage';
 
 import EventOverview from '../pages/EventOverview';
 
@@ -10,6 +11,9 @@ const EventRouter = () => {
   return (
     <>
       <Switch>
+        <Route path={`${match.path}/:candidateCode/email`}>
+          <EmailPage />
+        </Route>
         <Route path={`${match.path}/:candidateCode`}>
           {/* Event overview page for a specific event */}
           <EventOverview />

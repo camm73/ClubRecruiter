@@ -44,19 +44,16 @@ function App() {
               <ProtectedRoute>
                 <MemberDashboard />
               </ProtectedRoute>
-              {/* <MemberDashboard /> */}
             </Route>
             <Route path="/event">
               <ProtectedRoute>
                 <EventRouter />
               </ProtectedRoute>
-              {/* <EventRouter /> */}
             </Route>
             <Route path="/createEvent">
               <ProtectedRoute>
                 <CreateEvent />
               </ProtectedRoute>
-              {/* <CreateEvent /> */}
             </Route>
             <Route path="*">
               <NoRoute />
