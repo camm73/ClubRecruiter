@@ -22,12 +22,6 @@ const getComment = async (commentID) => {
     console.log(error);
     return false;
   }
-  /*
-  return {
-    commentText: 'This is a test comment. Test comment. Testing comment bubbles for profile page.',
-    memberID: '',
-  };
-  */
 };
 
 const getCommentList = async (candidateID) => {
@@ -46,9 +40,6 @@ const getCommentList = async (candidateID) => {
       console.log(errorText);
       return false;
     }
-    console.log(`For candidate ID: ${candidateID}`);
-    console.log(`STATUS: ${response.status}`);
-    console.log(await response.text());
     const resJson = await response.json();
     return resJson.comment_ids;
   } catch (error) {
