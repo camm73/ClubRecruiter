@@ -114,6 +114,31 @@ const rejectCandidate = async (candidateID) => {
   return statusRes;
 };
 
+const getEventCandidates = async (eventID) => {
+  const user = auth.currentUser;
+  const userToken = await user.getIdToken();
+  try {
+    const response = await fetch(`${cloudFunctionEndpoint}/candidate/by_event/${eventID}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.status !== 200) {
+      const errorText = await response.text();
+      console.log(errorText);
+      return [];
+    }
+    const resJson = await response.json();
+    console.log(resJson);
+    return resJson;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+};
+
 export {
   // eslint-disable-next-line import/prefer-default-export
   validateCandidateCode,
@@ -121,4 +146,5 @@ export {
   submitCandidateApplication,
   acceptCandidate,
   rejectCandidate,
+  getEventCandidates,
 };
