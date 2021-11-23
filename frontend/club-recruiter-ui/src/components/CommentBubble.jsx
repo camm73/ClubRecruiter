@@ -23,6 +23,7 @@ const CommentBubble = ({ commentID, refreshCommentList }) => {
 
   useEffect(async () => {
     // Query backend for member name from member ID
+    if (commentMemberID === undefined || commentMemberID.length === 0) return;
     const memberDetails = await getMember(commentMemberID);
     setMemberName(memberDetails.displayName);
   }, [commentMemberID]);
@@ -61,8 +62,9 @@ const CommentBubble = ({ commentID, refreshCommentList }) => {
       </Typography>
       <IconButton onClick={() => {
         setConfirmationAction(() => () => {
-          deleteComment(commentID);
-          refreshCommentList();
+          deleteComment(commentID).then(() => {
+            refreshCommentList();
+          });
         });
         setConfirmationOpen(true);
       }}
