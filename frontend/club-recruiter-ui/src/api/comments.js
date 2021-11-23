@@ -1,11 +1,33 @@
 import { auth, cloudFunctionEndpoint } from './firebase';
 
 const getComment = async (commentID) => {
-  console.log(commentID);
+  const user = auth.currentUser;
+  const userToken = await user.getIdToken();
+  try {
+    const response = await fetch(`${cloudFunctionEndpoint}/comment/${commentID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+    });
+    if (response.status !== 200) {
+      const errorText = await response.text();
+      console.log(errorText);
+      return false;
+    }
+    const resJson = await response.json();
+    return resJson.comment_ids;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+  /*
   return {
     commentText: 'This is a test comment. Test comment. Testing comment bubbles for profile page.',
     memberID: '',
   };
+  */
 };
 
 const getCommentList = async (candidateID) => {
@@ -32,8 +54,34 @@ const getCommentList = async (candidateID) => {
   }
 };
 
-const postComment = async (candidateID, commentText, memberID) => {
-  console.log(`Posting comment by ${memberID} for ${candidateID}: ${commentText}`);
+const postComment = async (candidateID, commentText, eventID) => {
+  console.log(`Posting comment for ${candidateID}: ${commentText}`);
+  const user = auth.currentUser;
+  const userToken = await user.getIdToken();
+  const requestBody = {
+    candidate_id: candidateID,
+    event_id: eventID,
+    comment: commentText,
+  };
+  try {
+    const response = await fetch(`${cloudFunctionEndpoint}/comment/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+    if (response.status !== 200) {
+      const errorText = await response.text();
+      console.log(errorText);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 };
 
 const deleteComment = async (commentID) => {

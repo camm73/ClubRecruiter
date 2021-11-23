@@ -7,6 +7,7 @@ import {
 import '../styles/CandidateProfile.css';
 import { DialogContent } from '@material-ui/core';
 import Close from '@mui/icons-material/Close';
+import { useParams } from 'react-router-dom';
 
 import { getCandidate, acceptCandidate, rejectCandidate } from '../api/candidate';
 import { getCommentList, postComment } from '../api/comments';
@@ -23,6 +24,7 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
   const [commentText, setCommentText] = useState('');
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [confirmationAction, setConfirmationAction] = useState(async () => {});
+  const { eventID } = useParams();
 
   // Max length of 200 characters
   const MAX_COMMENT_LENGTH = 200;
@@ -49,7 +51,7 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
   }, [candidateID]);
 
   const handleSubmitComment = async () => {
-    await postComment(candidateID, commentText, 'memberID');
+    await postComment(candidateID, commentText, eventID);
     setCommentText('');
     await updateCommentList();
   };
