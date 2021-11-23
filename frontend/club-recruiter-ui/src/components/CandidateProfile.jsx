@@ -7,6 +7,7 @@ import {
 import '../styles/CandidateProfile.css';
 import { DialogContent } from '@material-ui/core';
 import Close from '@mui/icons-material/Close';
+import { useParams } from 'react-router-dom';
 
 import { getCandidate, acceptCandidate, rejectCandidate } from '../api/candidate';
 import { getCommentList, postComment } from '../api/comments';
@@ -23,22 +24,10 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
   const [commentText, setCommentText] = useState('');
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [confirmationAction, setConfirmationAction] = useState(async () => {});
+  const { eventID } = useParams();
 
   // Max length of 200 characters
   const MAX_COMMENT_LENGTH = 200;
-
-  // Query for candidate details upon load
-  useEffect(async () => {
-    if (candidateID === undefined || !candidateID.length) return;
-    const currentCandidate = await getCandidate(candidateID);
-    const commentList = await getCommentList(candidateID);
-    setCandidateName(currentCandidate.name);
-    setCandidatePhoneNumber(currentCandidate.phone_number);
-    setCandidateEmail(currentCandidate.email);
-    setCandidateApplicationStatus(currentCandidate.application_status);
-    setCandidateResumeID(currentCandidate.resume_id);
-    setCommentIDList(commentList);
-  }, [candidateID]);
 
   const updateCommentList = async () => {
     const commentList = await getCommentList(candidateID);
@@ -49,8 +38,20 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
     console.log(`Downloading resume: ${resumeID}`);
   };
 
+  // Query for candidate details upon load
+  useEffect(async () => {
+    if (candidateID === undefined || !candidateID.length) return;
+    const currentCandidate = await getCandidate(candidateID);
+    setCandidateName(currentCandidate.name);
+    setCandidatePhoneNumber(currentCandidate.phone_number);
+    setCandidateEmail(currentCandidate.email);
+    setCandidateApplicationStatus(currentCandidate.application_status);
+    setCandidateResumeID(currentCandidate.resume_id);
+    await updateCommentList();
+  }, [candidateID]);
+
   const handleSubmitComment = async () => {
-    await postComment(candidateID, commentText, 'memberID');
+    await postComment(candidateID, commentText, eventID);
     setCommentText('');
     await updateCommentList();
   };
@@ -155,7 +156,11 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
           }}
           >
             {commentIDList.map((currID) => (
-              <CommentBubble key={currID} commentID={currID} />
+              <CommentBubble
+                key={currID}
+                commentID={currID}
+                refreshCommentList={updateCommentList}
+              />
             ))}
           </div>
           <div style={{
