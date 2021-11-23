@@ -4,8 +4,6 @@ const { getAuth, signInWithCustomToken, connectAuthEmulator } = require('firebas
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 var expect = require("chai").expect;
-var request = require("request");
-const rp = require('request-promise');
 const serviceAccount = require('../config/serviceAccountKey.json');
 const { DEV_API_ENDPOINT } = require('./constant');
 
@@ -93,9 +91,11 @@ describe('Events', () => {
                     if (err) {
                         done(err)
                     } else {
-                        console.log(res.body)
+                        expect(res.body).to.have.property('event_id')
                         existing_event_id = res.body.event_id
+                        expect(res.body).to.have.property('member_code')
                         existing_member_code = res.body.member_code
+                        expect(res.body).to.have.property('candidate_code')
                         existing_candidate_code = res.body.candidate_code
                         done()
                     }
@@ -118,6 +118,7 @@ describe('Events', () => {
                     if (err) {
                         done(err)
                     } else {
+                        expect(res.body).to.have.property('event_id', existing_event_id)
                         done()
                     }
                 });
@@ -141,6 +142,7 @@ describe('Events', () => {
                     if (err) {
                         done(err)
                     } else {
+                        expect(res.body).to.have.property('event_id', existing_event_id)
                         done()
                     }
                 });
@@ -177,6 +179,7 @@ describe('Events', () => {
     */
     describe('/GET event', () => {
         // TODO: test promotion/demotion
+
         it('it should fail to get an event', (done) => {
 
             chai.request(DEV_API_ENDPOINT)
