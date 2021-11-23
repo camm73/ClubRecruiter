@@ -17,7 +17,7 @@ const getComment = async (commentID) => {
       return false;
     }
     const resJson = await response.json();
-    return resJson.comment_ids;
+    return resJson;
   } catch (error) {
     console.log(error);
     return false;
@@ -46,6 +46,9 @@ const getCommentList = async (candidateID) => {
       console.log(errorText);
       return false;
     }
+    console.log(`For candidate ID: ${candidateID}`);
+    console.log(`STATUS: ${response.status}`);
+    console.log(await response.text());
     const resJson = await response.json();
     return resJson.comment_ids;
   } catch (error) {
