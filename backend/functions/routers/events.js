@@ -3,7 +3,7 @@ var { firestore } = require('firebase-admin');
 var admin = require('firebase-admin');
 var crypto = require('crypto');
 
-const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE } = require('../constants');
+const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE, CLUB_MEMBERS_COLLECTION, CANDIDATES_COLLECTION, COMMENTS_COLLECTION } = require('../constants');
 const { validateFirebaseIdToken } = require('../auth');
 const { isAdmin } = require('../util');
 
@@ -227,8 +227,56 @@ app.delete('/delete_member', validateFirebaseIdToken, async (req, res) => {
  * @returns { string } a success message if the event delete is successful, an
  * error message otherwise
  */
-app.delete('/delete', async (req, res) => {
-  res.status(200).send(`Ok`);
+app.delete('/delete', validateFirebaseIdToken, async (req, res) => {
+  var member_id = req.user.uid;
+  var { event_id } = req.body;
+  var db = firestore();
+
+  if (!(await isAdmin(member_id, event_id))) {
+    res.status(404).send(`Non-admin cannot delete an event!`);
+    return;
+  }
+
+  try {
+    // delete all entries in the ClubMembers_Events collection 
+    // delete all candidates under the event
+    // delete all comments under this event
+    // Finally, delete the event from Events collection
+    var eventMemberRef = await db.collection(EVENT_MEMBERS_COLLECTION)
+      .where("event_id", "==", event_id)
+      .get();
+
+    eventMemberRef.forEach((doc) => {
+      doc.ref.delete();
+    });
+
+    var eventRef = db.collection(EVENTS_COLLECTION)
+      .doc(event_id);
+
+    var candidate_code = (await eventRef.get()).data().candidate_code;
+
+    var candidateRef = await db.collection(CANDIDATES_COLLECTION)
+      .where(CANDIDATE_CODE, "==", candidate_code)
+      .get();
+
+    candidateRef.forEach((doc) => {
+      doc.ref.delete();
+    });
+
+    var commentRef = await db.collection(COMMENTS_COLLECTION)
+      .where("event_id", "==", event_id)
+      .get();
+
+    commentRef.forEach((doc) => {
+      doc.ref.delete();
+    })
+
+    eventRef.delete();
+    res.status(200).send("Delete success!");
+
+  } catch (error) {
+    res.status(404).send(error);
+  }
 });
 
 module.exports = app;
