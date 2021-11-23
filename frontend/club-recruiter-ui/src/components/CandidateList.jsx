@@ -50,7 +50,6 @@ const CandidateList = ({ eventID, profileOpenHandler }) => {
         pageSize={5}
         rowsPerPageOptions={[5]}
         onCellClick={(params) => {
-          console.log(params);
           profileOpenHandler(params.row.id);
         }}
       />
