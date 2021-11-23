@@ -11,7 +11,7 @@ const memberApp = require('./routers/members')
 admin.initializeApp();
 
 const runtimeOpts = {
-  memory: '0.5GB'
+  memory: '512MB'
 }
 
 exports.candidate = functions.runWith(runtimeOpts).https.onRequest(candidateApp)
