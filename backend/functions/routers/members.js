@@ -27,7 +27,7 @@ app.get('/:member_id', async function (req, res) {
 
 /**
  * This function promotes an existing member of an event to organizer
- * @name POST/member/promote/:target_id
+ * @name POST/member/promote
  * @function
  * @param { string } member_id
  * @param { string } target_id id of the member to promote
@@ -35,10 +35,9 @@ app.get('/:member_id', async function (req, res) {
  * @returns a success message if member is successfully promoted, an
  * error message otherwise
  */
-app.post('/promote/:target_id', validateFirebaseIdToken, async (req, res) => {
+app.post('/promote', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
-  var { target_id } = req.params;
-  var { event_id } = req.body;
+  var { event_id, target_id } = req.body;
   var db = firestore();
 
   try {
@@ -73,7 +72,7 @@ app.post('/promote/:target_id', validateFirebaseIdToken, async (req, res) => {
 
 /**
  * This function demotes an existing member of an event to regular member
- * @name POST/member/demote/:target_id
+ * @name POST/member/demote
  * @function
  * @param { string } member_id
  * @param { string } target_id id of the member to demote
@@ -81,10 +80,9 @@ app.post('/promote/:target_id', validateFirebaseIdToken, async (req, res) => {
  * @returns a success message if member is successfully demoted, an
  * error message otherwise
  */
-app.post('/demote/:target_id', validateFirebaseIdToken, async (req, res) => {
+app.post('/demote', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
-  var { target_id } = req.params;
-  var { event_id } = req.body;
+  var { event_id, target_id } = req.body;
   var db = firestore();
 
   try {
