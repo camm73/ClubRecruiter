@@ -10,7 +10,11 @@ const memberApp = require('./routers/members')
 // initialize firestore app
 admin.initializeApp();
 
-exports.candidate = functions.https.onRequest(candidateApp)
-exports.event = functions.https.onRequest(eventApp)
-exports.comment = functions.https.onRequest(commentApp)
-exports.member = functions.https.onRequest(memberApp)
+const runtimeOpts = {
+  memory: '0.5GB'
+}
+
+exports.candidate = functions.runWith(runtimeOpts).https.onRequest(candidateApp)
+exports.event = functions.runWith(runtimeOpts).https.onRequest(eventApp)
+exports.comment = functions.runWith(runtimeOpts).https.onRequest(commentApp)
+exports.member = functions.runWith(runtimeOpts).https.onRequest(memberApp)

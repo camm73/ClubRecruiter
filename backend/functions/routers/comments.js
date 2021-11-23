@@ -133,14 +133,10 @@ app.post('/delete', validateFirebaseIdToken, async (req, res) => {
     }
 
     await db.collection(CANDIDATES_COLLECTION)
-      .where("candidate_id", "==", candidate_id).get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach(function (document) {
-          document.ref.update({
-            comments: firestore.FieldValue.arrayRemove(comment_id)
-          });
-        });
+      .doc(candidate_id).update({
+        comments: firestore.FieldValue.arrayRemove(comment_id)
       });
+
 
     await commentRef.delete();
     res.status(200).send(`Deleted ${comment_id}`);
