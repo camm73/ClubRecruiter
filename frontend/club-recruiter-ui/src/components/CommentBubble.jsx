@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 
-import { Typography } from '@mui/material';
+import { Typography, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-import { getComment } from '../api/comments';
+import { getComment, deleteComment } from '../api/comments';
+import ConfirmationDialog from './ConfirmationDialog';
 
-const CommentBubble = ({ commentID }) => {
+const CommentBubble = ({ commentID, refreshCommentList }) => {
   const [commentText, setCommentText] = useState('');
   const [commentMemberID, setCommentMemberID] = useState('');
   const [memberName, setMemberName] = useState('');
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [confirmationAction, setConfirmationAction] = useState(async () => {});
 
   // Fetch comment at mount
   useEffect(async () => {
@@ -36,6 +40,16 @@ const CommentBubble = ({ commentID }) => {
       martinTop: '5px',
     }}
     >
+      <ConfirmationDialog
+        open={confirmationOpen}
+        closeHandler={() => setConfirmationOpen(false)}
+        yesAction={() => {
+          confirmationAction();
+          setConfirmationOpen(false);
+        }}
+        title="Confirm Deletion"
+        bodyText="Are you sure you want to delete this comment?"
+      />
       <Typography variant="subtitle1" sx={{ paddingLeft: '20px', minWidth: '100px' }}>
         {memberName}
         {': '}
@@ -43,6 +57,16 @@ const CommentBubble = ({ commentID }) => {
       <Typography variant="body2" sx={{ paddingRight: '20px' }}>
         {commentText}
       </Typography>
+      <IconButton onClick={() => {
+        setConfirmationAction(() => () => {
+          deleteComment(commentID);
+          refreshCommentList();
+        });
+        setConfirmationOpen(true);
+      }}
+      >
+        <DeleteIcon />
+      </IconButton>
     </div>
   );
 };
