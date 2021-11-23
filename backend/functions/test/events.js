@@ -1,4 +1,6 @@
 const admin = require('firebase-admin');
+const { initializeApp } = require('firebase/app')
+const { getAuth, signInWithCustomToken, connectAuthEmulator } = require('firebase/auth')
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 var expect = require("chai").expect;
@@ -11,7 +13,7 @@ require('dotenv').config();
 
 // var url ="https://semaphoreci.com/community/tutorials/getting-started-with-node-js-and-mocha"
 
-const uid = 'test-uid';
+const uid = 'test-uid-1';
 let customToken = null;
 let idToken = null;
 
@@ -22,33 +24,37 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
 
-describe("Base API", function () {
-    it("returns status 200", function (done) {
-        // process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
-        request(DEV_API_ENDPOINT, function (error, response, body) {
-            // setTimeout(function(){}, 2000);
-            expect(response.statusCode).to.equal(200);
-            done();
-        });
-    });
-});
+const firebaseConfig = {
+    apiKey: process.env.REACT_APP_API_KEY,
+    authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+    projectId: process.env.REACT_APP_PROJECT_ID,
+    storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+    messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+    appId: process.env.REACT_APP_APP_ID,
+};
+  
+  
+const firebaseApp = initializeApp(firebaseConfig);
+  
+// No more base API, so will remove this test
+// describe("Base API", function () {
+//     it("returns status 200", function (done) {
+//         request(DEV_API_ENDPOINT, function (error, response, body) {
+//             expect(response.statusCode).to.equal(200);
+//             done();
+//         });
+//     });
+// });
 
 describe('Events', () => {
+    let existing_event_id = null;
     before(async () => {
         try {
             customToken = await admin.auth().createCustomToken(uid);
-
-            const res = await rp({
-                url: `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyCustomToken?key=${process.env.REACT_APP_API_KEY}`,
-                method: 'POST',
-                body: {
-                    token: customToken,
-                    returnSecureToken: true,
-                },
-                json: true,
-            });
-
-            idToken = res.idToken;
+            const auth = getAuth(firebaseApp)
+            connectAuthEmulator(auth, "http://localhost:9099")
+            const response  = await signInWithCustomToken(auth, customToken)
+            idToken = response.user.accessToken
         } catch (error) {
             console.log("failed!")
             console.log(error);
@@ -77,31 +83,34 @@ describe('Events', () => {
                     if (err) {
                         done(err)
                     } else {
+                        existing_event_id = res.body.event_id
                         done()
                     }
                 });
         });
 
-        it('it should add a member', (done) => {
+        // TODO
 
-            let body = {
-                member_code: "12345",
-            }
+        // it('it should add a member', (done) => {
 
-            chai.request(DEV_API_ENDPOINT)
-                .post('/event/member_join')
-                .set('Authorization', 'Bearer ' + idToken)
-                .set('content-type', 'application/json')
-                .send(body)
-                .end((err, res) => {
-                    expect(res.statusCode).to.equal(200);
-                    if (err) {
-                        done(err)
-                    } else {
-                        done()
-                    }
-                });
-        });
+        //     let body = {
+        //         member_code: "12345",
+        //     }
+
+        //     chai.request(DEV_API_ENDPOINT)
+        //         .post('/event/member_join')
+        //         .set('Authorization', 'Bearer ' + idToken)
+        //         .set('content-type', 'application/json')
+        //         .send(body)
+        //         .end((err, res) => {
+        //             expect(res.statusCode).to.equal(200);
+        //             if (err) {
+        //                 done(err)
+        //             } else {
+        //                 done()
+        //             }
+        //         });
+        // });
     }),
 
         /*
@@ -126,7 +135,7 @@ describe('Events', () => {
 
             it('it should successfully get an event', (done) => {
                 chai.request(DEV_API_ENDPOINT)
-                    .get('/event/existing_event')
+                    .get(`/event/${existing_event_id}`)
                     .set('Authorization', 'Bearer ' + idToken)
                     .end((err, res) => {
                         expect(res.statusCode).to.equal(200);
