@@ -76,7 +76,6 @@ const getCandidate = async (candidateID) => {
       return {};
     }
     const resJson = await response.json();
-    console.log(resJson);
     return resJson;
   } catch (error) {
     console.log(error);
