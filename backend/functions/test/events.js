@@ -117,50 +117,6 @@ describe('Events', () => {
                 });
         });
 
-        describe('/DELETE event', () => {
-            it('it should fail to add an existing member to event', (done) => {
-
-                let body = {
-                    member_code: existing_member_code,
-                }
-
-                chai.request(DEV_API_ENDPOINT)
-                    .post('/event/member_join')
-                    .set('Authorization', 'Bearer ' + idToken)
-                    .set('content-type', 'application/json')
-                    .send(body)
-                    .end((err, res) => {
-                        expect(res.statusCode).to.equal(404);
-                        if (err) {
-                            done(err)
-                        } else {
-                            done()
-                        }
-                    });
-            });
-            
-            it('it should delete member from event', (done) => {
-                let body = {
-                    target_id: uid2,
-                    event_id: existing_event_id,
-                }
-
-                chai.request(DEV_API_ENDPOINT)
-                    .delete('/event/delete_member')
-                    .set('Authorization', 'Bearer ' + idToken)
-                    .set('content-type', 'application/json')
-                    .send(body)
-                    .end((err, res) => {
-                        expect(res.statusCode).to.equal(200);
-                        if (err) {
-                            done(err)
-                        } else {
-                            done()
-                        }
-                    });
-            });
-        });
-
 
         // TODO
 
@@ -234,4 +190,69 @@ describe('Events', () => {
                     });
             });
         });
+
+        describe('/DELETE event', () => {
+            it('it should fail to add an existing member to event', (done) => {
+
+                let body = {
+                    member_code: existing_member_code,
+                }
+
+                chai.request(DEV_API_ENDPOINT)
+                    .post('/event/member_join')
+                    .set('Authorization', 'Bearer ' + idToken)
+                    .set('content-type', 'application/json')
+                    .send(body)
+                    .end((err, res) => {
+                        expect(res.statusCode).to.equal(404);
+                        if (err) {
+                            done(err)
+                        } else {
+                            done()
+                        }
+                    });
+            });
+            
+            it('it should delete member from event', (done) => {
+                let body = {
+                    target_id: uid2,
+                    event_id: existing_event_id,
+                }
+
+                chai.request(DEV_API_ENDPOINT)
+                    .delete('/event/delete_member')
+                    .set('Authorization', 'Bearer ' + idToken)
+                    .set('content-type', 'application/json')
+                    .send(body)
+                    .end((err, res) => {
+                        expect(res.statusCode).to.equal(200);
+                        if (err) {
+                            done(err)
+                        } else {
+                            done()
+                        }
+                    });
+            });
+
+            it('it should delete event', (done) => {
+                let body = {
+                    event_id: existing_event_id,
+                }
+
+                chai.request(DEV_API_ENDPOINT)
+                    .delete('/event/delete')
+                    .set('Authorization', 'Bearer ' + idToken)
+                    .set('content-type', 'application/json')
+                    .send(body)
+                    .end((err, res) => {
+                        expect(res.statusCode).to.equal(200);
+                        if (err) {
+                            done(err)
+                        } else {
+                            done()
+                        }
+                    });
+            });
+        });
+
 });
