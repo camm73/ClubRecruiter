@@ -227,9 +227,8 @@ app.delete('/delete_member', validateFirebaseIdToken, async (req, res) => {
  * @returns { string } a success message if the event delete is successful, an
  * error message otherwise
  */
-// app.delete('/delete', validateFirebaseIdToken, async (req, res) => {
-app.delete('/delete', async (req, res) => {
-  var member_id = req.body.member_id;
+app.delete('/delete', validateFirebaseIdToken, async (req, res) => {
+  var member_id = req.user.uid;
   var { event_id } = req.body;
   var db = firestore();
 
