@@ -27,19 +27,6 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
   // Max length of 200 characters
   const MAX_COMMENT_LENGTH = 200;
 
-  // Query for candidate details upon load
-  useEffect(async () => {
-    if (candidateID === undefined || !candidateID.length) return;
-    const currentCandidate = await getCandidate(candidateID);
-    const commentList = await getCommentList(candidateID);
-    setCandidateName(currentCandidate.name);
-    setCandidatePhoneNumber(currentCandidate.phone_number);
-    setCandidateEmail(currentCandidate.email);
-    setCandidateApplicationStatus(currentCandidate.application_status);
-    setCandidateResumeID(currentCandidate.resume_id);
-    setCommentIDList(commentList);
-  }, [candidateID]);
-
   const updateCommentList = async () => {
     const commentList = await getCommentList(candidateID);
     setCommentIDList(commentList);
@@ -48,6 +35,18 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
   const downloadResume = (resumeID) => {
     console.log(`Downloading resume: ${resumeID}`);
   };
+
+  // Query for candidate details upon load
+  useEffect(async () => {
+    if (candidateID === undefined || !candidateID.length) return;
+    const currentCandidate = await getCandidate(candidateID);
+    setCandidateName(currentCandidate.name);
+    setCandidatePhoneNumber(currentCandidate.phone_number);
+    setCandidateEmail(currentCandidate.email);
+    setCandidateApplicationStatus(currentCandidate.application_status);
+    setCandidateResumeID(currentCandidate.resume_id);
+    await updateCommentList();
+  }, [candidateID]);
 
   const handleSubmitComment = async () => {
     await postComment(candidateID, commentText, 'memberID');

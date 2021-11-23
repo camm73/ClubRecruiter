@@ -9,8 +9,27 @@ const getComment = async (commentID) => {
 };
 
 const getCommentList = async (candidateID) => {
-  console.log(`Get comment list: ${candidateID}`);
-  return ['123', '456', '789', '000'];
+  const user = auth.currentUser;
+  const userToken = await user.getIdToken();
+  try {
+    const response = await fetch(`${cloudFunctionEndpoint}/comment/by_candidate/${candidateID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+    });
+    if (response.status !== 200) {
+      const errorText = await response.text();
+      console.log(errorText);
+      return false;
+    }
+    const resJson = await response.json();
+    return resJson.comment_ids;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 };
 
 const postComment = async (candidateID, commentText, memberID) => {
