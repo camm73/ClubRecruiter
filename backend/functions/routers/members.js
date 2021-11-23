@@ -48,8 +48,9 @@ app.post('/promote/:target_id', validateFirebaseIdToken, async (req, res) => {
       return;
     }
 
-    const eventMemberDocRef = await db.collection(EVENT_MEMBERS_COLLECTION).where(
-      "member_id", "==", target_id).where("event_id", "==", event_id).get();
+    const eventMemberDocRef = await db.collection(EVENT_MEMBERS_COLLECTION)
+      .where("member_id", "==", target_id)
+      .where("event_id", "==", event_id).get();
 
     if (!eventMemberDocRef.empty) {
 
