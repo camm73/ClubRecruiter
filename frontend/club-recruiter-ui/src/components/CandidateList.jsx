@@ -3,7 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
-import { getEventCandidates } from '../api/candidate';
+import { getEventCandidates, getCandidate } from '../api/candidate';
 
 const columns = [
   {
@@ -45,28 +45,34 @@ const sampleCandidates = [
 
 const CandidateList = ({ eventID, profileOpenHandler }) => {
   const [candidates, setCandidates] = useState([]);
+  // const [candidateIDList, setCandidateIDList] = useState([]);
   const [candidateRows, setCandidateRows] = useState([]);
 
-  const makeCandidateRows = async (candidateList) => {
+  const loadCandidates = async () => {
+    const idList = await getEventCandidates(eventID);
+
+    const eventCandidates = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const id of idList) {
+      // eslint-disable-next-line no-await-in-loop
+      const candRes = await getCandidate(id);
+      candRes.candidateID = id;
+      eventCandidates.push(candRes);
+    }
+    setCandidates(eventCandidates);
+
     const rowList = [];
-    candidateList.forEach((candidateEntry, index) => {
+    eventCandidates.forEach((candidateEntry, index) => {
       const candRow = {
         id: index,
         name: candidateEntry.name,
-        status: candidateEntry.application_status,
+        status: candidateEntry.applicationStatus,
+        candidate_id: candidateEntry.candidateID,
       };
       rowList.push(candRow);
     });
     setCandidateRows(rowList);
-  };
-
-  const loadCandidates = async () => {
-    if (!candidates.length) {
-      const eventCandidates = await getEventCandidates(eventID);
-      setCandidates(eventCandidates);
-      await makeCandidateRows(eventCandidates);
-      console.log(candidates);
-    }
+    console.log(candidates);
   };
 
   useEffect(loadCandidates, []);

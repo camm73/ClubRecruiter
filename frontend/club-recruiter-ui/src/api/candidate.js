@@ -131,8 +131,7 @@ const getEventCandidates = async (eventID) => {
       return [];
     }
     const resJson = await response.json();
-    console.log(resJson);
-    return resJson;
+    return resJson.candidate_ids;
   } catch (error) {
     console.log(error);
     return [];
