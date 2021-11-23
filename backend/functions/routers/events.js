@@ -3,7 +3,7 @@ var { firestore } = require('firebase-admin');
 var admin = require('firebase-admin');
 var crypto = require('crypto');
 
-const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE, CLUB_MEMBERS_COLLECTION, CANDIDATES_COLLECTION } = require('../constants');
+const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE, CLUB_MEMBERS_COLLECTION, CANDIDATES_COLLECTION, COMMENTS_COLLECTION } = require('../constants');
 const { validateFirebaseIdToken } = require('../auth');
 const { isAdmin } = require('../util');
 
@@ -240,6 +240,7 @@ app.delete('/delete', validateFirebaseIdToken, async (req, res) => {
   try {
     // delete all entries in the ClubMembers_Events collection 
     // delete all candidates under the event
+    // delete all comments under this event
     // Finally, delete the event from Events collection
     var eventMemberRef = await db.collection(EVENT_MEMBERS_COLLECTION)
       .where("event_id", "==", event_id)
@@ -261,6 +262,14 @@ app.delete('/delete', validateFirebaseIdToken, async (req, res) => {
     candidateRef.forEach((doc) => {
       doc.ref.delete();
     });
+
+    var commentRef = await db.collection(COMMENTS_COLLECTION)
+      .where("event_id", "==", event_id)
+      .get();
+
+    commentRef.forEach((doc) => {
+      doc.ref.delete();
+    })
 
     eventRef.delete();
     res.status(200).send("Delete success!");
