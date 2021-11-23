@@ -20,6 +20,11 @@ const { isAdmin } = require("../util");
 app.get('/by_candidate/:candidate_id', async function (req, res) {
   var { candidate_id } = req.params;
 
+  if (!candidate_id) {
+    res.status(404).send("candidate_id should not be empty!");
+    return;
+  }
+
   try {
     var db = firestore();
     const candidateRes = await db.collection(CANDIDATES_COLLECTION)
