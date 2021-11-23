@@ -14,8 +14,10 @@ require('dotenv').config();
 // var url ="https://semaphoreci.com/community/tutorials/getting-started-with-node-js-and-mocha"
 
 const uid = 'test-uid-1';
+const uid2 = 'test-uid-2';
 let customToken = null;
 let idToken = null;
+
 
 chai.use(chaiHttp);
 
@@ -48,6 +50,8 @@ const firebaseApp = initializeApp(firebaseConfig);
 
 describe('Events', () => {
     let existing_event_id = null;
+    let existing_member_code = null;
+    let existing_candidate_code = null;
     before(async () => {
         try {
             customToken = await admin.auth().createCustomToken(uid);
@@ -59,7 +63,7 @@ describe('Events', () => {
             console.log("failed!")
             console.log(error);
         }
-
+        
     })
     /*
     * Test the /POST route
@@ -84,17 +88,86 @@ describe('Events', () => {
                         done(err)
                     } else {
                         existing_event_id = res.body.event_id
+                        existing_member_code = res.body.member_code
+                        existing_candidate_code = res.body.candidate_code
                         done()
                     }
                 });
         });
+
+        it('it should add member to event', (done) => {
+
+            let body = {
+                event_id: existing_event_id,
+                target_id: uid2,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .post('/event/member_add')
+                .set('Authorization', 'Bearer ' + idToken)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+        describe('/DELETE event', () => {
+            it('it should fail to add an existing member to event', (done) => {
+
+                let body = {
+                    member_code: existing_member_code,
+                }
+
+                chai.request(DEV_API_ENDPOINT)
+                    .post('/event/member_join')
+                    .set('Authorization', 'Bearer ' + idToken)
+                    .set('content-type', 'application/json')
+                    .send(body)
+                    .end((err, res) => {
+                        expect(res.statusCode).to.equal(404);
+                        if (err) {
+                            done(err)
+                        } else {
+                            done()
+                        }
+                    });
+            });
+            
+            it('it should delete member from event', (done) => {
+                let body = {
+                    target_id: uid2,
+                    event_id: existing_event_id,
+                }
+
+                chai.request(DEV_API_ENDPOINT)
+                    .delete('/event/delete_member')
+                    .set('Authorization', 'Bearer ' + idToken)
+                    .set('content-type', 'application/json')
+                    .send(body)
+                    .end((err, res) => {
+                        expect(res.statusCode).to.equal(200);
+                        if (err) {
+                            done(err)
+                        } else {
+                            done()
+                        }
+                    });
+            });
+        });
+
 
         // TODO
 
         // it('it should add a member', (done) => {
 
         //     let body = {
-        //         member_code: "12345",
+        //         member_code: existing_member_code,
         //     }
 
         //     chai.request(DEV_API_ENDPOINT)
@@ -147,5 +220,18 @@ describe('Events', () => {
                     });
             });
 
+            it('it should successfully get all member events', (done) => {
+                chai.request(DEV_API_ENDPOINT)
+                    .get(`/event/by_member`)
+                    .set('Authorization', 'Bearer ' + idToken)
+                    .end((err, res) => {
+                        expect(res.statusCode).to.equal(200);
+                        if (err) {
+                            done(err)
+                        } else {
+                            done()
+                        }
+                    });
+            });
         });
 });
