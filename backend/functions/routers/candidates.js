@@ -162,7 +162,7 @@ app.get('/by_event/:event_id', async (req, res) => {
   try {
     var db = firestore();
     const eventDocRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
-    const candidate_ids = eventDocRef.data()['candidates'];
+    const candidate_ids = eventDocRef.data().candidates;
 
     res.status(200).send({
       candidate_ids: candidate_ids,
