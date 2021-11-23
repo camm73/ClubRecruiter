@@ -25,9 +25,22 @@ app.get('/by_candidate/:candidate_id', async function (req, res) {
     const candidateRes = await db.collection(CANDIDATES_COLLECTION)
       .doc(candidate_id).get();
 
-    res.status(200).send({
-      comment_ids: candidateRes.data().comments
-    });
+    if (!candidateRes.exists) {
+      res.status(404).send("Candidate doesn't exist!");
+      return;
+    }
+
+    if (candidateRes.data().comments) {
+      res.status(200).send({
+        comment_ids: candidateRes.data().comments
+      });
+    } else {
+      res.status(200).send({
+        comment_ids: []
+      });
+    }
+
+
   } catch (e) {
     res.status(404).send(`Error retrieving comments: ${e}`);
   }
