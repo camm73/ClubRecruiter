@@ -13,9 +13,14 @@ require('dotenv').config();
 
 // var url ="https://semaphoreci.com/community/tutorials/getting-started-with-node-js-and-mocha"
 
-const uid = 'test-uid-1';
-let customToken = null;
-let idToken = null;
+const uid1 = 'test-uid-1';
+const uid2 = 'test-uid-2';
+const member_id_3 = 'IAmAMember'
+let customToken1 = null;
+let customToken2 = null;
+let idToken1 = null;
+let idToken2 = null;
+
 
 chai.use(chaiHttp);
 
@@ -48,18 +53,23 @@ const firebaseApp = initializeApp(firebaseConfig);
 
 describe('Events', () => {
     let existing_event_id = null;
+    let existing_member_code = null;
+    let existing_candidate_code = null;
     before(async () => {
         try {
-            customToken = await admin.auth().createCustomToken(uid);
+            customToken1 = await admin.auth().createCustomToken(uid1);
+            customToken2 = await admin.auth().createCustomToken(uid2);
             const auth = getAuth(firebaseApp)
             connectAuthEmulator(auth, "http://localhost:9099")
-            const response  = await signInWithCustomToken(auth, customToken)
-            idToken = response.user.accessToken
+            const response1  = await signInWithCustomToken(auth, customToken1)
+            idToken1 = response1.user.accessToken
+            const response2  = await signInWithCustomToken(auth, customToken2)
+            idToken2 = response2.user.accessToken
         } catch (error) {
             console.log("failed!")
             console.log(error);
         }
-
+        
     })
     /*
     * Test the /POST route
@@ -75,7 +85,7 @@ describe('Events', () => {
 
             chai.request(DEV_API_ENDPOINT)
                 .post('/event/create')
-                .set('Authorization', 'Bearer ' + idToken)
+                .set('Authorization', 'Bearer ' + idToken1)
                 .set('content-type', 'application/json')
                 .send(body)
                 .end((err, res) => {
@@ -83,23 +93,72 @@ describe('Events', () => {
                     if (err) {
                         done(err)
                     } else {
+                        console.log(res.body)
                         existing_event_id = res.body.event_id
+                        existing_member_code = res.body.member_code
+                        existing_candidate_code = res.body.candidate_code
                         done()
                     }
                 });
         });
+
+        it('it should be able to join the event', (done) => {
+
+            let body = {
+                member_code: existing_member_code,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .post('/event/member_join')
+                .set('Authorization', 'Bearer ' + idToken2)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+
+        it('it should add member to event', (done) => {
+
+            let body = {
+                event_id: existing_event_id,
+                target_id: member_id_3,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .post('/event/member_add')
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+
 
         // TODO
 
         // it('it should add a member', (done) => {
 
         //     let body = {
-        //         member_code: "12345",
+        //         member_code:  existing_member_code,
         //     }
 
         //     chai.request(DEV_API_ENDPOINT)
         //         .post('/event/member_join')
-        //         .set('Authorization', 'Bearer ' + idToken)
+        //         .set('Authorization', 'Bearer ' + idToken1)
         //         .set('content-type', 'application/json')
         //         .send(body)
         //         .end((err, res) => {
@@ -111,41 +170,172 @@ describe('Events', () => {
         //             }
         //         });
         // });
-    }),
+    });
 
-        /*
-        * Test the /GET route
-        */
-        describe('/GET event', () => {
-            it('it should fail to get an event', (done) => {
+    /*
+    * Test the /GET route
+    */
+    describe('/GET event', () => {
+        // TODO: test promotion/demotion
+        it('it should fail to get an event', (done) => {
 
-                chai.request(DEV_API_ENDPOINT)
-                    .get('/event/asdf')
-                    .set('Authorization', 'Bearer ' + idToken)
-                    .end((err, res) => {
-                        expect(res.statusCode).to.equal(404);
-                        if (err) {
-                            done(err)
-                        } else {
-                            done()
-                        }
-                    });
-            });
-
-
-            it('it should successfully get an event', (done) => {
-                chai.request(DEV_API_ENDPOINT)
-                    .get(`/event/${existing_event_id}`)
-                    .set('Authorization', 'Bearer ' + idToken)
-                    .end((err, res) => {
-                        expect(res.statusCode).to.equal(200);
-                        if (err) {
-                            done(err)
-                        } else {
-                            done()
-                        }
-                    });
-            });
-
+            chai.request(DEV_API_ENDPOINT)
+                .get('/event/asdf')
+                .set('Authorization', 'Bearer ' + idToken1)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(404);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
         });
+
+
+        it('it should successfully get an event (creater of event)', (done) => {
+            chai.request(DEV_API_ENDPOINT)
+                .get(`/event/${existing_event_id}`)
+                .set('Authorization', 'Bearer ' + idToken1)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+        it('it should successfully get an event (member who joined event)', (done) => {
+            chai.request(DEV_API_ENDPOINT)
+                .get(`/event/${existing_event_id}`)
+                .set('Authorization', 'Bearer ' + idToken2)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+
+        it('it should successfully get all member events', (done) => {
+            chai.request(DEV_API_ENDPOINT)
+                .get(`/event/by_member`)
+                .set('Authorization', 'Bearer ' + idToken1)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+    });
+
+    describe('/DELETE event', () => {
+        it('it should fail to add an existing member to event', (done) => {
+
+            let body = {
+                member_code:  existing_member_code,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .post('/event/member_join')
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(404);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+        
+        it('it should delete member from event', (done) => {
+            let body = {
+                target_id: member_id_3,
+                event_id: existing_event_id,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .delete('/event/delete_member')
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+        it('it should not delete event (non-organizer)', (done) => {
+            let body = {
+                event_id: existing_event_id,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .delete('/event/delete')
+                .set('Authorization', 'Bearer ' +  idToken2)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(404);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+
+        it('it should delete event', (done) => {
+            let body = {
+                event_id: existing_event_id,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .delete('/event/delete')
+                .set('Authorization', 'Bearer ' +  idToken1)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+        it('it should be unable to see deleted event', (done) => {
+
+            chai.request(DEV_API_ENDPOINT)
+                .get(`/event/${existing_event_id}`)
+                .set('Authorization', 'Bearer ' + idToken1)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(404);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+    });
+
 });
