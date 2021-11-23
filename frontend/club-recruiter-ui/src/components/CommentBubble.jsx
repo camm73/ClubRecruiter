@@ -16,8 +16,8 @@ const CommentBubble = ({ commentID, refreshCommentList }) => {
   // Fetch comment at mount
   useEffect(async () => {
     const comment = await getComment(commentID);
-    setCommentText(comment.commentText);
-    setCommentMemberID(comment.memberID);
+    setCommentText(comment.comment);
+    setCommentMemberID(comment.member_id);
   }, []);
 
   useEffect(async () => {
