@@ -164,14 +164,9 @@ app.get('/by_event/:event_id', async (req, res) => {
     const eventDocRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
     const candidate_ids = eventDocRef.data()['candidates'];
 
-    const candidates = []
-    for (var idx in candidate_ids) {
-      let candidate_id = candidate_ids[idx];
-      const candidatesDocRef = await db.collection(CANDIDATES_COLLECTION).doc(candidate_id).get();
-      candidates.push(candidatesDocRef.data());
-    };
-
-    res.status(200).send(candidates);
+    res.status(200).send({
+      candidate_ids: candidate_ids,
+    });
   } catch (e) {
     res.status(404).send(`Error retrieving candidates: ${e}`);
   }
