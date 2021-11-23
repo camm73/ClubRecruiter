@@ -2,7 +2,7 @@ const app = require("../express_generator")();
 const { firestore } = require('firebase-admin');
 const { member } = require("..");
 const { validateFirebaseIdToken } = require("../auth");
-const { COMMENTS_COLLECTION } = require('../constants');
+const { COMMENTS_COLLECTION, CANDIDATES_COLLECTION } = require('../constants');
 const { isAdmin } = require("../util");
 
 // TODO: for comments routes, make sure either:
@@ -22,9 +22,12 @@ app.get('/by_candidate/:candidate_id', async function (req, res) {
 
   try {
     var db = firestore();
-    const commentsRes = await db.collection(COMMENTS_COLLECTION).where("candidate_id", "==", candidate_id).get()
+    const candidateRes = await db.collection(CANDIDATES_COLLECTION)
+      .doc(candidate_id).get();
 
-    res.status(200).send(commentsRes.docs.map(doc => Object.assign(doc.data(), { id: doc.id })));
+    res.status(200).send({
+      comment_ids: candidateRes.data().comments
+    });
   } catch (e) {
     res.status(404).send(`Error retrieving comments: ${e}`);
   }
@@ -69,13 +72,18 @@ app.post('/add', validateFirebaseIdToken, async (req, res) => {
   var { candidate_id, event_id, comment } = req.body;
   try {
     var db = firestore();
-    await db.collection(COMMENTS_COLLECTION).add({
+    var commentRef = await db.collection(COMMENTS_COLLECTION).add({
       member_id: member_id,
       candidate_id: candidate_id,
       event_id: event_id,
       comment: comment,
       timestamp: Date.now(),
     });
+
+    // add the comment_id to the candidate as well
+    await db.collection(CANDIDATES_COLLECTION).doc(candidate_id).update({
+      comments: firestore.FieldValue.arrayUnion(commentRef.id)
+    })
     res.status(200).send(`Successfully added comment`);
   } catch (e) {
     res.status(404).send(`Error: ${e}`);
@@ -91,20 +99,30 @@ app.post('/add', validateFirebaseIdToken, async (req, res) => {
  * @returns { string } a success status message if the comment is deleted
  * successfully, an error message otherwise
  */
-app.post('/delete/:comment_id', validateFirebaseIdToken, async (req, res) => {
+app.post('/delete', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
-  var { comment_id } = req.params;
+  var { comment_id } = req.body;
 
   try {
     var db = firestore();
     const commentRef = db.collection(COMMENTS_COLLECTION).doc(comment_id);
 
-    var event_id = (await commentRef.get()).data().event_id;
+    var { event_id, candidate_id } = (await commentRef.get()).data();
 
     if (!(await isAdmin(member_id, event_id))) {
       res.status(404).send(`Non-admin cannot delete comments!`);
       return;
     }
+
+    await db.collection(CANDIDATES_COLLECTION)
+      .where("candidate_id", "==", candidate_id).get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach(function (document) {
+          document.ref.update({
+            comments: firestore.FieldValue.arrayRemove(comment_id)
+          });
+        });
+      });
 
     await commentRef.delete();
     res.status(200).send(`Deleted ${comment_id}`);
