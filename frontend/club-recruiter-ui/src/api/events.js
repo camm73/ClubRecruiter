@@ -19,7 +19,6 @@ const listMemberEvents = async () => {
       return [];
     }
     const resJson = await response.json();
-    console.log(resJson);
     return resJson;
   } catch (error) {
     console.log(error);
@@ -76,7 +75,6 @@ const getEventDetails = async (eventID) => {
       return {};
     }
     const resJson = await response.json();
-    console.log(resJson);
     return resJson;
   } catch (error) {
     console.log(error);
@@ -107,7 +105,6 @@ const createEvent = async (eventName, eventDescription, coverPicName) => {
       return '';
     }
     const resJson = await response.json();
-    console.log(resJson);
     return resJson.event_id;
   } catch (error) {
     console.log(error);

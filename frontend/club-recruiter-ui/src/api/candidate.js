@@ -60,20 +60,27 @@ const validateCandidateCode = async (candidateCode) => {
 
 // Get candidate details using candidateID
 const getCandidate = async (candidateID) => {
-  console.log(`Getting ID: ${candidateID}`);
-  const candidateName = 'FirstName LastName';
-  const candidateEmail = 'test@example.com';
-  const candidatePhoneNumber = '123-456-7890';
-  const candidateApplicationStatus = 'Pending';
-  const candidateResumeID = 'ID';
-
-  return {
-    name: candidateName,
-    email: candidateEmail,
-    phoneNumber: candidatePhoneNumber,
-    applicationStatus: candidateApplicationStatus,
-    resumeID: candidateResumeID,
-  };
+  const user = auth.currentUser;
+  const userToken = await user.getIdToken();
+  try {
+    const response = await fetch(`${cloudFunctionEndpoint}/candidate/${candidateID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+    });
+    if (response.status !== 200) {
+      const errorText = await response.text();
+      console.log(errorText);
+      return {};
+    }
+    const resJson = await response.json();
+    return resJson;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 };
 
 const setCandidateStatus = async (candidateID, statusValue) => {
@@ -114,6 +121,30 @@ const rejectCandidate = async (candidateID) => {
   return statusRes;
 };
 
+const getEventCandidates = async (eventID) => {
+  const user = auth.currentUser;
+  const userToken = await user.getIdToken();
+  try {
+    const response = await fetch(`${cloudFunctionEndpoint}/candidate/by_event/${eventID}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.status !== 200) {
+      const errorText = await response.text();
+      console.log(errorText);
+      return [];
+    }
+    const resJson = await response.json();
+    return resJson.candidate_ids;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+};
+
 export {
   // eslint-disable-next-line import/prefer-default-export
   validateCandidateCode,
@@ -121,4 +152,5 @@ export {
   submitCandidateApplication,
   acceptCandidate,
   rejectCandidate,
+  getEventCandidates,
 };

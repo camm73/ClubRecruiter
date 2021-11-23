@@ -29,15 +29,16 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
 
   // Query for candidate details upon load
   useEffect(async () => {
+    if (candidateID === undefined || !candidateID.length) return;
     const currentCandidate = await getCandidate(candidateID);
     const commentList = await getCommentList(candidateID);
     setCandidateName(currentCandidate.name);
-    setCandidatePhoneNumber(currentCandidate.phoneNumber);
+    setCandidatePhoneNumber(currentCandidate.phone_number);
     setCandidateEmail(currentCandidate.email);
-    setCandidateApplicationStatus(currentCandidate.applicationStatus);
-    setCandidateResumeID(currentCandidate.resumeID);
+    setCandidateApplicationStatus(currentCandidate.application_status);
+    setCandidateResumeID(currentCandidate.resume_id);
     setCommentIDList(commentList);
-  }, []);
+  }, [candidateID]);
 
   const updateCommentList = async () => {
     const commentList = await getCommentList(candidateID);
@@ -96,7 +97,7 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
           onClick={() => {
             setConfirmationAction(() => () => {
               rejectCandidate(candidateID);
-              return 'Rejected';
+              return 'rejected';
             });
             setConfirmationOpen(true);
           }}
@@ -111,7 +112,7 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
           onClick={() => {
             setConfirmationAction(() => () => {
               acceptCandidate(candidateID);
-              return 'Accepted';
+              return 'accepted';
             });
             setConfirmationOpen(true);
           }}

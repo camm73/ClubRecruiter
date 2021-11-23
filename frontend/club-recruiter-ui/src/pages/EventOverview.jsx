@@ -95,7 +95,7 @@ const EventOverview = () => {
           </Button>
         </div>
         <EventCard eventID={eventID} />
-        <CandidateList profileOpenHandler={handleOpenCandidateProfile} />
+        <CandidateList eventID={eventID} profileOpenHandler={handleOpenCandidateProfile} />
       </Box>
       <CandidateProfile
         open={profileVisible}
