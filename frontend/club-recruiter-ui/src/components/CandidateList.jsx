@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
 import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Container from '@mui/material/Container';
@@ -16,63 +18,23 @@ const columns = [
   { field: 'status', headerName: 'Status', width: 130 },
 ];
 
-// TODO: replace values
-/*
-const sampleCandidates = [
-  {
-    id: 1, name: 'Jon Snow', status: 'Accepted',
-  },
-  {
-    id: 2, name: 'Cersei Lannister', status: 'Pending',
-  },
-  {
-    id: 3, name: 'Jaime Lannister', status: 'Pending',
-  },
-  {
-    id: 4, name: 'Arya Stark', status: 'Accepted',
-  },
-  {
-    id: 5, name: 'Daenerys Targaryen', status: 'Rejected',
-  },
-  {
-    id: 6, name: 'Melisandre', status: 'Accepted',
-  },
-  {
-    id: 7, name: 'Ferrara Clifford', status: 'Rejected',
-  },
-];
-*/
-
 const CandidateList = ({ eventID, profileOpenHandler }) => {
-  const [candidates, setCandidates] = useState([]);
-  // const [candidateIDList, setCandidateIDList] = useState([]);
   const [candidateRows, setCandidateRows] = useState([]);
 
   const loadCandidates = async () => {
     const idList = await getEventCandidates(eventID);
 
-    const eventCandidates = [];
-    // eslint-disable-next-line no-restricted-syntax
+    const rowArr = [];
     for (const id of idList) {
-      // eslint-disable-next-line no-await-in-loop
-      const candRes = await getCandidate(id);
-      candRes.candidateID = id;
-      eventCandidates.push(candRes);
+      const currCand = await getCandidate(id);
+      currCand.candidate_id = id;
+      rowArr.push({
+        id,
+        name: currCand.name,
+        status: currCand.application_status,
+      });
     }
-    setCandidates(eventCandidates);
-
-    const rowList = [];
-    eventCandidates.forEach((candidateEntry, index) => {
-      const candRow = {
-        id: index,
-        name: candidateEntry.name,
-        status: candidateEntry.applicationStatus,
-        candidate_id: candidateEntry.candidateID,
-      };
-      rowList.push(candRow);
-    });
-    setCandidateRows(rowList);
-    console.log(candidates);
+    setCandidateRows(rowArr);
   };
 
   useEffect(loadCandidates, []);
@@ -89,7 +51,7 @@ const CandidateList = ({ eventID, profileOpenHandler }) => {
         rowsPerPageOptions={[5]}
         onCellClick={(params) => {
           console.log(params);
-          profileOpenHandler('candidateID');
+          profileOpenHandler(params.row.id);
         }}
       />
     </Container>

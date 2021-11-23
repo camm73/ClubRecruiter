@@ -60,6 +60,29 @@ const validateCandidateCode = async (candidateCode) => {
 
 // Get candidate details using candidateID
 const getCandidate = async (candidateID) => {
+  const user = auth.currentUser;
+  const userToken = await user.getIdToken();
+  try {
+    const response = await fetch(`${cloudFunctionEndpoint}/candidate/${candidateID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+    });
+    if (response.status !== 200) {
+      const errorText = await response.text();
+      console.log(errorText);
+      return {};
+    }
+    const resJson = await response.json();
+    console.log(resJson);
+    return resJson;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+  /*
   console.log(`Getting ID: ${candidateID}`);
   const candidateName = 'FirstName LastName';
   const candidateEmail = 'test@example.com';
@@ -74,6 +97,7 @@ const getCandidate = async (candidateID) => {
     applicationStatus: candidateApplicationStatus,
     resumeID: candidateResumeID,
   };
+  */
 };
 
 const setCandidateStatus = async (candidateID, statusValue) => {
