@@ -118,6 +118,7 @@ describe('Events', () => {
         });
 
 
+
         // TODO
 
         // it('it should add a member', (done) => {
@@ -140,119 +141,119 @@ describe('Events', () => {
         //             }
         //         });
         // });
-    }),
+    });
 
-        /*
-        * Test the /GET route
-        */
-        describe('/GET event', () => {
-            it('it should fail to get an event', (done) => {
+    /*
+    * Test the /GET route
+    */
+    describe('/GET event', () => {
+        it('it should fail to get an event', (done) => {
 
-                chai.request(DEV_API_ENDPOINT)
-                    .get('/event/asdf')
-                    .set('Authorization', 'Bearer ' + idToken)
-                    .end((err, res) => {
-                        expect(res.statusCode).to.equal(404);
-                        if (err) {
-                            done(err)
-                        } else {
-                            done()
-                        }
-                    });
-            });
-
-
-            it('it should successfully get an event', (done) => {
-                chai.request(DEV_API_ENDPOINT)
-                    .get(`/event/${existing_event_id}`)
-                    .set('Authorization', 'Bearer ' + idToken)
-                    .end((err, res) => {
-                        expect(res.statusCode).to.equal(200);
-                        if (err) {
-                            done(err)
-                        } else {
-                            done()
-                        }
-                    });
-            });
-
-            it('it should successfully get all member events', (done) => {
-                chai.request(DEV_API_ENDPOINT)
-                    .get(`/event/by_member`)
-                    .set('Authorization', 'Bearer ' + idToken)
-                    .end((err, res) => {
-                        expect(res.statusCode).to.equal(200);
-                        if (err) {
-                            done(err)
-                        } else {
-                            done()
-                        }
-                    });
-            });
+            chai.request(DEV_API_ENDPOINT)
+                .get('/event/asdf')
+                .set('Authorization', 'Bearer ' + idToken)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(404);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
         });
 
-        describe('/DELETE event', () => {
-            it('it should fail to add an existing member to event', (done) => {
 
-                let body = {
-                    member_code: existing_member_code,
-                }
-
-                chai.request(DEV_API_ENDPOINT)
-                    .post('/event/member_join')
-                    .set('Authorization', 'Bearer ' + idToken)
-                    .set('content-type', 'application/json')
-                    .send(body)
-                    .end((err, res) => {
-                        expect(res.statusCode).to.equal(404);
-                        if (err) {
-                            done(err)
-                        } else {
-                            done()
-                        }
-                    });
-            });
-            
-            it('it should delete member from event', (done) => {
-                let body = {
-                    target_id: uid2,
-                    event_id: existing_event_id,
-                }
-
-                chai.request(DEV_API_ENDPOINT)
-                    .delete('/event/delete_member')
-                    .set('Authorization', 'Bearer ' + idToken)
-                    .set('content-type', 'application/json')
-                    .send(body)
-                    .end((err, res) => {
-                        expect(res.statusCode).to.equal(200);
-                        if (err) {
-                            done(err)
-                        } else {
-                            done()
-                        }
-                    });
-            });
-
-            it('it should delete event', (done) => {
-                let body = {
-                    event_id: existing_event_id,
-                }
-
-                chai.request(DEV_API_ENDPOINT)
-                    .delete('/event/delete')
-                    .set('Authorization', 'Bearer ' + idToken)
-                    .set('content-type', 'application/json')
-                    .send(body)
-                    .end((err, res) => {
-                        expect(res.statusCode).to.equal(200);
-                        if (err) {
-                            done(err)
-                        } else {
-                            done()
-                        }
-                    });
-            });
+        it('it should successfully get an event', (done) => {
+            chai.request(DEV_API_ENDPOINT)
+                .get(`/event/${existing_event_id}`)
+                .set('Authorization', 'Bearer ' + idToken)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
         });
+
+        it('it should successfully get all member events', (done) => {
+            chai.request(DEV_API_ENDPOINT)
+                .get(`/event/by_member`)
+                .set('Authorization', 'Bearer ' + idToken)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+    });
+
+    describe('/DELETE event', () => {
+        it('it should fail to add an existing member to event', (done) => {
+
+            let body = {
+                member_code: existing_member_code,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .post('/event/member_join')
+                .set('Authorization', 'Bearer ' + idToken)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(404);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+        
+        it('it should delete member from event', (done) => {
+            let body = {
+                target_id: uid2,
+                event_id: existing_event_id,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .delete('/event/delete_member')
+                .set('Authorization', 'Bearer ' + idToken)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+        it('it should delete event', (done) => {
+            let body = {
+                event_id: existing_event_id,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .delete('/event/delete')
+                .set('Authorization', 'Bearer ' + idToken)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+    });
 
 });
