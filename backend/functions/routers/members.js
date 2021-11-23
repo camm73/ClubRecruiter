@@ -52,12 +52,13 @@ app.post('/promote/:target_id', validateFirebaseIdToken, async (req, res) => {
       "member_id", "==", target_id).where("event_id", "==", event_id).get();
 
     if (!eventMemberDocRef.empty) {
-      const eventMemberID = eventMemberDocRef.docs[0].id;
 
-      // Add member to event admins
-      await db.collection(EVENT_MEMBERS_COLLECTION).doc(eventMemberID).update({
-        is_admin: true
-      })
+      // update each member 
+      eventMemberDocRef.forEach((doc) => {
+        doc.ref.update({
+          is_admin: true
+        })
+      });
 
       res.status(200).send(`Promoted ${target_id} in event ${event_id}`);
     } else {
@@ -91,16 +92,18 @@ app.post('/demote/:target_id', validateFirebaseIdToken, async (req, res) => {
       return;
     }
 
-    const eventMemberDocRef = await db.collection(EVENT_MEMBERS_COLLECTION).where(
-      "member_id", "==", target_id).where("event_id", "==", event_id).get();
+    const eventMemberDocRef = await db.collection(EVENT_MEMBERS_COLLECTION)
+      .where("member_id", "==", target_id)
+      .where("event_id", "==", event_id).get();
 
     if (!eventMemberDocRef.empty) {
-      const eventMemberID = eventMemberDocRef.docs[0].id;
 
-      // Add member to event admins
-      await db.collection(EVENT_MEMBERS_COLLECTION).doc(eventMemberID).update({
-        is_admin: false
-      })
+      // demote each member
+      eventMemberDocRef.forEach((doc) => {
+        doc.ref.update({
+          is_admin: false
+        })
+      });
 
       res.status(200).send(`Demoted ${target_id} in event ${event_id}`);
     } else {
