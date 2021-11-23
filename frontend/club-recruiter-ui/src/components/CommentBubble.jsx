@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Typography, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+import { getMember } from '../api/members';
 import { getComment, deleteComment } from '../api/comments';
 import ConfirmationDialog from './ConfirmationDialog';
 
@@ -21,8 +22,9 @@ const CommentBubble = ({ commentID, refreshCommentList }) => {
   }, []);
 
   useEffect(async () => {
-    // TODO: Query backend for member name from member ID
-    setMemberName('Member Name');
+    // Query backend for member name from member ID
+    const memberDetails = await getMember(commentMemberID);
+    setMemberName(memberDetails.displayName);
   }, [commentMemberID]);
 
   return (
