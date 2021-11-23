@@ -180,6 +180,59 @@ app.post('/member_join', validateFirebaseIdToken, async (req, res) => {
   }
 });
 
+/**
+ * Admin adds member to a given event
+ * @name POST/event/member_add
+ * @function
+ * @param { string } member_id 
+ * @param { string } event_id
+ * @param { string } target_id
+ * @returns { string } the candidate code of the event if successful, an
+ * error message otherwise
+ */
+app.post('/member_add', validateFirebaseIdToken, async (req, res) => {
+  var member_id = req.user.uid;
+  var { event_id, target_id } = req.body;
+  var db = firestore();
+
+
+  try {
+    if (!(await (isAdmin(member_id, event_id)))) {
+      res.status(404).send("The current member is not an admin of the event!");
+      return;
+    }
+
+    // Check if the database already has an existing document
+    var memberEventRef = await db
+      .collection(EVENT_MEMBERS_COLLECTION)
+      .where("member_id", "==", target_id)
+      .where("event_id", "==", event_id)
+      .get();
+
+    if (!memberEventRef.empty) {
+      res.status(404).send(`Cannot add member to an event that they've already joined!`);
+      return;
+    }
+
+    await db.collection(EVENT_MEMBERS_COLLECTION).add({
+      member_id: member_id,
+      event_id: event_id,
+      is_admin: false,
+    });
+
+    res.status(200).send({
+      event_id: event_id
+    });
+    return;
+
+  } catch (e) {
+    res.status(404).send(e);
+    return;
+  }
+});
+
+
+
 
 
 /**
