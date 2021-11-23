@@ -91,9 +91,10 @@ app.post('/apply', async (req, res) => {
         application_status: 'pending',
         resume_id: resume_id,
         profile_pic_id: profile_pic_id,
+        comments: [],
       }); // creates a new candidate profile
 
-      // add the candidate to the respective member
+      // add the candidate to the respective event
       await db.collection(EVENTS_COLLECTION)
         .where(CANDIDATE_CODE, "==", candidate_code)
         .get()
