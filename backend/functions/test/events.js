@@ -59,7 +59,9 @@ describe('Events', () => {
             customToken2 = await admin.auth().createCustomToken(uid2);
             const auth = getAuth(firebaseApp)
             connectAuthEmulator(auth, "http://localhost:9099")
+            console.log("connected")
             const response1  = await signInWithCustomToken(auth, customToken1)
+            console.log("signed in")
             idToken1 = response1.user.accessToken
             const response2  = await signInWithCustomToken(auth, customToken2)
             idToken2 = response2.user.accessToken
