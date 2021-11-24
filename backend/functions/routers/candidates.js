@@ -1,8 +1,7 @@
 const app = require("../express_generator")();
 const { firestore } = require('firebase-admin')
-const admin = require('firebase-admin');
 
-var { EVENTS_COLLECTION, CANDIDATES_COLLECTION, CANDIDATE_CODE, CLOUD_STORAGE_BUCKET_URL } = require('../constants');
+var { EVENTS_COLLECTION, CANDIDATES_COLLECTION, CANDIDATE_CODE } = require('../constants');
 const { validateCandidateCode, deleteFile } = require('../util');
 
 // TODO: for candidates routes, make sure either:
@@ -101,7 +100,7 @@ app.post('/apply', async (req, res) => {
         .then((querySnapshot) => {
           querySnapshot.forEach(function (document) {
             document.ref.update({
-              candidates: admin.firestore.FieldValue.arrayUnion(candidateDocRef.id)
+              candidates: firestore.FieldValue.arrayUnion(candidateDocRef.id)
             });
           });
         });

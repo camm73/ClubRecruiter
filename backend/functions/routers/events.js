@@ -1,6 +1,5 @@
 const app = require("../express_generator")();
-var { firestore, storage } = require('firebase-admin');
-var admin = require('firebase-admin');
+var { firestore } = require('firebase-admin');
 var crypto = require('crypto');
 
 const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE, CLUB_MEMBERS_COLLECTION, CANDIDATES_COLLECTION, COMMENTS_COLLECTION, CLOUD_STORAGE_BUCKET_URL } = require('../constants');
