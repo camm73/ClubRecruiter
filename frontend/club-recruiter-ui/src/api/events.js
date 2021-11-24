@@ -47,16 +47,12 @@ const joinEvent = async (memberCode) => {
       return '';
     }
     const resJson = await response.json();
-    return resJson.candidate_code;
+    return resJson.event_id;
   } catch (error) {
     console.log(error);
     return '';
   }
 };
-
-const listEventMembers = async (candidateCode) => ['Tian Yu Liu', 'Wen Hong Lam'];
-
-const listEventOrganizers = async (candidateCode) => ['Zacharye', 'Jackson', 'Rex'];
 
 const getEventDetails = async (eventID) => {
   const user = auth.currentUser;
@@ -143,8 +139,6 @@ export {
   // eslint-disable-next-line import/prefer-default-export
   listMemberEvents,
   joinEvent,
-  listEventMembers,
-  listEventOrganizers,
   getEventDetails,
   createEvent,
   deleteEvent,
