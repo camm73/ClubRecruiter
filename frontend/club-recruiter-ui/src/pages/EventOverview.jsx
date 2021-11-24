@@ -58,10 +58,10 @@ const EventOverview = () => {
       >
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
-          <UserList memberIDList={organizers} title="Organizers" promotable={false} />
+          <UserList memberIDList={organizers} title="Organizers" promotable={false} refreshFunction={loadEventDetails} />
 
           <Divider />
-          <UserList memberIDList={members} title="Members" promotable />
+          <UserList memberIDList={members} title="Members" promotable refreshFunction={loadEventDetails} />
 
         </Box>
       </Drawer>

@@ -47,7 +47,7 @@ const joinEvent = async (memberCode) => {
       return '';
     }
     const resJson = await response.json();
-    return resJson.candidate_code;
+    return resJson.event_id;
   } catch (error) {
     console.log(error);
     return '';
