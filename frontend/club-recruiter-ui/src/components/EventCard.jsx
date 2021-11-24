@@ -57,10 +57,16 @@ const EventCard = ({ clickAction, eventID, refreshAction }) => {
         display: 'flex', margin: 3, bgcolor: '#E5E5E5',
       }}
       >
-        <CardActionArea sx={{ display: 'flex', flexDirection: 'row' }} disabled={clickAction === undefined} onClick={clickAction}>
+        <CardActionArea
+          style={{ display: 'flex', flexDirection: 'row' }}
+          disabled={clickAction === undefined}
+          onClick={clickAction}
+        >
           <CardMedia
             component="img"
-            sx={{ width: 200 }}
+            style={{
+              maxWidth: 250,
+            }}
             image={coverPhotoLink}
             alt="logo"
           />

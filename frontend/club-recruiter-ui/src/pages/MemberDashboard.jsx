@@ -63,7 +63,7 @@ const MemberDashboard = () => {
               }}
               size="large"
             />
-)}
+          )}
           label="Only show events I am organizing"
         />
         <div className="event-list">
