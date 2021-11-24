@@ -3,7 +3,7 @@ var { firestore, storage } = require('firebase-admin');
 var admin = require('firebase-admin');
 var crypto = require('crypto');
 
-const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE, CLUB_MEMBERS_COLLECTION, CANDIDATES_COLLECTION, COMMENTS_COLLECTION } = require('../constants');
+const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE, CLUB_MEMBERS_COLLECTION, CANDIDATES_COLLECTION, COMMENTS_COLLECTION, CLOUD_STORAGE_BUCKET_URL } = require('../constants');
 const { validateFirebaseIdToken } = require('../auth');
 const { isAdmin } = require('../util');
 
@@ -330,8 +330,8 @@ app.delete('/delete', validateFirebaseIdToken, async (req, res) => {
       .where(CANDIDATE_CODE, "==", candidate_code)
       .get();
 
-    candidateRef.forEach((doc) => {
-      await storage().bucket().file(`resume/${doc.data().resume_id}`).delete();
+    candidateRef.forEach(async (doc) => {
+      storage().bucket(CLOUD_STORAGE_BUCKET_URL).file(`resume/${doc.data().resume_id}`).delete();
       doc.ref.delete();
     });
 
@@ -344,7 +344,7 @@ app.delete('/delete', validateFirebaseIdToken, async (req, res) => {
     })
 
     var event_cover_pic_id = (await eventRef.get()).data().cover_pic_id;
-    await storage().bucket().file(`eventCoverPhoto/${event_cover_pic_id}`).delete();
+    await storage().bucket(CLOUD_STORAGE_BUCKET_URL).file(`eventCoverPhoto/${event_cover_pic_id}`).delete();
 
     eventRef.delete();
     res.status(200).send("Delete success!");
