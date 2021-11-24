@@ -13,7 +13,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
-// import { getMember } from '../api/members';
+import { getMember } from '../api/members';
 
 const UserEntry = ({
   memberID, canDelete, promotable,
@@ -22,9 +22,8 @@ const UserEntry = ({
 
   const getUserData = async () => {
     if (memberID === undefined || !memberID.length) return;
-    // const memberObj = await getMember(memberID);
-    // setUserName(memberObj.displayName);
-    setUserName('name');
+    const memberObj = await getMember(memberID);
+    setUserName(memberObj.displayName);
   };
 
   useEffect(getUserData, [memberID]);
