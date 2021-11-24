@@ -1,11 +1,10 @@
 const app = require("../express_generator")();
-var { firestore, storage } = require('firebase-admin');
-var admin = require('firebase-admin');
+var { firestore } = require('firebase-admin');
 var crypto = require('crypto');
 
 const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE, CLUB_MEMBERS_COLLECTION, CANDIDATES_COLLECTION, COMMENTS_COLLECTION, CLOUD_STORAGE_BUCKET_URL } = require('../constants');
 const { validateFirebaseIdToken } = require('../auth');
-const { isAdmin } = require('../util');
+const { isAdmin, deleteFile } = require('../util');
 
 async function getEventMembers(event_id, is_admin) {
   var db = firestore();
@@ -350,7 +349,7 @@ app.delete('/delete', validateFirebaseIdToken, async (req, res) => {
       .get();
 
     candidateRef.forEach(async (doc) => {
-      storage().bucket(CLOUD_STORAGE_BUCKET_URL).file(`resume/${doc.data().resume_id}`).delete();
+      deleteFile(`resume/${doc.data().resume_id}`);
       doc.ref.delete();
     });
 
@@ -363,7 +362,7 @@ app.delete('/delete', validateFirebaseIdToken, async (req, res) => {
     })
 
     var event_cover_pic_id = (await eventRef.get()).data().cover_pic_id;
-    await storage().bucket(CLOUD_STORAGE_BUCKET_URL).file(`eventCoverPhoto/${event_cover_pic_id}`).delete();
+    deleteFile(`eventCoverPhoto/${event_cover_pic_id}`);
 
     eventRef.delete();
     res.status(200).send("Delete success!");

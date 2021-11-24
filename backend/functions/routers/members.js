@@ -2,7 +2,7 @@ const app = require("../express_generator")();
 const admin = require('firebase-admin');
 const { firestore } = require('firebase-admin');
 const { validateFirebaseIdToken } = require("../auth");
-const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CLUB_MEMBERS_COLLECTION } = require('../constants');
+const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION } = require('../constants');
 const { isAdmin } = require('../util');
 
 /**

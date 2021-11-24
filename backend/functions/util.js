@@ -1,12 +1,12 @@
-const { firestore } = require("firebase-admin");
-const { EVENTS_COLLECTION, CANDIDATE_CODE, EVENT_MEMBERS_COLLECTION } = require("./constants");
+const { firestore, storage } = require("firebase-admin");
+const { EVENTS_COLLECTION, CANDIDATE_CODE, EVENT_MEMBERS_COLLECTION, CLOUD_STORAGE_BUCKET_URL } = require("./constants");
 
 /**
  * Validates a candidate_code
  * @name validateCandidateCode
  * @function
  * @param { string } candidate_code
- * @returns { Object } true if the candidate code is valid, false otherwise
+ * @returns { boolean } true if the candidate code is valid, false otherwise
  * 
  */
 async function validateCandidateCode(candidate_code) {
@@ -27,7 +27,7 @@ async function validateCandidateCode(candidate_code) {
  * @function
  * @param { string } member_id
  * @param { string } event_id
- * @returns { Object } true if member_id is an admin of event_id, false
+ * @returns { boolean } true if member_id is an admin of event_id, false
  * otherwise 
  * 
  */
@@ -43,7 +43,20 @@ async function isAdmin(member_id, event_id) {
   return true;
 }
 
+/**
+ * Deletes a file from Cloud Storage buckets
+ * @name deleteFile
+ * @function
+ * @param { string } filename
+ * @returns { void } Nothing
+ * 
+ */
+async function deleteFile(filename) {
+  storage().bucket(CLOUD_STORAGE_BUCKET_URL).file(filename).delete();
+}
+
 module.exports = {
   validateCandidateCode,
-  isAdmin
+  isAdmin,
+  deleteFile
 }
