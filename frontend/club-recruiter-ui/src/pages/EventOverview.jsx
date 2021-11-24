@@ -14,7 +14,7 @@ import EventCard from '../components/EventCard';
 import CandidateList from '../components/CandidateList';
 import CandidateProfile from '../components/CandidateProfile';
 
-import { listEventMembers, listEventOrganizers, getEventDetails } from '../api/events';
+import { getEventDetails } from '../api/events';
 
 const drawerWidth = 300;
 
@@ -30,18 +30,6 @@ const EventOverview = () => {
   const location = useLocation();
   const history = useHistory();
 
-  const loadMembers = async () => {
-    const eventMembers = await listEventMembers(eventID);
-    setMembers(eventMembers);
-    console.log('Loaded list of members for event');
-  };
-
-  const loadOrganizers = async () => {
-    const eventOrganizers = await listEventOrganizers(eventID);
-    setOrganizers(eventOrganizers);
-    console.log('Loaded list of organizers for event');
-  };
-
   const handleOpenCandidateProfile = (candidateID) => {
     setProfileCandidateID(candidateID);
     setProfileVisible(true);
@@ -50,8 +38,8 @@ const EventOverview = () => {
   const loadEventDetails = async () => {
     const eventDetails = await getEventDetails(eventID);
     setCandidateCode(eventDetails.candidate_code);
-    loadMembers();
-    loadOrganizers();
+    setMembers(eventDetails.members);
+    setOrganizers(eventDetails.admins);
   };
 
   // Load events at page mount
