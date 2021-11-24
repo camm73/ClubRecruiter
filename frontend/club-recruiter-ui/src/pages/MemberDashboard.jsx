@@ -19,7 +19,6 @@ const MemberDashboard = () => {
   const history = useHistory();
 
   const loadEvents = async () => {
-    // TODO: Replace with member id from cookie
     const memberEvents = await listMemberEvents();
     setEvents(memberEvents);
     console.log('Loaded list of events for user');
@@ -77,6 +76,7 @@ const MemberDashboard = () => {
                   }}
                   key={eventID}
                   eventID={eventID}
+                  refreshAction={loadEvents}
                 />
               ),
             )

@@ -94,7 +94,12 @@ const EventOverview = () => {
             Send Email Update
           </Button>
         </div>
-        <EventCard eventID={eventID} />
+        <EventCard
+          eventID={eventID}
+          refreshAction={() => {
+            history.push('/dashboard');
+          }}
+        />
         <CandidateList eventID={eventID} profileOpenHandler={handleOpenCandidateProfile} />
       </Box>
       <CandidateProfile
