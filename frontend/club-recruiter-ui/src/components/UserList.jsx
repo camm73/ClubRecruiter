@@ -21,7 +21,7 @@ import {
 const UserEntry = ({
   memberID, canDelete, promotable, refreshFunction,
 }) => {
-  const [userName, setUserName] = useState('name');
+  const [userName, setUserName] = useState('');
   const { eventID } = useParams();
 
   const getUserData = async () => {
