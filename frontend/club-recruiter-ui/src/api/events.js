@@ -54,13 +54,6 @@ const joinEvent = async (memberCode) => {
   }
 };
 
-<<<<<<< Updated upstream
-const listEventMembers = async (eventID) => ['Tian Yu Liu', 'Wen Hong Lam'];
-
-const listEventOrganizers = async (eventID) => ['Zacharye', 'Jackson', 'Rex'];
-
-=======
->>>>>>> Stashed changes
 const getEventDetails = async (eventID) => {
   const user = auth.currentUser;
   const userToken = await user.getIdToken();
