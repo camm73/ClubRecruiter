@@ -11,6 +11,7 @@ import { useParams } from 'react-router-dom';
 
 import { getCandidate, acceptCandidate, rejectCandidate } from '../api/candidate';
 import { getCommentList, postComment } from '../api/comments';
+import { getResumeLink } from '../api/firebase';
 import CommentBubble from './CommentBubble';
 import ConfirmationDialog from './ConfirmationDialog';
 
@@ -34,8 +35,18 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
     setCommentIDList(commentList);
   };
 
-  const downloadResume = (resumeID) => {
-    console.log(`Downloading resume: ${resumeID}`);
+  const viewResume = async (resumeID) => {
+    const resumeLink = await getResumeLink(resumeID);
+    window.open(resumeLink);
+  };
+
+  const resetModal = () => {
+    setCandidateName('');
+    setCandidatePhoneNumber('');
+    setCandidateEmail('');
+    setCandidateApplicationStatus('');
+    setCandidateResumeID('');
+    setCommentIDList([]);
   };
 
   // Query for candidate details upon load
@@ -86,9 +97,9 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
           style={{
             minHeight: '30px', backgroundColor: 'gray', borderRadius: '10px', padding: '10px',
           }}
-          onClick={() => downloadResume(candidateResumeID)}
+          onClick={() => viewResume(candidateResumeID)}
         >
-          Download Resume
+          View Resume
         </Button>
         <Button
           size="small"
@@ -137,10 +148,25 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
         title="Confirm Application Status Change"
         bodyText={`Are you sure you want to change the application status of candidate: ${candidateName}?`}
       />
-      <Dialog fullWidth sx={{ textAlign: 'center' }} maxWidth="sm" open={open} onBackdropClick={closeHandler}>
+      <Dialog
+        fullWidth
+        sx={{ textAlign: 'center' }}
+        maxWidth="sm"
+        open={open}
+        onBackdropClick={() => {
+          closeHandler();
+          resetModal();
+        }}
+      >
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
           <div style={{ position: 'absolute', left: '10px', top: '10px' }}>
-            <Button startIcon={<Close />} onClick={closeHandler} />
+            <Button
+              startIcon={<Close />}
+              onClick={() => {
+                closeHandler();
+                resetModal();
+              }}
+            />
           </div>
           <Typography variant="h5" sx={{ padding: 1 }}>
             {candidateName}
