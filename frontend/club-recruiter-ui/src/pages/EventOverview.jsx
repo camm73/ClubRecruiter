@@ -31,13 +31,13 @@ const EventOverview = () => {
   const history = useHistory();
 
   const loadMembers = async () => {
-    const eventMembers = await listEventMembers(candidateCode);
+    const eventMembers = await listEventMembers(eventID);
     setMembers(eventMembers);
     console.log('Loaded list of members for event');
   };
 
   const loadOrganizers = async () => {
-    const eventOrganizers = await listEventOrganizers(candidateCode);
+    const eventOrganizers = await listEventOrganizers(eventID);
     setOrganizers(eventOrganizers);
     console.log('Loaded list of organizers for event');
   };
@@ -70,10 +70,10 @@ const EventOverview = () => {
       >
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
-          <UserList nameList={organizers} title="Organizers" />
+          <UserList memberIDList={organizers} title="Organizers" promotable={false} />
 
           <Divider />
-          <UserList nameList={members} title="Members" />
+          <UserList memberIDList={members} title="Members" promotable />
 
         </Box>
       </Drawer>

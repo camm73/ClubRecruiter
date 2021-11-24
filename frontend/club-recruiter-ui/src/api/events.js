@@ -54,9 +54,9 @@ const joinEvent = async (memberCode) => {
   }
 };
 
-const listEventMembers = async (candidateCode) => ['Tian Yu Liu', 'Wen Hong Lam'];
+const listEventMembers = async (eventID) => ['Tian Yu Liu', 'Wen Hong Lam'];
 
-const listEventOrganizers = async (candidateCode) => ['Zacharye', 'Jackson', 'Rex'];
+const listEventOrganizers = async (eventID) => ['Zacharye', 'Jackson', 'Rex'];
 
 const getEventDetails = async (eventID) => {
   const user = auth.currentUser;
