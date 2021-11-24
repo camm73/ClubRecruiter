@@ -79,7 +79,15 @@ const EventOverview = () => {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Button
+            style={{ backgroundColor: 'lightgray', borderRadius: '5px', padding: '10px' }}
+            onClick={() => {
+              history.push('/dashboard');
+            }}
+          >
+            Back to Dashboard
+          </Button>
           <Button
             style={{ backgroundColor: 'lightgray', borderRadius: '5px', padding: '10px' }}
             onClick={() => {
@@ -94,7 +102,12 @@ const EventOverview = () => {
             Send Email Update
           </Button>
         </div>
-        <EventCard eventID={eventID} />
+        <EventCard
+          eventID={eventID}
+          refreshAction={() => {
+            history.push('/dashboard');
+          }}
+        />
         <CandidateList eventID={eventID} profileOpenHandler={handleOpenCandidateProfile} />
       </Box>
       <CandidateProfile
