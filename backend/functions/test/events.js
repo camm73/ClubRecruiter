@@ -6,37 +6,7 @@ const { DEV_API_ENDPOINT } = require('./constant');
 
 require('dotenv').config();
 
-
-
-
 chai.use(chaiHttp);
-
-// // console.log(firebaseConfig)
-// admin.initializeApp({
-//     credential: admin.credential.cert(serviceAccount)
-// });
-
-// const firebaseConfig = {
-//     apiKey: process.env.REACT_APP_API_KEY,
-//     authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-//     projectId: process.env.REACT_APP_PROJECT_ID,
-//     storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-//     messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
-//     appId: process.env.REACT_APP_APP_ID,
-// };
-  
-  
-// const firebaseApp = initializeApp(firebaseConfig);
-  
-// No more base API, so will remove this test
-// describe("Base API", function () {
-//     it("returns status 200", function (done) {
-//         request(DEV_API_ENDPOINT, function (error, response, body) {
-//             expect(response.statusCode).to.equal(200);
-//             done();
-//         });
-//     });
-// });
 
 
 function events_test(firebaseApp, admin){

@@ -32,6 +32,6 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 
 describe('run all tests', () => {
-    //events.events_test(firebaseApp,admin);
+    events.events_test(firebaseApp,admin);
     candidates.candidates_test(firebaseApp,admin);
 });
