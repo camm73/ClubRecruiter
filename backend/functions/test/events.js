@@ -1,43 +1,32 @@
-const admin = require('firebase-admin');
-const { initializeApp } = require('firebase/app')
 const { getAuth, signInWithCustomToken, connectAuthEmulator } = require('firebase/auth')
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 var expect = require("chai").expect;
-const serviceAccount = require('../config/serviceAccountKey.json');
 const { DEV_API_ENDPOINT } = require('./constant');
 
 require('dotenv').config();
 
-// var url ="https://semaphoreci.com/community/tutorials/getting-started-with-node-js-and-mocha"
 
-const uid1 = 'test-uid-1';
-const uid2 = 'test-uid-2';
-const member_id_3 = 'IAmAMember'
-let customToken1 = null;
-let customToken2 = null;
-let idToken1 = null;
-let idToken2 = null;
 
 
 chai.use(chaiHttp);
 
-// console.log(firebaseConfig)
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
+// // console.log(firebaseConfig)
+// admin.initializeApp({
+//     credential: admin.credential.cert(serviceAccount)
+// });
 
-const firebaseConfig = {
-    apiKey: process.env.REACT_APP_API_KEY,
-    authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-    projectId: process.env.REACT_APP_PROJECT_ID,
-    storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-    messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
-    appId: process.env.REACT_APP_APP_ID,
-};
+// const firebaseConfig = {
+//     apiKey: process.env.REACT_APP_API_KEY,
+//     authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+//     projectId: process.env.REACT_APP_PROJECT_ID,
+//     storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+//     messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+//     appId: process.env.REACT_APP_APP_ID,
+// };
   
   
-const firebaseApp = initializeApp(firebaseConfig);
+// const firebaseApp = initializeApp(firebaseConfig);
   
 // No more base API, so will remove this test
 // describe("Base API", function () {
@@ -49,10 +38,19 @@ const firebaseApp = initializeApp(firebaseConfig);
 //     });
 // });
 
+
+function events_test(firebaseApp, admin){
 describe('Events', () => {
     let existing_event_id = null;
     let existing_member_code = null;
     let existing_candidate_code = null;
+    const uid1 = 'test-uid-1';
+    const uid2 = 'test-uid-2';
+    const member_id_3 = 'IAmAMember'
+    let customToken1 = null;
+    let customToken2 = null;
+    let idToken1 = null;
+    let idToken2 = null;
     before(async () => {
         try {
             customToken1 = await admin.auth().createCustomToken(uid1);
@@ -343,4 +341,10 @@ describe('Events', () => {
 
     });
 
-});
+    });
+
+
+}
+
+module.exports = { events_test };
+
