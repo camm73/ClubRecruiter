@@ -7,6 +7,21 @@ const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CODE_LENGTH, MEMBER_CODE, C
 const { validateFirebaseIdToken } = require('../auth');
 const { isAdmin } = require('../util');
 
+async function getEventMembers(event_id, is_admin) {
+  var db = firestore();
+  var eventMemberRef = await db.collection(EVENT_MEMBERS_COLLECTION)
+    .where("event_id", "==", event_id)
+    .where('is_admin', "==", is_admin)
+    .get();
+
+  var member_id_list = [];
+  eventMemberRef.forEach((doc) => {
+    member_id_list.push(doc.data().member_id)
+  });
+
+  return member_id_list;
+}
+
 /**
  * Lists all events a ClubMember is a member of
  * @name GET/event/by_member
@@ -54,7 +69,10 @@ app.get('/:event_id', async (req, res) => {
   try {
     var docRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
     if (docRef.exists) {
-      res.status(200).send(docRef.data());
+      var data = docRef.data();
+      data.members = await getEventMembers(event_id, false);
+      data.admins = await getEventMembers(event_id, true);
+      res.status(200).send(data);
     } else {
       res.status(404).send(`Event with event_id: ${event_id} doesn't exist!`)
     }
