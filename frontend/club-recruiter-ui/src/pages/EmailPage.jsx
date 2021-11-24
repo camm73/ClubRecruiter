@@ -1,52 +1,41 @@
-import { React, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { React, useState, useEffect } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 import Header from '../components/Header';
-import UserList from '../components/UserList';
 import EventCard from '../components/EventCard';
 import EmailForm from '../components/EmailForm';
 import FilterMenu from '../components/FilterMenu';
+import CandidateEmailList from '../components/CandidateEmailList';
+
+import { getEventCandidates } from '../api/candidate';
 
 const drawerWidth = 300;
 
-// these are test examples, to be replaced with
-// actual candidates sent from the backend when integration is done
-const sampleCandidates = [
-  {
-    name: 'ONE',
-    status: 'pending',
-  },
-  {
-    name: 'TWO',
-    status: 'accepted',
-  },
-  {
-    name: 'THREE',
-    status: 'pending',
-  },
-  {
-    name: 'FOUR',
-    status: 'rejected',
-  },
-];
-
-const getNames = (candidates) => Array.from(candidates, (candidate) => candidate.name);
-
 const EmailPage = () => {
   const [filter, setFilter] = useState('');
+  const [candidateIDList, setCandidateIDList] = useState([]);
+  const [filteredEmailList, setFilteredEmailList] = useState([]);
   const { eventID } = useParams();
-  const [displayNames, setDisplayNames] = useState(getNames(sampleCandidates));
+  const history = useHistory();
 
-  const handleChange = (event) => {
+  const handleFilterChange = (event) => {
     const newFilter = event.target.value;
+    if (newFilter === undefined) return;
     setFilter(newFilter);
-    setDisplayNames(getNames(sampleCandidates.filter((c) => (newFilter !== '' ? c.status === newFilter : c))));
   };
+
+  const loadCandidates = async () => {
+    const idList = await getEventCandidates(eventID);
+    setCandidateIDList(idList);
+  };
+
+  useEffect(loadCandidates, []);
 
   return (
     <Container sx={{ display: 'flex' }}>
@@ -61,15 +50,25 @@ const EmailPage = () => {
       >
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
-          <UserList nameList={displayNames} title="Email Candidates" canDelete={false}>
-            <FilterMenu filter={filter} handleChange={handleChange} />
-          </UserList>
+          <CandidateEmailList candidateIDList={candidateIDList} title="Email Candidates" filter={filter} refreshEmailList={setFilteredEmailList}>
+            <FilterMenu filter={filter} handleChange={handleFilterChange} />
+          </CandidateEmailList>
         </Box>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
+        <Button
+          style={{
+            backgroundColor: 'lightgray', color: 'black', borderRadius: '5px', padding: '10px',
+          }}
+          onClick={() => {
+            history.push(`/event/${eventID}`);
+          }}
+        >
+          Back to Event Overview
+        </Button>
         <EventCard eventID={eventID} />
-        <EmailForm />
+        <EmailForm filteredEmailList={filteredEmailList} />
       </Box>
     </Container>
   );
