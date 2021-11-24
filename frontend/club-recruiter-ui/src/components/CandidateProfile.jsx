@@ -200,6 +200,11 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
               label="Type a comment"
               value={commentText}
               variant="outlined"
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  handleSubmitComment();
+                }
+              }}
               onChange={(e) => {
                 if (e.target.value.length <= MAX_COMMENT_LENGTH) {
                   setCommentText(e.target.value);
