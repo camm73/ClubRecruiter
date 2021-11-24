@@ -2,8 +2,8 @@ const app = require("../express_generator")();
 const { firestore } = require('firebase-admin')
 const admin = require('firebase-admin');
 
-var { EVENTS_COLLECTION, CANDIDATES_COLLECTION, CANDIDATE_CODE } = require('../constants');
-const { validateCandidateCode } = require('../util');
+var { EVENTS_COLLECTION, CANDIDATES_COLLECTION, CANDIDATE_CODE, CLOUD_STORAGE_BUCKET_URL } = require('../constants');
+const { validateCandidateCode, deleteFile } = require('../util');
 
 // TODO: for candidates routes, make sure either:
 // the current member is an admin of the event that the candidate is in.
@@ -173,5 +173,30 @@ app.get('/by_event/:event_id', async (req, res) => {
     res.status(404).send(`Error retrieving candidates: ${e}`);
   }
 });
+
+/**
+ * Deletes a candidate given their candidate_id
+ * @name DELETE/candidate/delete
+ * @function
+ * @param { string } candidate_id
+ * @returns { string } Status 200 success if delete is successful, 404 otherwise
+ * 
+ */
+app.delete('/delete', async function (req, res) {
+  var { candidate_id } = req.body;
+  var db = firestore();
+
+  try {
+    var candidateRef = await db.collection(CANDIDATES_COLLECTION).doc(candidate_id);
+    var resume_id = (await candidateRef.get()).data().resume_id;
+
+    deleteFile(`resume/${resume_id}`);
+    candidateRef.delete();
+    res.status(200).send("Success!");
+  } catch (e) {
+    res.status(404).send(`Error deleting candidate: ${e}`);
+  }
+
+})
 
 module.exports = app;
