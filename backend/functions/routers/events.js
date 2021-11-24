@@ -1,5 +1,5 @@
 const app = require("../express_generator")();
-var { firestore } = require('firebase-admin');
+var { firestore, storage } = require('firebase-admin');
 var admin = require('firebase-admin');
 var crypto = require('crypto');
 
@@ -331,6 +331,7 @@ app.delete('/delete', validateFirebaseIdToken, async (req, res) => {
       .get();
 
     candidateRef.forEach((doc) => {
+      await storage().bucket().file(`resume/${doc.data().resume_id}`).delete();
       doc.ref.delete();
     });
 
@@ -341,6 +342,9 @@ app.delete('/delete', validateFirebaseIdToken, async (req, res) => {
     commentRef.forEach((doc) => {
       doc.ref.delete();
     })
+
+    var event_cover_pic_id = (await eventRef.get()).data().cover_pic_id;
+    await storage().bucket().file(`eventCoverPhoto/${event_cover_pic_id}`).delete();
 
     eventRef.delete();
     res.status(200).send("Delete success!");
