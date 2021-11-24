@@ -9,3 +9,5 @@ module.exports.CODE_LENGTH = 6;
 
 module.exports.MEMBER_CODE = "member_code";
 module.exports.CANDIDATE_CODE = "candidate_code";
+
+module.exports.CLOUD_STORAGE_BUCKET_URL = "recruitme-4b479.appspot.com";

@@ -105,7 +105,9 @@ app.post('/apply', async (req, res) => {
             });
           });
         });
-      res.status(200).send(`Candidate with id ${candidateDocRef.id} applied to event successfully!`);
+      res.status(200).send({
+        candidate_id: candidateDocRef.id
+      });
       return;
 
     } else {
