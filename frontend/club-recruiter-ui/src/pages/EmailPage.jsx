@@ -1,10 +1,11 @@
 import { React, useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 import Header from '../components/Header';
 import EventCard from '../components/EventCard';
@@ -21,9 +22,11 @@ const EmailPage = () => {
   const [candidateIDList, setCandidateIDList] = useState([]);
   const [filteredEmailList, setFilteredEmailList] = useState([]);
   const { eventID } = useParams();
+  const history = useHistory();
 
   const handleFilterChange = (event) => {
     const newFilter = event.target.value;
+    if (newFilter === undefined) return;
     setFilter(newFilter);
   };
 
@@ -54,6 +57,16 @@ const EmailPage = () => {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
+        <Button
+          style={{
+            backgroundColor: 'lightgray', color: 'black', borderRadius: '5px', padding: '10px',
+          }}
+          onClick={() => {
+            history.push(`/event/${eventID}`);
+          }}
+        >
+          Back to Event Overview
+        </Button>
         <EventCard eventID={eventID} />
         <EmailForm filteredEmailList={filteredEmailList} />
       </Box>
