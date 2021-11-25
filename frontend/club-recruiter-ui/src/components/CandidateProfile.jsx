@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import {
-  Dialog, Card, CardContent, Typography, Button, CardActions, TextField,
+  Dialog, Card, CardContent, Typography, Button, CardActions, TextField, IconButton,
 } from '@mui/material';
 
 import '../styles/CandidateProfile.css';
@@ -9,6 +9,7 @@ import { DialogContent } from '@material-ui/core';
 import Close from '@mui/icons-material/Close';
 import { useParams } from 'react-router-dom';
 
+import DeleteIcon from '@mui/icons-material/Delete';
 import { getCandidate, acceptCandidate, rejectCandidate } from '../api/candidate';
 import { getCommentList, postComment } from '../api/comments';
 import { getResumeLink } from '../api/firebase';
@@ -171,6 +172,11 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
           <Typography variant="h5" sx={{ padding: 1 }}>
             {candidateName}
           </Typography>
+          <div style={{ position: 'absolute', right: '20px' }}>
+            <IconButton>
+              <DeleteIcon />
+            </IconButton>
+          </div>
         </div>
         <DialogContent>
           <DetailCard />
