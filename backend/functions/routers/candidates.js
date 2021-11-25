@@ -189,11 +189,6 @@ app.delete('/delete', validateFirebaseIdToken, async function (req, res) {
   var { candidate_id } = req.body;
   var db = firestore();
 
-  if (!(await isAdmin(member_id, event_id))) {
-    res.status(404).send('Non-admins cannot delete candidates!');
-    return;
-  }
-
   try {
     // Deleting a candidate requires multiple steps:
     // 1. Remove all the comments related to this specific candidate
@@ -202,6 +197,12 @@ app.delete('/delete', validateFirebaseIdToken, async function (req, res) {
     // 4. Finally, delete the Candidate entry
     var candidateRef = db.collection(CANDIDATES_COLLECTION).doc(candidate_id);
     var candidateData = (await candidateRef.get()).data();
+    var event_id = candidateData.event_id;
+
+    if (!(await isAdmin(member_id, event_id))) {
+      res.status(404).send('Non-admins cannot delete candidates!');
+      return;
+    }
 
     // step 1
     candidateData.comments.forEach((comment_id) => {
@@ -210,9 +211,9 @@ app.delete('/delete', validateFirebaseIdToken, async function (req, res) {
 
     // step 2
     db.collection(EVENTS_COLLECTION)
-      .doc(candidateData.event_id)
+      .doc(event_id)
       .update({
-        candidates: firestore.FieldValue.arrayRemove(candidateRef.id)
+        candidates: firestore.FieldValue.arrayRemove(candidate_id)
       })
 
     // step 3
