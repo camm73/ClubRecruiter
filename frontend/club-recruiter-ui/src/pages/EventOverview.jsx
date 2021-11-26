@@ -23,6 +23,7 @@ const EventOverview = () => {
 
   const [members, setMembers] = useState([]);
   const [organizers, setOrganizers] = useState([]);
+  const [candidateIDList, setCandidateIDList] = useState([]);
   const [profileVisible, setProfileVisible] = useState(false);
   const [profileCandidateID, setProfileCandidateID] = useState('');
 
@@ -38,6 +39,7 @@ const EventOverview = () => {
     const eventDetails = await getEventDetails(eventID);
     setMembers(eventDetails.members);
     setOrganizers(eventDetails.admins);
+    setCandidateIDList(eventDetails.candidates);
   };
 
   // Load events at page mount
@@ -94,12 +96,16 @@ const EventOverview = () => {
             history.push('/dashboard');
           }}
         />
-        <CandidateList eventID={eventID} profileOpenHandler={handleOpenCandidateProfile} />
+        <CandidateList
+          candidateIDList={candidateIDList}
+          profileOpenHandler={handleOpenCandidateProfile}
+        />
       </Box>
       <CandidateProfile
         open={profileVisible}
         candidateID={profileCandidateID}
         closeHandler={() => setProfileVisible(false)}
+        eventRefresh={loadEventDetails}
       />
     </Container>
   );

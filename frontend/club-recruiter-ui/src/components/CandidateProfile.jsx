@@ -18,7 +18,9 @@ import { getResumeLink } from '../api/firebase';
 import CommentBubble from './CommentBubble';
 import ConfirmationDialog from './ConfirmationDialog';
 
-const CandidateProfile = ({ open, candidateID, closeHandler }) => {
+const CandidateProfile = ({
+  open, candidateID, closeHandler, eventRefresh,
+}) => {
   const [candidateName, setCandidateName] = useState('');
   const [candidatePhoneNumber, setCandidatePhoneNumber] = useState('');
   const [candidateEmail, setCandidateEmail] = useState('');
@@ -182,6 +184,7 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
                   alert('You are not allowed to delete this candidate.');
                   return;
                 }
+                await eventRefresh();
                 closeHandler();
                 resetModal();
               }}
