@@ -539,6 +539,69 @@ describe('Events', () => {
                 });
         });
  
+        it('it should update candidate status to pending', (done) => {
+            let body = {
+                status: 'pending',
+                candidate_id: existing_candidate_id,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .post('/candidate/status')
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+ 
+        it('it should update candidate status to accepted', (done) => {
+            let body = {
+                status: 'accepted',
+                candidate_id: existing_candidate_id,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .post('/candidate/status')
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+         it('it should fail to update candidate status', (done) => {
+            let body = {
+                status: 'an invalid status',
+                candidate_id: existing_candidate_id,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .post('/candidate/status')
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(404);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+ 
     });
 
 });
