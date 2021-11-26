@@ -39,7 +39,7 @@ const EmailPage = () => {
 
   return (
     <Container sx={{ display: 'flex' }}>
-      <Header pageName="Email Page" />
+      <Header pageName="Email Page" authRoute />
       <Drawer
         variant="permanent"
         sx={{

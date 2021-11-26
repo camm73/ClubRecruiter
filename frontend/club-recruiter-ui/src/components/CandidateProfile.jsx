@@ -10,7 +10,9 @@ import Close from '@mui/icons-material/Close';
 import { useParams } from 'react-router-dom';
 
 import DeleteIcon from '@mui/icons-material/Delete';
-import { getCandidate, acceptCandidate, rejectCandidate } from '../api/candidate';
+import {
+  getCandidate, acceptCandidate, rejectCandidate, deleteCandidate,
+} from '../api/candidate';
 import { getCommentList, postComment } from '../api/comments';
 import { getResumeLink } from '../api/firebase';
 import CommentBubble from './CommentBubble';
@@ -173,7 +175,17 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
             {candidateName}
           </Typography>
           <div style={{ position: 'absolute', right: '20px' }}>
-            <IconButton>
+            <IconButton
+              onClick={async () => {
+                const deleteSuccess = await deleteCandidate(candidateID);
+                if (!deleteSuccess) {
+                  alert('You are not allowed to delete this candidate.');
+                  return;
+                }
+                closeHandler();
+                resetModal();
+              }}
+            >
               <DeleteIcon />
             </IconButton>
           </div>
