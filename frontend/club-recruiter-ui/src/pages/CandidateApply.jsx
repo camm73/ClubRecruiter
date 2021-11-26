@@ -1,4 +1,4 @@
-import { Container, Button } from '@mui/material';
+import { Container, Button, CircularProgress } from '@mui/material';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams, useHistory } from 'react-router-dom';
@@ -13,10 +13,11 @@ const CandidateApply = () => {
   const { control, handleSubmit } = useForm();
   const { candidateCode } = useParams();
   const [resumeFile, setResumeFile] = useState(null);
+  const [submittedApp, setSubmittedApp] = useState(false);
   const history = useHistory();
 
   const onSubmit = async (data) => {
-    // todo: call the API endpoint
+    setSubmittedApp(true);
     const fileName = await uploadFile(resumeFile, 'resume');
     console.log(data);
     console.log(fileName);
@@ -24,6 +25,7 @@ const CandidateApply = () => {
     const statusMessage = await submitCandidateApplication(
       candidateCode, data.email, data.name, data.phone, data.additional, fileName,
     );
+    setSubmittedApp(false);
     alert(statusMessage);
     history.push('/');
   };
@@ -42,12 +44,15 @@ const CandidateApply = () => {
           <FormTextField name="additional" label="Tell us more about yourself :)" control={control} required />
           <FormFileField name="resume" label="Resume/CV (optional)" control={control} accept=".doc,.docx,.pdf" setFile={setResumeFile} />
           <FormTextField name="misc" label="Anything else you would like to share :)" control={control} />
-          <Button
-            variant="contained"
-            type="submit"
-          >
-            Submit
-          </Button>
+          {!submittedApp ? (
+            <Button
+              variant="contained"
+              type="submit"
+            >
+              Submit
+            </Button>
+          ) : <CircularProgress />}
+
         </Container>
       </form>
 
