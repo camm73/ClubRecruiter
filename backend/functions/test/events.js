@@ -636,7 +636,7 @@ describe('Events', () => {
                 });
         });
 
-         it('it should get candidate info', (done) => {
+        it('it should get candidate info', (done) => {
             chai.request(DEV_API_ENDPOINT)
                 .get(`/candidate/${existing_candidate_id}`)
                 .set('Authorization', 'Bearer ' + idToken1)
@@ -667,9 +667,61 @@ describe('Events', () => {
                 });
         });
  
+        it('it should get event candidates', (done) => {
+            chai.request(DEV_API_ENDPOINT)
+                .get(`/candidate/by_event/${existing_event_id}`)
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.body.candidate_ids.length).to.equal(1);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+        it('it should fail to get event candidates', (done) => {
+            chai.request(DEV_API_ENDPOINT)
+                .get(`/candidate/by_event/nosuchevent`)
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(404);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
 
 
+    });
 
+    describe('/DELETE candidate', () => {
+        it('it should delete candidate', (done) => {
+
+            let body = {
+                candidate_id: existing_candidate_id,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .delete('/candidate/delete')
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
     });
 
 });
