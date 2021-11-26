@@ -1,39 +1,38 @@
-import { cloudFunctionEndpoint, auth } from './firebase';
+import { auth, cloudFunctionEndpoint } from './firebase';
 
-/* eslint-disable no-unused-vars */
-// TODO: Query backend for list of events for a member
-const listMemberEvents = async () => {
+const getMember = async (memberID) => {
   const user = auth.currentUser;
   const userToken = await user.getIdToken();
   try {
-    const response = await fetch(`${cloudFunctionEndpoint}/event/by_member`, {
+    const response = await fetch(`${cloudFunctionEndpoint}/member/${memberID}`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${userToken}`,
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
       },
     });
     if (response.status !== 200) {
       const errorText = await response.text();
       console.log(errorText);
-      return [];
+      return false;
     }
     const resJson = await response.json();
     return resJson;
   } catch (error) {
     console.log(error);
-    return [];
+    return false;
   }
 };
 
-const joinEvent = async (memberCode) => {
+const promoteMember = async (targetID, eventID) => {
   const user = auth.currentUser;
   const userToken = await user.getIdToken();
   const requestBody = {
-    member_code: memberCode,
+    event_id: eventID,
+    target_id: targetID,
   };
   try {
-    const response = await fetch(`${cloudFunctionEndpoint}/event/member_join`, {
+    const response = await fetch(`${cloudFunctionEndpoint}/member/promote`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -44,50 +43,24 @@ const joinEvent = async (memberCode) => {
     if (response.status !== 200) {
       const errorText = await response.text();
       console.log(errorText);
-      return '';
+      return false;
     }
-    const resJson = await response.json();
-    return resJson.event_id;
+    return true;
   } catch (error) {
     console.log(error);
-    return '';
+    return false;
   }
 };
 
-const getEventDetails = async (eventID) => {
-  const user = auth.currentUser;
-  const userToken = await user.getIdToken();
-  try {
-    const response = await fetch(`${cloudFunctionEndpoint}/event/${eventID}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${userToken}`,
-      },
-    });
-    if (response.status !== 200) {
-      const errorText = await response.text();
-      console.log(errorText);
-      return {};
-    }
-    const resJson = await response.json();
-    return resJson;
-  } catch (error) {
-    console.log(error);
-    return {};
-  }
-};
-
-const createEvent = async (eventName, eventDescription, coverPicName) => {
+const demoteMember = async (targetID, eventID) => {
   const user = auth.currentUser;
   const userToken = await user.getIdToken();
   const requestBody = {
-    event_name: eventName,
-    event_description: eventDescription,
-    event_cover_pic_id: coverPicName,
+    event_id: eventID,
+    target_id: targetID,
   };
   try {
-    const response = await fetch(`${cloudFunctionEndpoint}/event/create/`, {
+    const response = await fetch(`${cloudFunctionEndpoint}/member/demote`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -98,25 +71,24 @@ const createEvent = async (eventName, eventDescription, coverPicName) => {
     if (response.status !== 200) {
       const errorText = await response.text();
       console.log(errorText);
-      return '';
+      return false;
     }
-    const resJson = await response.json();
-    return resJson.event_id;
+    return true;
   } catch (error) {
     console.log(error);
-    return '';
+    return false;
   }
 };
 
-const deleteEvent = async (eventID) => {
+const removeMember = async (targetID, eventID) => {
   const user = auth.currentUser;
   const userToken = await user.getIdToken();
   const requestBody = {
     event_id: eventID,
   };
   try {
-    const response = await fetch(`${cloudFunctionEndpoint}/event/delete`, {
-      method: 'DELETE',
+    const response = await fetch(`${cloudFunctionEndpoint}/member/delete/${targetID}`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${userToken}`,
@@ -137,9 +109,8 @@ const deleteEvent = async (eventID) => {
 
 export {
   // eslint-disable-next-line import/prefer-default-export
-  listMemberEvents,
-  joinEvent,
-  getEventDetails,
-  createEvent,
-  deleteEvent,
+  getMember,
+  promoteMember,
+  demoteMember,
+  removeMember,
 };

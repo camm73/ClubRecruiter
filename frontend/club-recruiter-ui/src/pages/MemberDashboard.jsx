@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import {
   TextField, Button, FormControlLabel, Switch,
 } from '@mui/material';
@@ -18,15 +19,19 @@ const MemberDashboard = () => {
   const history = useHistory();
 
   const loadEvents = async () => {
-    // TODO: Replace with member id from cookie
-    const memberEvents = await listMemberEvents('member_id');
+    const memberEvents = await listMemberEvents();
     setEvents(memberEvents);
     console.log('Loaded list of events for user');
   };
 
   const handleJoinEvent = async () => {
-    await joinEvent(memberCode, 'member_id');
-    console.log('Joined new event');
+    const joinRes = await joinEvent(memberCode);
+    if (!joinRes.length) {
+      alert('Member code is invalid!');
+      return;
+    }
+    // Returns candidate code
+    history.push(`/event/${joinRes}`);
   };
 
   const handleCreateEvent = () => {
@@ -58,19 +63,20 @@ const MemberDashboard = () => {
               }}
               size="large"
             />
-)}
+          )}
           label="Only show events I am organizing"
         />
         <div className="event-list">
           {
             events.map(
-              (code) => (
+              (eventID) => (
                 <EventCard
                   clickAction={() => {
-                    history.push(`/event/${code}`);
+                    history.push(`/event/${eventID}`);
                   }}
-                  key={code}
-                  candidateCode={code}
+                  key={eventID}
+                  eventID={eventID}
+                  refreshAction={loadEvents}
                 />
               ),
             )

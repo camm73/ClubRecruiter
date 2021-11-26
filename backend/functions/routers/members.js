@@ -1,22 +1,9 @@
-const express = require('express');
+const app = require("../express_generator")();
 const admin = require('firebase-admin');
 const { firestore } = require('firebase-admin');
-const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CLUB_MEMBERS_COLLECTION } = require('../constants');
-
-var router = express.Router();
-
-async function isAdmin(member_id, event_id) {
-  var db = firestore()
-  const currUserRef = await db.collection(EVENT_MEMBERS_COLLECTION)
-    .where("member_id", "==", member_id).where("event_id", "==", event_id).get();
-  if (currUserRef.empty)
-    return false;
-
-  if (!currUserRef.docs[0].get("is_admin"))
-    return false;
-
-  return true;
-}
+const { validateFirebaseIdToken } = require("../auth");
+const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION } = require('../constants');
+const { isAdmin } = require('../util');
 
 /**
  * Gets a member's detail given its id
@@ -26,7 +13,7 @@ async function isAdmin(member_id, event_id) {
  * @returns { Object } member detail with member_id
  * 
  */
-router.get('/:member_id', async function (req, res) {
+app.get('/:member_id', async function (req, res) {
   var { member_id } = req.params;
 
   try {
@@ -40,7 +27,7 @@ router.get('/:member_id', async function (req, res) {
 
 /**
  * This function promotes an existing member of an event to organizer
- * @name POST/member/promote/:target_id
+ * @name POST/member/promote
  * @function
  * @param { string } member_id
  * @param { string } target_id id of the member to promote
@@ -48,29 +35,30 @@ router.get('/:member_id', async function (req, res) {
  * @returns a success message if member is successfully promoted, an
  * error message otherwise
  */
-router.post('/promote/:target_id', async (req, res) => {
+app.post('/promote', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
-  var { target_id } = req.params;
-  var { event_id } = req.body;
+  var { event_id, target_id } = req.body;
   var db = firestore();
 
   try {
 
-    if (!isAdmin(member_id, event_id)) {
+    if (!(await isAdmin(member_id, event_id))) {
       res.status(404).send(`Current user is not authorized to promote members!`);
       return;
     }
 
-    const eventMemberDocRef = await db.collection(EVENT_MEMBERS_COLLECTION).where(
-      "member_id", "==", target_id).where("event_id", "==", event_id).get();
+    const eventMemberDocRef = await db.collection(EVENT_MEMBERS_COLLECTION)
+      .where("member_id", "==", target_id)
+      .where("event_id", "==", event_id).get();
 
     if (!eventMemberDocRef.empty) {
-      const eventMemberID = eventMemberDocRef.docs[0].id;
 
-      // Add member to event admins
-      await db.collection(EVENT_MEMBERS_COLLECTION).doc(eventMemberID).update({
-        is_admin: true
-      })
+      // update each member 
+      eventMemberDocRef.forEach((doc) => {
+        doc.ref.update({
+          is_admin: true
+        })
+      });
 
       res.status(200).send(`Promoted ${target_id} in event ${event_id}`);
     } else {
@@ -84,7 +72,7 @@ router.post('/promote/:target_id', async (req, res) => {
 
 /**
  * This function demotes an existing member of an event to regular member
- * @name POST/member/demote/:target_id
+ * @name POST/member/demote
  * @function
  * @param { string } member_id
  * @param { string } target_id id of the member to demote
@@ -92,28 +80,29 @@ router.post('/promote/:target_id', async (req, res) => {
  * @returns a success message if member is successfully demoted, an
  * error message otherwise
  */
-router.post('/demote/:target_id', async (req, res) => {
+app.post('/demote', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
-  var { target_id } = req.params;
-  var { event_id } = req.body;
+  var { event_id, target_id } = req.body;
   var db = firestore();
 
   try {
-    if (!isAdmin(member_id, event_id)) {
+    if (!(await isAdmin(member_id, event_id))) {
       res.status(404).send(`Current user is not authorized to promote members!`);
       return;
     }
 
-    const eventMemberDocRef = await db.collection(EVENT_MEMBERS_COLLECTION).where(
-      "member_id", "==", target_id).where("event_id", "==", event_id).get();
+    const eventMemberDocRef = await db.collection(EVENT_MEMBERS_COLLECTION)
+      .where("member_id", "==", target_id)
+      .where("event_id", "==", event_id).get();
 
     if (!eventMemberDocRef.empty) {
-      const eventMemberID = eventMemberDocRef.docs[0].id;
 
-      // Add member to event admins
-      await db.collection(EVENT_MEMBERS_COLLECTION).doc(eventMemberID).update({
-        is_admin: false
-      })
+      // demote each member
+      eventMemberDocRef.forEach((doc) => {
+        doc.ref.update({
+          is_admin: false
+        })
+      });
 
       res.status(200).send(`Demoted ${target_id} in event ${event_id}`);
     } else {
@@ -135,13 +124,13 @@ router.post('/demote/:target_id', async (req, res) => {
  * @returns { string } a success message if member is successfully added, an
  * error message otherwise
  */
-router.post('/add', async (req, res) => {
+app.post('/add', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { event_id } = req.params;
   var db = firestore();
 
   try {
-    if (!isAdmin(member_id, event_id)) {
+    if (!(await isAdmin(member_id, event_id))) {
       res.status(404).send(`Current user is not authorized to add members!`);
       return;
     }
@@ -178,14 +167,14 @@ router.post('/add', async (req, res) => {
  * @returns a success message if member is successfully deleted, an
  * error message otherwise
  */
-router.post('/delete/:target_id', async (req, res) => {
+app.post('/delete/:target_id', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { target_id } = req.params;
   var { event_id } = req.body;
   var db = firestore();
 
   try {
-    if (!isAdmin(member_id, event_id)) {
+    if (!(await isAdmin(member_id, event_id))) {
       res.status(404).send(`Current user is not authorized to delete members!`);
       return;
     }
@@ -210,4 +199,4 @@ router.post('/delete/:target_id', async (req, res) => {
 });
 
 
-module.exports = router;
+module.exports = app;

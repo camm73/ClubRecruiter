@@ -1,29 +1,43 @@
+const app = require("../express_generator")();
 var { firestore } = require('firebase-admin');
-var admin = require('firebase-admin');
-var express = require('express');
-var router = express.Router();
 var crypto = require('crypto');
 
-const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE } = require('../constants');
+const { EVENTS_COLLECTION, EVENT_MEMBERS_COLLECTION, CODE_LENGTH, MEMBER_CODE, CANDIDATE_CODE, CLUB_MEMBERS_COLLECTION, CANDIDATES_COLLECTION, COMMENTS_COLLECTION, CLOUD_STORAGE_BUCKET_URL } = require('../constants');
 const { validateFirebaseIdToken } = require('../auth');
+const { isAdmin, deleteFile } = require('../util');
+
+async function getEventMembers(event_id, is_admin) {
+  var db = firestore();
+  var eventMemberRef = await db.collection(EVENT_MEMBERS_COLLECTION)
+    .where("event_id", "==", event_id)
+    .where('is_admin', "==", is_admin)
+    .get();
+
+  var member_id_list = [];
+  eventMemberRef.forEach((doc) => {
+    member_id_list.push(doc.data().member_id)
+  });
+
+  return member_id_list;
+}
 
 /**
  * Lists all events a ClubMember is a member of
- * @name GET/event/list/:member_id
+ * @name GET/event/by_member
  * @function
  * @param {string} member_id
- * @returns { Object[] } a list of events the ClubMember is a member or admin of
+ * @returns { string[] } a list of event_id's the ClubMember is a member or admin of
  */
-router.get('/list/:member_id', async function (req, res) {
+app.get('/by_member', validateFirebaseIdToken, async function (req, res) {
   try {
-    var { member_id } = req.params;
+    var member_id = req.user.uid;
 
     var db = firestore();
     const membersEventsRes = await db.collection(EVENT_MEMBERS_COLLECTION).where("member_id", "==", member_id).get();
 
     if (membersEventsRes.empty) {
       console.log("No matching documents!");
-      res.status(404).send(`Can't find member with member_id == ${member_id}`);
+      res.status(404).send(`Can't find member with member_id ${member_id}`);
       return;
     }
 
@@ -34,7 +48,7 @@ router.get('/list/:member_id', async function (req, res) {
 
     res.status(200).send(eventList);
   } catch (e) {
-    res.status(404).send(`Error adding document with ID: ${docRef.id}`);
+    res.status(404).send(`Error finding events by member: ${e}`);
   }
 });
 
@@ -48,19 +62,41 @@ router.get('/list/:member_id', async function (req, res) {
  * eventCoverPictureUrl, eventCode, accessCode, list[members], list[organizers],
  * list[candidates]
  */
-router.get('/:event_id', async (req, res) => {
+app.get('/:event_id', async (req, res) => {
   var { event_id } = req.params;
   var db = firestore();
   try {
     var docRef = await db.collection(EVENTS_COLLECTION).doc(event_id).get();
     if (docRef.exists) {
-      res.status(200).send(docRef.data());
+      var data = docRef.data();
+      data.members = await getEventMembers(event_id, false);
+      data.admins = await getEventMembers(event_id, true);
+      res.status(200).send(data);
     } else {
       res.status(404).send(`Event with event_id: ${event_id} doesn't exist!`)
     }
   } catch (e) {
     res.status(404).send(`Error retrieving event: ${e}`)
   }
+});
+
+/**
+ * Checks whether or not the current member is an admin of the given event
+ * @name GET/event/is_admin
+ * @function
+ * @param {string} member_id
+ * @param {string} event_id
+ * @returns { boolean } true if the current member is an admin of event_id,
+ * false otherwise
+ */
+app.get('/is_admin', validateFirebaseIdToken, async (req, res) => {
+  var member_id = req.user.uid;
+  var { event_id } = req.query;
+
+  var is_admin = await isAdmin(member_id, event_id);
+  res.status(200).send({
+    is_admin: is_admin
+  });
 });
 
 
@@ -75,7 +111,7 @@ router.get('/:event_id', async (req, res) => {
  * @returns { [string, string] } candidate_code and member_code to the frontend to
  * be distributed to ClubMembers as well as Candidates
  */
-router.post('/create', validateFirebaseIdToken, async (req, res) => {
+app.post('/create', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { event_name, event_description, event_cover_pic_id } = req.body;
 
@@ -132,17 +168,18 @@ router.post('/create', validateFirebaseIdToken, async (req, res) => {
  * @returns { string } the candidate code of the event if successful, an
  * error message otherwise
  */
-router.post('/member_join', validateFirebaseIdToken, async (req, res) => {
+app.post('/member_join', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
   var { member_code } = req.body;
   var db = firestore();
+
+  member_code = member_code.toLowerCase();
 
   try {
     var eventDocRef = await db
       .collection(EVENTS_COLLECTION)
       .where(MEMBER_CODE, "==", member_code).get();
 
-    var event = eventDocRef.docs[0];
     var event_id = eventDocRef.docs[0].id;
 
     // Check if the database already has an existing document
@@ -165,7 +202,7 @@ router.post('/member_join', validateFirebaseIdToken, async (req, res) => {
       });
 
       res.status(200).send({
-        candidate_code: event.data()[CANDIDATE_CODE]
+        event_id: event_id
       });
       return;
     } else {
@@ -179,19 +216,93 @@ router.post('/member_join', validateFirebaseIdToken, async (req, res) => {
   }
 });
 
+/**
+ * Admin adds member to a given event
+ * @name POST/event/member_add
+ * @function
+ * @param { string } member_id 
+ * @param { string } event_id
+ * @param { string } target_id
+ * @returns { string } the candidate code of the event if successful, an
+ * error message otherwise
+ */
+app.post('/member_add', validateFirebaseIdToken, async (req, res) => {
+  var member_id = req.user.uid;
+  var { event_id, target_id } = req.body;
+  var db = firestore();
+
+
+  try {
+    if (!(await (isAdmin(member_id, event_id)))) {
+      res.status(404).send("The current member is not an admin of the event!");
+      return;
+    }
+
+    // Check if the database already has an existing document
+    var memberEventRef = await db
+      .collection(EVENT_MEMBERS_COLLECTION)
+      .where("member_id", "==", target_id)
+      .where("event_id", "==", event_id)
+      .get();
+
+    if (!memberEventRef.empty) {
+      res.status(404).send(`Cannot add member to an event that they've already joined!`);
+      return;
+    }
+
+    await db.collection(EVENT_MEMBERS_COLLECTION).add({
+      member_id: member_id,
+      event_id: event_id,
+      is_admin: false,
+    });
+
+    res.status(200).send({
+      event_id: event_id
+    });
+    return;
+
+  } catch (e) {
+    res.status(404).send(e);
+    return;
+  }
+});
+
+
+
 
 
 /**
  * Deletes a member from an event
  * @name DELETE/event/delete_member
  * @function
- * @param { string } target_id 
+ * @param { string } target_id is the member_id that we wish to delete
  * @param { string } event_id
  * @returns a success message if member is successfully deleted, an
  * error message otherwise
  */
-router.delete('/delete_member', async (req, res) => {
-  res.status(200).send(`Ok`);
+app.delete('/delete_member', validateFirebaseIdToken, async (req, res) => {
+  var member_id = req.user.uid;
+  var { target_id, event_id } = req.body;
+  try {
+    if (!(await (isAdmin(member_id, event_id)))) {
+      res.status(404).send("The current member is not an admin of the event!");
+      return;
+    }
+
+    var db = firestore();
+    var eventMemberDocRef = await db.collection(EVENT_MEMBERS_COLLECTION)
+      .where("member_id", "==", target_id)
+      .where("event_id", "==", event_id).get();
+
+    eventMemberDocRef.forEach((event_member) => {
+      event_member.ref.delete();
+    })
+
+    res.status(200).send("Member deleted successfully!");
+  } catch (e) {
+    res.status(404).send(`Error: ${e}`);
+  }
+
 });
 
 
@@ -205,8 +316,60 @@ router.delete('/delete_member', async (req, res) => {
  * @returns { string } a success message if the event delete is successful, an
  * error message otherwise
  */
-router.delete('/delete', async (req, res) => {
-  res.status(200).send(`Ok`);
+app.delete('/delete', validateFirebaseIdToken, async (req, res) => {
+  var member_id = req.user.uid;
+  var { event_id } = req.body;
+  var db = firestore();
+
+  if (!(await isAdmin(member_id, event_id))) {
+    res.status(404).send(`Non-admin cannot delete an event!`);
+    return;
+  }
+
+  try {
+    // delete all entries in the ClubMembers_Events collection 
+    // delete all candidates under the event
+    // delete all comments under this event
+    // Finally, delete the event from Events collection
+    var eventMemberRef = await db.collection(EVENT_MEMBERS_COLLECTION)
+      .where("event_id", "==", event_id)
+      .get();
+
+    eventMemberRef.forEach((doc) => {
+      doc.ref.delete();
+    });
+
+    var eventRef = db.collection(EVENTS_COLLECTION)
+      .doc(event_id);
+
+    var candidate_code = (await eventRef.get()).data().candidate_code;
+
+    var candidateRef = await db.collection(CANDIDATES_COLLECTION)
+      .where(CANDIDATE_CODE, "==", candidate_code)
+      .get();
+
+    candidateRef.forEach(async (doc) => {
+      deleteFile(`resume/${doc.data().resume_id}`);
+      doc.ref.delete();
+    });
+
+    var commentRef = await db.collection(COMMENTS_COLLECTION)
+      .where("event_id", "==", event_id)
+      .get();
+
+    commentRef.forEach((doc) => {
+      doc.ref.delete();
+    })
+
+    var event_cover_pic_id = (await eventRef.get()).data().cover_pic_id;
+    deleteFile(`eventCoverPhoto/${event_cover_pic_id}`);
+
+    eventRef.delete();
+    res.status(200).send("Delete success!");
+
+  } catch (error) {
+    res.status(404).send(error);
+  }
 });
 
-module.exports = router;
+module.exports = app;

@@ -3,7 +3,7 @@ import { Controller } from 'react-hook-form';
 import React from 'react';
 
 const FormTextField = ({
-  name, label, control, required, multiline, defaultValue, disabled,
+  name, label, control, required, multiline, defaultValue, disabled, width = 0.5,
 }) => (
   <Controller
     name={name}
@@ -23,7 +23,7 @@ const FormTextField = ({
         minRows={12}
         sx={{
           mb: 2,
-          width: 0.5,
+          width,
           '& .MuiOutlinedInput-root': {
             backgroundColor: '#F9F9F9',
           },

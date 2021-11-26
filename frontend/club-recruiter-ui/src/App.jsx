@@ -4,7 +4,8 @@ import {
   Switch,
   Route,
 } from 'react-router-dom';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import { recruitMeTheme } from './styles/MaterialStyle';
 
 import EventRouter from './routers/EventRouter';
 import Home from './pages/Home';
@@ -15,19 +16,9 @@ import CreateEvent from './pages/CreateEvent';
 import ProtectedRoute from './components/ProtectedRoute';
 import ApplyRouter from './routers/ApplyRouter';
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#FCDDEC',
-      light: '#FEF8F8',
-      contrastText: '#EF5DA8',
-    },
-  },
-});
-
 function App() {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={recruitMeTheme}>
       <div>
         <Router>
           <Switch>
@@ -44,19 +35,16 @@ function App() {
               <ProtectedRoute>
                 <MemberDashboard />
               </ProtectedRoute>
-              {/* <MemberDashboard /> */}
             </Route>
             <Route path="/event">
               <ProtectedRoute>
                 <EventRouter />
               </ProtectedRoute>
-              {/* <EventRouter /> */}
             </Route>
             <Route path="/createEvent">
               <ProtectedRoute>
                 <CreateEvent />
               </ProtectedRoute>
-              {/* <CreateEvent /> */}
             </Route>
             <Route path="*">
               <NoRoute />

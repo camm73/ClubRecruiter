@@ -7,10 +7,13 @@ import {
 import '../styles/CandidateProfile.css';
 import { DialogContent } from '@material-ui/core';
 import Close from '@mui/icons-material/Close';
+import { useParams } from 'react-router-dom';
 
-import { getCandidate } from '../api/candidate';
+import { getCandidate, acceptCandidate, rejectCandidate } from '../api/candidate';
 import { getCommentList, postComment } from '../api/comments';
+import { getResumeLink } from '../api/firebase';
 import CommentBubble from './CommentBubble';
+import ConfirmationDialog from './ConfirmationDialog';
 
 const CandidateProfile = ({ open, candidateID, closeHandler }) => {
   const [candidateName, setCandidateName] = useState('');
@@ -20,33 +23,46 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
   const [candidateResumeID, setCandidateResumeID] = useState('');
   const [commentIDList, setCommentIDList] = useState([]);
   const [commentText, setCommentText] = useState('');
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [confirmationAction, setConfirmationAction] = useState(async () => {});
+  const { eventID } = useParams();
 
   // Max length of 200 characters
   const MAX_COMMENT_LENGTH = 200;
-
-  // Query for candidate details upon load
-  useEffect(async () => {
-    const currentCandidate = await getCandidate(candidateID);
-    const commentList = await getCommentList(candidateID);
-    setCandidateName(currentCandidate.name);
-    setCandidatePhoneNumber(currentCandidate.phoneNumber);
-    setCandidateEmail(currentCandidate.email);
-    setCandidateApplicationStatus(currentCandidate.applicationStatus);
-    setCandidateResumeID(currentCandidate.resumeID);
-    setCommentIDList(commentList);
-  }, []);
 
   const updateCommentList = async () => {
     const commentList = await getCommentList(candidateID);
     setCommentIDList(commentList);
   };
 
-  const downloadResume = (resumeID) => {
-    console.log(`Downloading resume: ${resumeID}`);
+  const viewResume = async (resumeID) => {
+    const resumeLink = await getResumeLink(resumeID);
+    window.open(resumeLink);
   };
 
+  const resetModal = () => {
+    setCandidateName('');
+    setCandidatePhoneNumber('');
+    setCandidateEmail('');
+    setCandidateApplicationStatus('');
+    setCandidateResumeID('');
+    setCommentIDList([]);
+  };
+
+  // Query for candidate details upon load
+  useEffect(async () => {
+    if (candidateID === undefined || !candidateID.length) return;
+    const currentCandidate = await getCandidate(candidateID);
+    setCandidateName(currentCandidate.name);
+    setCandidatePhoneNumber(currentCandidate.phone_number);
+    setCandidateEmail(currentCandidate.email);
+    setCandidateApplicationStatus(currentCandidate.application_status);
+    setCandidateResumeID(currentCandidate.resume_id);
+    await updateCommentList();
+  }, [candidateID]);
+
   const handleSubmitComment = async () => {
-    await postComment(candidateID, commentText, 'memberID');
+    await postComment(candidateID, commentText, eventID);
     setCommentText('');
     await updateCommentList();
   };
@@ -72,68 +88,146 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
           </Typography>
         </div>
       </CardContent>
-      <CardActions sx={{ backgroundColor: 'lightgrey', display: 'flex', justifyContent: 'center' }}>
-        <Button size="small" sx={{ minWidth: '100vw', minHeight: '30px' }} onClick={() => downloadResume(candidateResumeID)}>Download Resume</Button>
+      <CardActions sx={{
+        backgroundColor: 'lightgrey', display: 'flex', justifyContent: 'center', flexDirection: 'row',
+      }}
+      >
+        <Button
+          size="small"
+          style={{
+            minHeight: '30px', backgroundColor: 'gray', borderRadius: '10px', padding: '10px',
+          }}
+          onClick={() => viewResume(candidateResumeID)}
+        >
+          View Resume
+        </Button>
+        <Button
+          size="small"
+          style={{
+            minHeight: '30px', backgroundColor: 'red', borderRadius: '10px', padding: '10px',
+          }}
+          onClick={() => {
+            setConfirmationAction(() => () => {
+              rejectCandidate(candidateID);
+              return 'rejected';
+            });
+            setConfirmationOpen(true);
+          }}
+        >
+          Reject Candidate
+        </Button>
+        <Button
+          size="small"
+          style={{
+            minHeight: '30px', backgroundColor: 'green', borderRadius: '10px', padding: '10px',
+          }}
+          onClick={() => {
+            setConfirmationAction(() => () => {
+              acceptCandidate(candidateID);
+              return 'accepted';
+            });
+            setConfirmationOpen(true);
+          }}
+        >
+          Accept Candidate
+        </Button>
       </CardActions>
     </Card>
   );
 
   return (
-    <Dialog fullWidth sx={{ textAlign: 'center' }} maxWidth="sm" open={open} onBackdropClick={closeHandler}>
-      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-        <div style={{ position: 'absolute', left: '10px', top: '10px' }}>
-          <Button startIcon={<Close />} onClick={closeHandler} />
-        </div>
-        <Typography variant="h5" sx={{ padding: 1 }}>
-          {candidateName}
-        </Typography>
-      </div>
-      <DialogContent>
-        <DetailCard />
-        <Typography variant="h6" sx={{ paddingTop: 1 }}>
-          Comments
-        </Typography>
-        <div style={{
-          overflowX: 'hidden', overflowY: 'auto', height: '200px', paddingTop: '5px',
+    <div>
+      <ConfirmationDialog
+        open={confirmationOpen}
+        closeHandler={() => setConfirmationOpen(false)}
+        yesAction={() => {
+          const newStatus = confirmationAction();
+          setConfirmationOpen(false);
+          setCandidateApplicationStatus(newStatus);
         }}
-        >
-          {commentIDList.map((currID) => (
-            <CommentBubble commentID={currID} />
-          ))}
-        </div>
-        <div style={{
-          display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px',
+        title="Confirm Application Status Change"
+        bodyText={`Are you sure you want to change the application status of candidate: ${candidateName}?`}
+      />
+      <Dialog
+        fullWidth
+        sx={{ textAlign: 'center' }}
+        maxWidth="sm"
+        open={open}
+        onBackdropClick={() => {
+          closeHandler();
+          resetModal();
         }}
-        >
-          <TextField
-            fullWidth
-            multiline
-            id="outlined-basic"
-            label="Type a comment"
-            value={commentText}
-            variant="outlined"
-            onChange={(e) => {
-              if (e.target.value.length <= MAX_COMMENT_LENGTH) {
-                setCommentText(e.target.value);
-              }
-            }}
-          />
-          <Button
-            style={{
-              display: 'flex',
-              borderRadius: '20px',
-              backgroundColor: 'lightgray',
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginLeft: '10px',
-            }}
-            onClick={handleSubmitComment}
+      >
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <div style={{ position: 'absolute', left: '10px', top: '10px' }}>
+            <Button
+              startIcon={<Close />}
+              onClick={() => {
+                closeHandler();
+                resetModal();
+              }}
+            />
+          </div>
+          <Typography variant="h5" sx={{ padding: 1 }}>
+            {candidateName}
+          </Typography>
+        </div>
+        <DialogContent>
+          <DetailCard />
+          <Typography variant="h6" sx={{ paddingTop: 1 }}>
+            Comments
+          </Typography>
+          <div style={{
+            overflowX: 'hidden', overflowY: 'auto', height: '200px', paddingTop: '5px',
+          }}
           >
-            Post
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+            {commentIDList.map((currID) => (
+              <CommentBubble
+                key={currID}
+                commentID={currID}
+                refreshCommentList={updateCommentList}
+              />
+            ))}
+          </div>
+          <div style={{
+            display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px',
+          }}
+          >
+            <TextField
+              fullWidth
+              multiline
+              id="outlined-basic"
+              label="Type a comment"
+              value={commentText}
+              variant="outlined"
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  handleSubmitComment();
+                }
+              }}
+              onChange={(e) => {
+                if (e.target.value.length <= MAX_COMMENT_LENGTH) {
+                  setCommentText(e.target.value);
+                }
+              }}
+            />
+            <Button
+              style={{
+                display: 'flex',
+                borderRadius: '20px',
+                backgroundColor: 'lightgray',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginLeft: '10px',
+              }}
+              onClick={handleSubmitComment}
+            >
+              Post
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 
