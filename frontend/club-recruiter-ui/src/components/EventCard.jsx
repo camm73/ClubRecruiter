@@ -13,7 +13,9 @@ import ConfirmationDialog from './ConfirmationDialog';
 import { getEventDetails, deleteEvent } from '../api/events';
 import { getEventCoverPhotoLink } from '../api/firebase';
 
-const EventCard = ({ clickAction, eventID, refreshAction }) => {
+const EventCard = ({
+  clickAction, eventID, eventDetails, refreshAction,
+}) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [memberCode, setMemberCode] = useState('');
@@ -23,7 +25,12 @@ const EventCard = ({ clickAction, eventID, refreshAction }) => {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
 
   const loadDetails = async () => {
-    const details = await getEventDetails(eventID);
+    let details;
+    if (eventDetails === undefined) {
+      details = await getEventDetails(eventID);
+    } else {
+      details = eventDetails;
+    }
     setTitle(details.name);
     setCandidateCode(details.candidate_code);
     setDescription(details.description);
@@ -34,7 +41,7 @@ const EventCard = ({ clickAction, eventID, refreshAction }) => {
     console.log('Loaded event details on event card');
   };
 
-  useEffect(loadDetails, []);
+  useEffect(loadDetails, [eventID, eventDetails]);
 
   return (
     <div>

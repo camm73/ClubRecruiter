@@ -26,6 +26,7 @@ const EventOverview = () => {
   const [candidateIDList, setCandidateIDList] = useState([]);
   const [profileVisible, setProfileVisible] = useState(false);
   const [profileCandidateID, setProfileCandidateID] = useState('');
+  const [eventDetails, setEventDetails] = useState(undefined);
 
   const location = useLocation();
   const history = useHistory();
@@ -36,10 +37,11 @@ const EventOverview = () => {
   };
 
   const loadEventDetails = async () => {
-    const eventDetails = await getEventDetails(eventID);
-    setMembers(eventDetails.members);
-    setOrganizers(eventDetails.admins);
-    setCandidateIDList(eventDetails.candidates);
+    const details = await getEventDetails(eventID);
+    setEventDetails(details);
+    setMembers(details.members);
+    setOrganizers(details.admins);
+    setCandidateIDList(details.candidates);
   };
 
   // Load events at page mount
@@ -92,6 +94,7 @@ const EventOverview = () => {
         </div>
         <EventCard
           eventID={eventID}
+          eventDetails={eventDetails}
           refreshAction={() => {
             history.push('/dashboard');
           }}
