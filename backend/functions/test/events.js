@@ -601,7 +601,42 @@ describe('Events', () => {
                     }
                 });
         });
+    });
+
+    describe('/GET candidate', () => {
+        it('it should successfully validate candidate code', (done) => {
+            chai.request(DEV_API_ENDPOINT)
+                .get(`/candidate/validate?candidate_code=${existing_candidate_code}`)
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.body.valid).to.equal(true);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+        it('it should fail to validate candidate code', (done) => {
+            chai.request(DEV_API_ENDPOINT)
+                .get(`/candidate/validate?candidate_code=bad-candidate-code`)
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.body.valid).to.equal(false);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
  
+
     });
 
 });
