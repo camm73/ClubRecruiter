@@ -1,4 +1,18 @@
 # RecruitME
+
+## Run Backend
+```
+cd backend/functions
+firebase emulators:start
+```
+To run test suites [optional]
+```
+cd backend/functions
+npm test
+```
+
+## Run Frontend
+
 The following is the directory structure of RecruitMe:
 
 ## frontend/club-recruiter-ui
