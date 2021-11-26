@@ -5,7 +5,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
-import { getEventCandidates, getCandidate } from '../api/candidate';
+import { getCandidate } from '../api/candidate';
 
 const columns = [
   {
@@ -18,14 +18,12 @@ const columns = [
   { field: 'status', headerName: 'Status', width: 130 },
 ];
 
-const CandidateList = ({ eventID, profileOpenHandler }) => {
+const CandidateList = ({ candidateIDList, profileOpenHandler }) => {
   const [candidateRows, setCandidateRows] = useState([]);
 
   const loadCandidates = async () => {
-    const idList = await getEventCandidates(eventID);
-
     const rowArr = [];
-    for (const id of idList) {
+    for (const id of candidateIDList) {
       const currCand = await getCandidate(id);
       currCand.candidate_id = id;
       rowArr.push({
@@ -37,7 +35,7 @@ const CandidateList = ({ eventID, profileOpenHandler }) => {
     setCandidateRows(rowArr);
   };
 
-  useEffect(loadCandidates, []);
+  useEffect(loadCandidates, [candidateIDList]);
 
   return (
     <Container sx={{ height: 400, width: '100%' }}>
