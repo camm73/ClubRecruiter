@@ -36,6 +36,7 @@ const CandidateProfile = ({
   const MAX_COMMENT_LENGTH = 200;
 
   const updateCommentList = async () => {
+    if (candidateID === undefined) return;
     const commentList = await getCommentList(candidateID);
     setCommentIDList(commentList);
   };
@@ -202,13 +203,13 @@ const CandidateProfile = ({
             overflowX: 'hidden', overflowY: 'auto', height: '200px', paddingTop: '5px',
           }}
           >
-            {commentIDList.map((currID) => (
+            {commentIDList !== undefined ? commentIDList.map((currID) => (
               <CommentBubble
                 key={currID}
                 commentID={currID}
                 refreshCommentList={updateCommentList}
               />
-            ))}
+            )) : <div />}
           </div>
           <div style={{
             display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px',
