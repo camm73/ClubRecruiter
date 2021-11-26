@@ -635,6 +635,22 @@ describe('Events', () => {
                     }
                 });
         });
+
+         it('it should get candidate info', (done) => {
+            chai.request(DEV_API_ENDPOINT)
+                .get(`/candidate/${existing_candidate_id}`)
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.body.name).to.equal('Candy Date');
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
  
 
     });
