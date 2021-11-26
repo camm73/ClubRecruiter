@@ -17,17 +17,22 @@ import { useParams } from 'react-router-dom';
 import {
   getMember, promoteMember, demoteMember, removeMember,
 } from '../api/members';
+import { isAdmin } from '../api/events';
 
 const UserEntry = ({
   memberID, canDelete, promotable, refreshFunction,
 }) => {
   const [userName, setUserName] = useState('');
+  const [admin, setAdmin] = useState(false);
   const { eventID } = useParams();
 
   const getUserData = async () => {
     if (memberID === undefined || !memberID.length) return;
     const memberObj = await getMember(memberID);
     setUserName(memberObj.displayName);
+    console.log(`Event ID: ${eventID}`);
+    const adminStatus = await isAdmin(eventID);
+    setAdmin(adminStatus);
   };
 
   useEffect(getUserData, [memberID]);
@@ -42,7 +47,7 @@ const UserEntry = ({
       <ListItemText
         primary={userName}
       />
-      {promotable && (
+      {promotable && admin && (
         <IconButton
           edge="end"
           aria-label="promote"
@@ -58,7 +63,7 @@ const UserEntry = ({
           <ArrowUpwardIcon />
         </IconButton>
       )}
-      {!promotable && (
+      {!promotable && admin && (
         <IconButton
           edge="end"
           aria-label="demote"
@@ -74,14 +79,14 @@ const UserEntry = ({
           <ArrowDownwardIcon />
         </IconButton>
       )}
-      {canDelete && (
+      {canDelete && admin && (
         <IconButton
           edge="end"
           aria-label="delete"
           onClick={async () => {
             const removeSuccess = await removeMember(memberID, eventID);
             if (!removeSuccess) {
-              alert('Failed to remove member from event!');
+              alert('You are not allowed to remove member from event!');
             } else {
               refreshFunction();
             }
