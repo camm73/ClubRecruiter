@@ -57,7 +57,7 @@ let existing_candidate_code = null;
 let existing_candidate_id = null;
 let existing_comment_id = null;
 
-describe('Events', () => {
+describe('API Tests', () => {
     before(async () => {
         try {
             customToken1 = await admin.auth().createCustomToken(uid1);
