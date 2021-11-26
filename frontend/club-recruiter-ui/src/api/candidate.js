@@ -3,8 +3,6 @@ import { auth, cloudFunctionEndpoint } from './firebase';
 const submitCandidateApplication = async (
   candidateCode, email, name, phoneNumber, biography, resumeID,
 ) => {
-  const user = auth.currentUser;
-  const userToken = await user.getIdToken();
   const requestBody = {
     candidate_code: candidateCode,
     email,
@@ -18,7 +16,6 @@ const submitCandidateApplication = async (
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${userToken}`,
       },
       body: JSON.stringify(requestBody),
     });
@@ -35,14 +32,11 @@ const submitCandidateApplication = async (
 };
 
 const validateCandidateCode = async (candidateCode) => {
-  const user = auth.currentUser;
-  const userToken = await user.getIdToken();
   try {
     const response = await fetch(`${cloudFunctionEndpoint}/candidate/validate?candidate_code=${candidateCode}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${userToken}`,
       },
     });
     if (response.status === 200) {
