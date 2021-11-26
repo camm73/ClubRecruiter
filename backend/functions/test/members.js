@@ -1,8 +1,8 @@
-const { getAuth, signInWithCustomToken, connectAuthEmulator } = require('firebase/auth')
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 var expect = require("chai").expect;
 const { DEV_API_ENDPOINT } = require('./constant');
+const { init } = require('./common');
 
 require('dotenv').config();
 
@@ -10,31 +10,15 @@ chai.use(chaiHttp);
 
 
 function members_test(auth, admin){
+describe('Members', () => {
     let existing_event_id = null;
     let existing_member_code = null;
     const uid1 = 'test-uid-1';
     const uid2 = 'test-uid-2';
-    let customToken1 = null;
-    let customToken2 = null;
     let idToken1 = null;
     let idToken2 = null;
     before(async () => {
-        try {
-            customToken1 = await admin.auth().createCustomToken(uid1);
-            customToken2 = await admin.auth().createCustomToken(uid2);
-            // const auth = getAuth(firebaseApp)
-            // connectAuthEmulator(auth, "http://localhost:9099")
-            console.log("connected")
-            const response1  = await signInWithCustomToken(auth, customToken1)
-            console.log("signed in")
-            idToken1 = response1.user.accessToken
-            const response2  = await signInWithCustomToken(auth, customToken2)
-            idToken2 = response2.user.accessToken
-        } catch (error) {
-            console.log("failed!")
-            console.log(error);
-        }
-        
+        ({idToken1, idToken2} = await init(auth, admin));
     })
     describe('Member - intialization', () => {
         it('it should create an event', (done) => {
@@ -182,6 +166,7 @@ function members_test(auth, admin){
                 });
         });
  
+    });
     });
 
 }

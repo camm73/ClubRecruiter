@@ -1,11 +1,9 @@
 const admin = require('firebase-admin');
 const { initializeApp } = require('firebase/app')
-const { getAuth, signInWithCustomToken, connectAuthEmulator } = require('firebase/auth')
+const { getAuth, connectAuthEmulator } = require('firebase/auth')
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-var expect = require("chai").expect;
 const serviceAccount = require('../config/serviceAccountKey.json');
-const { DEV_API_ENDPOINT } = require('./constant');
 
 require('dotenv').config();
 
