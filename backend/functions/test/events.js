@@ -54,6 +54,7 @@ const firebaseApp = initializeApp(firebaseConfig);
 let existing_event_id = null;
 let existing_member_code = null;
 let existing_candidate_code = null;
+let existing_candidate_id = null;
 
 describe('Events', () => {
     before(async () => {
@@ -473,6 +474,58 @@ describe('Events', () => {
 
             chai.request(DEV_API_ENDPOINT)
                 .post(`/member/delete/${uid2}`)
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+ 
+    });
+
+    // ------------------- Candidate tests ---------------------
+    describe('/POST candidate', () => {
+        it('it should add candidate to event', (done) => {
+            let body = {
+                candidate_code: existing_candidate_code,
+                email: 'candy@date.com',
+                name: 'Candy Date',
+                phone_number: 12345,
+                biography: 'I am a candy date',
+                resume_id: 999,
+                profile_pic_id: 811,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .post('/candidate/apply')
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    existing_candidate_id = res.body.candidate_id;
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+        it('it should update candidate status to rejected', (done) => {
+            let body = {
+                status: 'rejected',
+                candidate_id: existing_candidate_id,
+            }
+
+            chai.request(DEV_API_ENDPOINT)
+                .post('/candidate/status')
                 .set('Authorization', 'Bearer ' + idToken1)
                 .set('content-type', 'application/json')
                 .send(body)
