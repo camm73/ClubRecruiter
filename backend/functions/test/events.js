@@ -51,10 +51,11 @@ const firebaseApp = initializeApp(firebaseConfig);
 //     });
 // });
 
+let existing_event_id = null;
+let existing_member_code = null;
+let existing_candidate_code = null;
+
 describe('Events', () => {
-    let existing_event_id = null;
-    let existing_member_code = null;
-    let existing_candidate_code = null;
     before(async () => {
         try {
             customToken1 = await admin.auth().createCustomToken(uid1);
@@ -93,7 +94,6 @@ describe('Events', () => {
                     if (err) {
                         done(err)
                     } else {
-                        console.log(res.body)
                         existing_event_id = res.body.event_id
                         existing_member_code = res.body.member_code
                         existing_candidate_code = res.body.candidate_code
@@ -338,4 +338,36 @@ describe('Events', () => {
 
     });
 
+
+    // ------------------- Member tests ---------------------
+    describe('/GET member', () => {
+        it('it should get a member', (done) => {
+
+            chai.request(DEV_API_ENDPOINT)
+                .get(`/member/${uid1}`)
+                .set('Authorization', 'Bearer ' + idToken1)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+
+         it('it should fail to get a member', (done) => {
+            chai.request(DEV_API_ENDPOINT)
+                .get(`/member/non-existent-uid`)
+                .set('Authorization', 'Bearer ' + idToken1)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(404);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
+    });
 });
