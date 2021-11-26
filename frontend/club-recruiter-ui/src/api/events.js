@@ -135,6 +135,30 @@ const deleteEvent = async (eventID) => {
   }
 };
 
+const isAdmin = async (eventID) => {
+  const user = auth.currentUser;
+  const userToken = await user.getIdToken();
+  try {
+    const response = await fetch(`${cloudFunctionEndpoint}/event/is_admin?event_id=${eventID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+    });
+    if (response.status !== 200) {
+      const errorText = await response.text();
+      console.log(errorText);
+      return false;
+    }
+    const resJson = await response.json();
+    return resJson.is_admin;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
 export {
   // eslint-disable-next-line import/prefer-default-export
   listMemberEvents,
@@ -142,4 +166,5 @@ export {
   getEventDetails,
   createEvent,
   deleteEvent,
+  isAdmin,
 };
