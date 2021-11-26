@@ -22,6 +22,26 @@ async function getEventMembers(event_id, is_admin) {
 }
 
 /**
+ * Checks whether or not the current member is an admin of the given event
+ * @name GET/event/is_admin
+ * @function
+ * @param {string} member_id
+ * @param {string} event_id
+ * @returns { boolean } true if the current member is an admin of event_id,
+ * false otherwise
+ */
+app.get('/is_admin', validateFirebaseIdToken, async (req, res) => {
+  var member_id = req.user.uid;
+  var { event_id } = req.query;
+
+  var is_admin = await isAdmin(member_id, event_id);
+  res.status(200).send({
+    is_admin: is_admin
+  });
+});
+
+
+/**
  * Lists all events a ClubMember is a member of
  * @name GET/event/by_member
  * @function
@@ -78,25 +98,6 @@ app.get('/:event_id', async (req, res) => {
   } catch (e) {
     res.status(404).send(`Error retrieving event: ${e}`)
   }
-});
-
-/**
- * Checks whether or not the current member is an admin of the given event
- * @name GET/event/is_admin
- * @function
- * @param {string} member_id
- * @param {string} event_id
- * @returns { boolean } true if the current member is an admin of event_id,
- * false otherwise
- */
-app.get('/is_admin', validateFirebaseIdToken, async (req, res) => {
-  var member_id = req.user.uid;
-  var { event_id } = req.query;
-
-  var is_admin = await isAdmin(member_id, event_id);
-  res.status(200).send({
-    is_admin: is_admin
-  });
 });
 
 
