@@ -1,75 +1,23 @@
-const admin = require('firebase-admin');
-const { initializeApp } = require('firebase/app')
-const { getAuth, signInWithCustomToken, connectAuthEmulator } = require('firebase/auth')
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 var expect = require("chai").expect;
-var request = require("request");
-const rp = require('request-promise');
-const serviceAccount = require('../config/serviceAccountKey.json');
 const { DEV_API_ENDPOINT } = require('./constant');
+const { init } = require('./common');
 
 require('dotenv').config();
 
-// var url ="https://semaphoreci.com/community/tutorials/getting-started-with-node-js-and-mocha"
-
-const uid1 = 'test-uid-1';
-const uid2 = 'test-uid-2';
-const member_id_3 = 'IAmAMember'
-let customToken1 = null;
-let customToken2 = null;
-let idToken1 = null;
-let idToken2 = null;
-
-
 chai.use(chaiHttp);
 
-// console.log(firebaseConfig)
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
 
-const firebaseConfig = {
-    apiKey: process.env.REACT_APP_API_KEY,
-    authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-    projectId: process.env.REACT_APP_PROJECT_ID,
-    storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-    messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
-    appId: process.env.REACT_APP_APP_ID,
-};
-  
-  
-const firebaseApp = initializeApp(firebaseConfig);
-  
-// No more base API, so will remove this test
-// describe("Base API", function () {
-//     it("returns status 200", function (done) {
-//         request(DEV_API_ENDPOINT, function (error, response, body) {
-//             expect(response.statusCode).to.equal(200);
-//             done();
-//         });
-//     });
-// });
-
+function events_test(auth, admin){
 describe('Events', () => {
     let existing_event_id = null;
     let existing_member_code = null;
-    let existing_candidate_code = null;
+    const member_id_3 = 'IAmAMember'
+    let idToken1 = null;
+    let idToken2 = null;
     before(async () => {
-        try {
-            customToken1 = await admin.auth().createCustomToken(uid1);
-            customToken2 = await admin.auth().createCustomToken(uid2);
-            const auth = getAuth(firebaseApp)
-            connectAuthEmulator(auth, "http://localhost:9099")
-            const response1  = await signInWithCustomToken(auth, customToken1)
-            idToken1 = response1.user.accessToken
-            const response2  = await signInWithCustomToken(auth, customToken2)
-            idToken2 = response2.user.accessToken
-        } catch (error) {
-            console.log("failed!")
-            console.log(error);
-        }
-        
+        ({idToken1, idToken2} = await init(auth, admin));
     })
     /*
     * Test the /POST route
@@ -93,9 +41,11 @@ describe('Events', () => {
                     if (err) {
                         done(err)
                     } else {
-                        console.log(res.body)
+                        expect(res.body).to.have.property('event_id')
                         existing_event_id = res.body.event_id
+                        expect(res.body).to.have.property('member_code')
                         existing_member_code = res.body.member_code
+                        expect(res.body).to.have.property('candidate_code')
                         existing_candidate_code = res.body.candidate_code
                         done()
                     }
@@ -118,6 +68,7 @@ describe('Events', () => {
                     if (err) {
                         done(err)
                     } else {
+                        expect(res.body).to.have.property('event_id', existing_event_id)
                         done()
                     }
                 });
@@ -141,6 +92,7 @@ describe('Events', () => {
                     if (err) {
                         done(err)
                     } else {
+                        expect(res.body).to.have.property('event_id', existing_event_id)
                         done()
                     }
                 });
@@ -177,6 +129,7 @@ describe('Events', () => {
     */
     describe('/GET event', () => {
         // TODO: test promotion/demotion
+
         it('it should fail to get an event', (done) => {
 
             chai.request(DEV_API_ENDPOINT)
@@ -338,4 +291,10 @@ describe('Events', () => {
 
     });
 
-});
+    });
+
+
+}
+
+module.exports = { events_test };
+
