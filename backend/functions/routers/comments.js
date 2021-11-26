@@ -101,7 +101,9 @@ app.post('/add', validateFirebaseIdToken, async (req, res) => {
     await db.collection(CANDIDATES_COLLECTION).doc(candidate_id).update({
       comments: firestore.FieldValue.arrayUnion(commentRef.id)
     })
-    res.status(200).send(`Successfully added comment`);
+    res.status(200).send({
+      comment_id: commentRef.id
+    });
   } catch (e) {
     res.status(404).send(`Error: ${e}`);
   }
