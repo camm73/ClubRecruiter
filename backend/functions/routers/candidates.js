@@ -26,7 +26,7 @@ app.get('/validate', async function (req, res) {
       valid: valid
     });
   } catch (e) {
-    res.status(404).send(`Error retrieving candidate: ${e}`);
+    res.status(404).send(`Error validating candidate code: ${e}`);
   }
 });
 
