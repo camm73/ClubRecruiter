@@ -25,7 +25,6 @@ const EventOverview = () => {
   const [organizers, setOrganizers] = useState([]);
   const [profileVisible, setProfileVisible] = useState(false);
   const [profileCandidateID, setProfileCandidateID] = useState('');
-  const [candidateCode, setCandidateCode] = useState('');
 
   const location = useLocation();
   const history = useHistory();
@@ -37,7 +36,6 @@ const EventOverview = () => {
 
   const loadEventDetails = async () => {
     const eventDetails = await getEventDetails(eventID);
-    setCandidateCode(eventDetails.candidate_code);
     setMembers(eventDetails.members);
     setOrganizers(eventDetails.admins);
   };
@@ -47,7 +45,7 @@ const EventOverview = () => {
 
   return (
     <Container sx={{ display: 'flex' }}>
-      <Header pageName={`Event Management: ${candidateCode}`} />
+      <Header pageName="Event Management" authRoute />
       <Drawer
         variant="permanent"
         sx={{

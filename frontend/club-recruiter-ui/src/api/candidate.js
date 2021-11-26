@@ -145,6 +145,33 @@ const getEventCandidates = async (eventID) => {
   }
 };
 
+const deleteCandidate = async (candidateID) => {
+  const user = auth.currentUser;
+  const userToken = await user.getIdToken();
+  const requestBody = {
+    candidate_id: candidateID,
+  };
+  try {
+    const response = await fetch(`${cloudFunctionEndpoint}/candidate/delete`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+    if (response.status !== 200) {
+      const errorText = await response.text();
+      console.log(errorText);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
 export {
   // eslint-disable-next-line import/prefer-default-export
   validateCandidateCode,
@@ -153,4 +180,5 @@ export {
   acceptCandidate,
   rejectCandidate,
   getEventCandidates,
+  deleteCandidate,
 };
