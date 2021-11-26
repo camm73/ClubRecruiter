@@ -651,7 +651,24 @@ describe('Events', () => {
                     }
                 });
         });
+
+        it('it should fail to get candidate info', (done) => {
+            chai.request(DEV_API_ENDPOINT)
+                .get(`/candidate/nosuchcandidate`)
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(404);
+                    if (err) {
+                        done(err)
+                    } else {
+                        done()
+                    }
+                });
+        });
  
+
+
 
     });
 

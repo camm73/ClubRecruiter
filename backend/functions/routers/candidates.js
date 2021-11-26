@@ -45,8 +45,12 @@ app.get('/:candidate_id', async function (req, res) {
   try {
     var db = firestore();
     const candidateRes = await db.collection(CANDIDATES_COLLECTION).doc(candidate_id).get();
-
-    res.status(200).send(candidateRes.data());
+    
+    if (candidateRes.data() == undefined) {
+      res.status(404).send(`Error retrieving candidate: ${candidate_id}`);
+    } else {
+      res.status(200).send(candidateRes.data());
+    }
   } catch (e) {
     res.status(404).send(`Error retrieving candidate: ${e}`);
   }
