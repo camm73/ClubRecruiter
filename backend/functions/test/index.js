@@ -11,6 +11,7 @@ require('dotenv').config();
 
 const events = require('./events')
 const candidates = require('./candidates')
+const members = require('./members')
 
 chai.use(chaiHttp);
 
@@ -32,6 +33,9 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 
 describe('run all tests', () => {
-    events.events_test(firebaseApp,admin);
-    candidates.candidates_test(firebaseApp,admin);
+    const auth = getAuth(firebaseApp)
+    connectAuthEmulator(auth, "http://localhost:9099")
+    members.members_test(auth, admin);
+    events.events_test(auth, admin);
+    candidates.candidates_test(auth,admin);
 });

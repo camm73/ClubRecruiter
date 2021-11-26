@@ -9,7 +9,7 @@ require('dotenv').config();
 chai.use(chaiHttp);
 
 
-function events_test(firebaseApp, admin){
+function events_test(auth, admin){
 describe('Events', () => {
     let existing_event_id = null;
     let existing_member_code = null;
@@ -25,8 +25,6 @@ describe('Events', () => {
         try {
             customToken1 = await admin.auth().createCustomToken(uid1);
             customToken2 = await admin.auth().createCustomToken(uid2);
-            const auth = getAuth(firebaseApp)
-            connectAuthEmulator(auth, "http://localhost:9099")
             console.log("connected")
             const response1  = await signInWithCustomToken(auth, customToken1)
             console.log("signed in")
