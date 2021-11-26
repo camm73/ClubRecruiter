@@ -20,22 +20,32 @@ import {
 import { isAdmin } from '../api/events';
 
 const UserEntry = ({
-  memberID, canDelete, promotable, refreshFunction,
+  memberID, canDelete, promotable, refreshFunction, memberCount,
 }) => {
   const [userName, setUserName] = useState('');
   const [admin, setAdmin] = useState(false);
+  const [organizerEnabled, setOrganizerEnabled] = useState(false);
   const { eventID } = useParams();
 
   const getUserData = async () => {
     if (memberID === undefined || !memberID.length) return;
     const memberObj = await getMember(memberID);
     setUserName(memberObj.displayName);
-    console.log(`Event ID: ${eventID}`);
     const adminStatus = await isAdmin(eventID);
     setAdmin(adminStatus);
   };
 
+  const updateOrganizerEnabled = () => {
+    // I.e. if only 1 organizer is left
+    if (memberCount <= 1 && !promotable) {
+      setOrganizerEnabled(false);
+    } else {
+      setOrganizerEnabled(true);
+    }
+  };
+
   useEffect(getUserData, [memberID]);
+  useEffect(updateOrganizerEnabled, [memberCount]);
 
   return (
     <ListItem>
@@ -63,7 +73,7 @@ const UserEntry = ({
           <ArrowUpwardIcon />
         </IconButton>
       )}
-      {!promotable && admin && (
+      {!promotable && admin && organizerEnabled && (
         <IconButton
           edge="end"
           aria-label="demote"
@@ -79,7 +89,7 @@ const UserEntry = ({
           <ArrowDownwardIcon />
         </IconButton>
       )}
-      {canDelete && admin && (
+      {canDelete && admin && organizerEnabled && (
         <IconButton
           edge="end"
           aria-label="delete"
@@ -109,6 +119,7 @@ function generate(memberIDList, refreshFunction, canDelete = true, promotable = 
         canDelete={canDelete}
         promotable={promotable}
         refreshFunction={refreshFunction}
+        memberCount={memberIDList.length}
       />
     ),
   );
