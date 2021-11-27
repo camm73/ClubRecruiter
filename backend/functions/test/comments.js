@@ -111,6 +111,7 @@ describe('Comments', () => {
                 .set('content-type', 'application/json')
                 .end((err, res) => {
                     expect(res.statusCode).to.equal(200);
+                    expect(res.body).to.have.property('comment')
                     if (err) {
                         done(err)
                     } else {

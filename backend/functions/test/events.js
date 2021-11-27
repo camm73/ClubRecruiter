@@ -13,7 +13,7 @@ function events_test(auth, admin){
 describe('Events', () => {
     let existing_event_id = null;
     let existing_member_code = null;
-    const member_id_3 = 'IAmAMember'
+    const member_id_2 = 'test-uid-2'
     let idToken1 = null;
     let idToken2 = null;
     before(async () => {
@@ -23,60 +23,34 @@ describe('Events', () => {
     * Test the /POST route
     */
     describe('/POST event', () => {
-        context('the creator of the event tries to create an event and add members', () => { 
-            it('it should create an event', (done) => {
+        it('it should create an event', (done) => {
 
-                let body = {
-                    event_name: "The event",
-                    event_description: "Event desc",
-                    event_cover_pic_id: "Coverpic id"
-                }
+            let body = {
+                event_name: "The event",
+                event_description: "Event desc",
+                event_cover_pic_id: "Coverpic id"
+            }
 
-                chai.request(DEV_API_ENDPOINT)
-                    .post('/event/create')
-                    .set('Authorization', 'Bearer ' + idToken1)
-                    .set('content-type', 'application/json')
-                    .send(body)
-                    .end((err, res) => {
-                        expect(res.statusCode).to.equal(200);
-                        if (err) {
-                            done(err)
-                        } else {
-                            expect(res.body).to.have.property('event_id')
-                            existing_event_id = res.body.event_id
-                            expect(res.body).to.have.property('member_code')
-                            existing_member_code = res.body.member_code
-                            expect(res.body).to.have.property('candidate_code')
-                            existing_candidate_code = res.body.candidate_code
-                            done()
-                        }
-                    });
-            });
-
-            it('it should add member to event', (done) => {
-
-                let body = {
-                    event_id: existing_event_id,
-                    target_id: member_id_3,
-                }
-    
-                chai.request(DEV_API_ENDPOINT)
-                    .post('/event/member_add')
-                    .set('Authorization', 'Bearer ' + idToken1)
-                    .set('content-type', 'application/json')
-                    .send(body)
-                    .end((err, res) => {
-                        expect(res.statusCode).to.equal(200);
-                        if (err) {
-                            done(err)
-                        } else {
-                            expect(res.body).to.have.property('event_id', existing_event_id)
-                            done()
-                        }
-                    });
-            });
-    
-        })
+            chai.request(DEV_API_ENDPOINT)
+                .post('/event/create')
+                .set('Authorization', 'Bearer ' + idToken1)
+                .set('content-type', 'application/json')
+                .send(body)
+                .end((err, res) => {
+                    expect(res.statusCode).to.equal(200);
+                    if (err) {
+                        done(err)
+                    } else {
+                        expect(res.body).to.have.property('event_id')
+                        existing_event_id = res.body.event_id
+                        expect(res.body).to.have.property('member_code')
+                        existing_member_code = res.body.member_code
+                        expect(res.body).to.have.property('candidate_code')
+                        existing_candidate_code = res.body.candidate_code
+                        done()
+                    }
+                });
+        });    
 
         context('another user with the member code tries to join the event', () => {
             it('it should be able to join the event', (done) => {
@@ -99,6 +73,27 @@ describe('Events', () => {
                             done()
                         }
                     });
+            it('it should fail to join an event after already being a part of it', (done) => {
+
+                let body = {
+                    member_code:  existing_member_code,
+                }
+    
+                chai.request(DEV_API_ENDPOINT)
+                    .post('/event/member_join')
+                    .set('Authorization', 'Bearer ' + idToken1)
+                    .set('content-type', 'application/json')
+                    .send(body)
+                    .end((err, res) => {
+                        expect(res.statusCode).to.equal(404);
+                        if (err) {
+                            done(err)
+                        } else {
+                            done()
+                        }
+                    });
+            });
+
             });
         })
 
@@ -201,26 +196,6 @@ describe('Events', () => {
     })
 
     describe('/DELETE event', () => {
-        it('it should fail to add an existing member to event', (done) => {
-
-            let body = {
-                member_code:  existing_member_code,
-            }
-
-            chai.request(DEV_API_ENDPOINT)
-                .post('/event/member_join')
-                .set('Authorization', 'Bearer ' + idToken1)
-                .set('content-type', 'application/json')
-                .send(body)
-                .end((err, res) => {
-                    expect(res.statusCode).to.equal(404);
-                    if (err) {
-                        done(err)
-                    } else {
-                        done()
-                    }
-                });
-        });
         
         context ('non-organizer tries to modify event', () => {
             it('it should not delete event', (done) => {
@@ -248,7 +223,7 @@ describe('Events', () => {
         context('organizer tries to modify event', () => {
             it('it should delete member from event', (done) => {
                 let body = {
-                    target_id: member_id_3,
+                    target_id: member_id_2,
                     event_id: existing_event_id,
                 }
     
