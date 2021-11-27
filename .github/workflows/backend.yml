@@ -14,7 +14,9 @@ jobs:
         run: npm i
       - name: Run setup
         working-directory: ./backend/functions
-        run: npm run setup
+        run: |
+          npm install -g firebase-tools
+          npm run setup
       - name: Run tests
         working-directory: ./backend/functions
         run: |
