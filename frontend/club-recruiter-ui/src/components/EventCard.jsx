@@ -14,7 +14,7 @@ import { getEventDetails, deleteEvent } from '../api/events';
 import { getEventCoverPhotoLink } from '../api/firebase';
 
 const EventCard = ({
-  admin, clickAction, eventID, eventDetails, refreshAction,
+  admin, clickAction, eventID, eventDetails, refreshAction, hideDescription,
 }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -82,9 +82,12 @@ const EventCard = ({
               <Typography component="div" variant="h4">
                 {title}
               </Typography>
-              <Typography variant="subtitle1" color="text.secondary" component="div">
-                {description}
-              </Typography>
+              {!hideDescription
+                ? (
+                  <Typography variant="subtitle1" color="text.secondary" component="div">
+                    {description}
+                  </Typography>
+                ) : <div /> }
 
               <Box sx={{ fontWeight: 'bold' }}>
                 <h4>

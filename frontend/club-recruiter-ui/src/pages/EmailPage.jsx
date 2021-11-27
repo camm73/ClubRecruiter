@@ -77,7 +77,7 @@ const EmailPage = () => {
             >
               Back to Event Overview
             </Button>
-            <EventCard eventID={eventID} />
+            <EventCard eventID={eventID} hideDescription />
             <EmailForm filteredEmailList={filteredEmailList} />
           </div>
         )
