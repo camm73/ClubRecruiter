@@ -14,7 +14,7 @@ import EventCard from '../components/EventCard';
 import CandidateList from '../components/CandidateList';
 import CandidateProfile from '../components/CandidateProfile';
 
-import { getEventDetails } from '../api/events';
+import { getEventDetails, isAdmin } from '../api/events';
 
 const drawerWidth = 300;
 
@@ -27,6 +27,7 @@ const EventOverview = () => {
   const [profileVisible, setProfileVisible] = useState(false);
   const [profileCandidateID, setProfileCandidateID] = useState('');
   const [eventDetails, setEventDetails] = useState(undefined);
+  const [admin, setAdmin] = useState(false);
 
   const location = useLocation();
   const history = useHistory();
@@ -44,8 +45,14 @@ const EventOverview = () => {
     setCandidateIDList(details.candidates);
   };
 
+  const checkAdmin = async () => {
+    const adminStatus = await isAdmin(eventID);
+    setAdmin(adminStatus);
+  };
+
   // Load events at page mount
   useEffect(loadEventDetails, []);
+  useEffect(checkAdmin, []);
 
   return (
     <Container sx={{ display: 'flex' }}>
@@ -78,21 +85,24 @@ const EventOverview = () => {
           >
             Back to Dashboard
           </Button>
-          <Button
-            style={{ backgroundColor: 'lightgray', borderRadius: '5px', padding: '10px' }}
-            onClick={() => {
-              const pathName = location.pathname;
-              if (pathName.charAt(pathName.length - 1) === '/') {
-                history.push(`${pathName}email`);
-              } else {
-                history.push(`${pathName}/email`);
-              }
-            }}
-          >
-            Send Email Update
-          </Button>
+          {admin ? (
+            <Button
+              style={{ backgroundColor: 'lightgray', borderRadius: '5px', padding: '10px' }}
+              onClick={() => {
+                const pathName = location.pathname;
+                if (pathName.charAt(pathName.length - 1) === '/') {
+                  history.push(`${pathName}email`);
+                } else {
+                  history.push(`${pathName}/email`);
+                }
+              }}
+            >
+              Send Email Update
+            </Button>
+          ) : <div />}
         </div>
         <EventCard
+          admin={admin}
           eventID={eventID}
           eventDetails={eventDetails}
           refreshAction={() => {
@@ -105,6 +115,7 @@ const EventOverview = () => {
         />
       </Box>
       <CandidateProfile
+        admin={admin}
         open={profileVisible}
         candidateID={profileCandidateID}
         closeHandler={() => setProfileVisible(false)}

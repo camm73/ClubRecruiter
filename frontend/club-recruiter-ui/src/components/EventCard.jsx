@@ -14,7 +14,7 @@ import { getEventDetails, deleteEvent } from '../api/events';
 import { getEventCoverPhotoLink } from '../api/firebase';
 
 const EventCard = ({
-  clickAction, eventID, eventDetails, refreshAction,
+  admin, clickAction, eventID, eventDetails, refreshAction,
 }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -61,7 +61,7 @@ const EventCard = ({
         bodyText="Are you sure you want to delete this event?"
       />
       <Card sx={{
-        display: 'flex', margin: 3, bgcolor: '#E5E5E5',
+        display: 'flex', margin: 3, bgcolor: '#E5E5E5', maxWidth: '800px',
       }}
       >
         <CardActionArea
@@ -106,12 +106,14 @@ const EventCard = ({
             </CardContent>
           </Box>
         </CardActionArea>
-        <IconButton onClick={() => {
-          setConfirmationOpen(true);
-        }}
-        >
-          <DeleteIcon />
-        </IconButton>
+        {admin ? (
+          <IconButton onClick={() => {
+            setConfirmationOpen(true);
+          }}
+          >
+            <DeleteIcon />
+          </IconButton>
+        ) : <div />}
       </Card>
     </div>
   );
