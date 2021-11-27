@@ -70,101 +70,108 @@ describe('Members', () => {
     });
 
    describe('/GET member', () => {
-        it('it should get a member', (done) => {
+        context('organizer tries to get member who is a part of the event', () => {
+            it('it should get a member', (done) => {
 
-            chai.request(DEV_API_ENDPOINT)
-                .get(`/member/${uid1}`)
-                .set('Authorization', 'Bearer ' + idToken1)
-                .end((err, res) => {
-                    expect(res.statusCode).to.equal(200);
-                    if (err) {
-                        done(err)
-                    } else {
-                        done()
-                    }
-                });
-        });
+                chai.request(DEV_API_ENDPOINT)
+                    .get(`/member/${uid1}`)
+                    .set('Authorization', 'Bearer ' + idToken1)
+                    .end((err, res) => {
+                        expect(res.statusCode).to.equal(200);
+                        if (err) {
+                            done(err)
+                        } else {
+                            done()
+                        }
+                    });
+            });
+        })
 
-         it('it should fail to get a member', (done) => {
-            chai.request(DEV_API_ENDPOINT)
-                .get(`/member/non-existent-uid`)
-                .set('Authorization', 'Bearer ' + idToken1)
-                .end((err, res) => {
-                    expect(res.statusCode).to.equal(404);
-                    if (err) {
-                        done(err)
-                    } else {
-                        done()
-                    }
-                });
-        });
+
+        context('organizer tries to get member who is not part of the event', () => {
+            it('it should fail to get a member', (done) => {
+                chai.request(DEV_API_ENDPOINT)
+                    .get(`/member/non-existent-uid`)
+                    .set('Authorization', 'Bearer ' + idToken1)
+                    .end((err, res) => {
+                        expect(res.statusCode).to.equal(404);
+                        if (err) {
+                            done(err)
+                        } else {
+                            done()
+                        }
+                    });
+            });
+        })
     });
 
     describe('/POST member', () => {
-        it('it should promote member in event', (done) => {
+        context('organizer tries to update member status', () => {
+            it('it should promote member in event', (done) => {
 
-            let body = {
-                target_id: uid2,
-                event_id: existing_event_id,
-            }
+                let body = {
+                    target_id: uid2,
+                    event_id: existing_event_id,
+                }
 
-            chai.request(DEV_API_ENDPOINT)
-                .post('/member/promote')
-                .set('Authorization', 'Bearer ' + idToken1)
-                .set('content-type', 'application/json')
-                .send(body)
-                .end((err, res) => {
-                    expect(res.statusCode).to.equal(200);
-                    if (err) {
-                        done(err)
-                    } else {
-                        done()
-                    }
-                });
-        });
+                chai.request(DEV_API_ENDPOINT)
+                    .post('/member/promote')
+                    .set('Authorization', 'Bearer ' + idToken1)
+                    .set('content-type', 'application/json')
+                    .send(body)
+                    .end((err, res) => {
+                        expect(res.statusCode).to.equal(200);
+                        if (err) {
+                            done(err)
+                        } else {
+                            done()
+                        }
+                    });
+            });
 
-        it('it should demote member in event', (done) => {
+            it('it should demote member in event', (done) => {
 
-            let body = {
-                target_id: uid2,
-                event_id: existing_event_id,
-            }
+                let body = {
+                    target_id: uid2,
+                    event_id: existing_event_id,
+                }
 
-            chai.request(DEV_API_ENDPOINT)
-                .post('/member/demote')
-                .set('Authorization', 'Bearer ' + idToken1)
-                .set('content-type', 'application/json')
-                .send(body)
-                .end((err, res) => {
-                    expect(res.statusCode).to.equal(200);
-                    if (err) {
-                        done(err)
-                    } else {
-                        done()
-                    }
-                });
-        });
+                chai.request(DEV_API_ENDPOINT)
+                    .post('/member/demote')
+                    .set('Authorization', 'Bearer ' + idToken1)
+                    .set('content-type', 'application/json')
+                    .send(body)
+                    .end((err, res) => {
+                        expect(res.statusCode).to.equal(200);
+                        if (err) {
+                            done(err)
+                        } else {
+                            done()
+                        }
+                    });
+            });
 
-        it('it should delete member from event', (done) => {
+            it('it should delete member from event', (done) => {
 
-            let body = {
-                event_id: existing_event_id,
-            }
+                let body = {
+                    event_id: existing_event_id,
+                }
 
-            chai.request(DEV_API_ENDPOINT)
-                .post(`/member/delete/${uid2}`)
-                .set('Authorization', 'Bearer ' + idToken1)
-                .set('content-type', 'application/json')
-                .send(body)
-                .end((err, res) => {
-                    expect(res.statusCode).to.equal(200);
-                    if (err) {
-                        done(err)
-                    } else {
-                        done()
-                    }
-                });
-        });
+                chai.request(DEV_API_ENDPOINT)
+                    .post(`/member/delete/${uid2}`)
+                    .set('Authorization', 'Bearer ' + idToken1)
+                    .set('content-type', 'application/json')
+                    .send(body)
+                    .end((err, res) => {
+                        expect(res.statusCode).to.equal(200);
+                        if (err) {
+                            done(err)
+                        } else {
+                            done()
+                        }
+                    });
+            });
+        })
  
     });
     });

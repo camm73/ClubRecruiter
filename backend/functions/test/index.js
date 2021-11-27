@@ -7,9 +7,10 @@ const serviceAccount = require('../config/serviceAccountKey.json');
 
 require('dotenv').config();
 
-const events = require('./events')
-const candidates = require('./candidates')
-const members = require('./members')
+const {events_test} = require('./events')
+const {candidates_test} = require('./candidates')
+const {members_test} = require('./members')
+const {comments_test} = require('./comments')
 
 chai.use(chaiHttp);
 
@@ -33,7 +34,8 @@ const firebaseApp = initializeApp(firebaseConfig);
 describe('run all tests', () => {
     const auth = getAuth(firebaseApp)
     connectAuthEmulator(auth, "http://localhost:9099")
-    members.members_test(auth, admin);
-    events.events_test(auth, admin);
-    candidates.candidates_test(auth,admin);
+    members_test(auth, admin);
+    events_test(auth, admin);
+    candidates_test(auth,admin);
+    comments_test(auth, admin)
 });
