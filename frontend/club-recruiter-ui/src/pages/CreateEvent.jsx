@@ -31,7 +31,7 @@ const CreateEvent = () => {
   return (
     <div>
       <Container sx={{ display: 'flex', flexDirection: 'column', padding: 10 }}>
-        <Header pageName="Create New Event" />
+        <Header pageName="Create New Event" authRoute />
         <form onSubmit={handleSubmit(onSubmit)}>
           <Container sx={{
             display: 'flex', flexDirection: 'column', padding: 10, alignItems: 'center',

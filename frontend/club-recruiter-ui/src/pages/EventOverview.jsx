@@ -14,7 +14,7 @@ import EventCard from '../components/EventCard';
 import CandidateList from '../components/CandidateList';
 import CandidateProfile from '../components/CandidateProfile';
 
-import { getEventDetails } from '../api/events';
+import { getEventDetails, isAdmin } from '../api/events';
 
 const drawerWidth = 300;
 
@@ -23,9 +23,11 @@ const EventOverview = () => {
 
   const [members, setMembers] = useState([]);
   const [organizers, setOrganizers] = useState([]);
+  const [candidateIDList, setCandidateIDList] = useState([]);
   const [profileVisible, setProfileVisible] = useState(false);
   const [profileCandidateID, setProfileCandidateID] = useState('');
-  const [candidateCode, setCandidateCode] = useState('');
+  const [eventDetails, setEventDetails] = useState(undefined);
+  const [admin, setAdmin] = useState(false);
 
   const location = useLocation();
   const history = useHistory();
@@ -36,18 +38,25 @@ const EventOverview = () => {
   };
 
   const loadEventDetails = async () => {
-    const eventDetails = await getEventDetails(eventID);
-    setCandidateCode(eventDetails.candidate_code);
-    setMembers(eventDetails.members);
-    setOrganizers(eventDetails.admins);
+    const details = await getEventDetails(eventID);
+    setEventDetails(details);
+    setMembers(details.members);
+    setOrganizers(details.admins);
+    setCandidateIDList(details.candidates);
+  };
+
+  const checkAdmin = async () => {
+    const adminStatus = await isAdmin(eventID);
+    setAdmin(adminStatus);
   };
 
   // Load events at page mount
   useEffect(loadEventDetails, []);
+  useEffect(checkAdmin, []);
 
   return (
     <Container sx={{ display: 'flex' }}>
-      <Header pageName={`Event Management: ${candidateCode}`} />
+      <Header pageName="Event Management" authRoute />
       <Drawer
         variant="permanent"
         sx={{
@@ -76,32 +85,41 @@ const EventOverview = () => {
           >
             Back to Dashboard
           </Button>
-          <Button
-            style={{ backgroundColor: 'lightgray', borderRadius: '5px', padding: '10px' }}
-            onClick={() => {
-              const pathName = location.pathname;
-              if (pathName.charAt(pathName.length - 1) === '/') {
-                history.push(`${pathName}email`);
-              } else {
-                history.push(`${pathName}/email`);
-              }
-            }}
-          >
-            Send Email Update
-          </Button>
+          {admin ? (
+            <Button
+              style={{ backgroundColor: 'lightgray', borderRadius: '5px', padding: '10px' }}
+              onClick={() => {
+                const pathName = location.pathname;
+                if (pathName.charAt(pathName.length - 1) === '/') {
+                  history.push(`${pathName}email`);
+                } else {
+                  history.push(`${pathName}/email`);
+                }
+              }}
+            >
+              Send Email Update
+            </Button>
+          ) : <div />}
         </div>
         <EventCard
+          admin={admin}
           eventID={eventID}
+          eventDetails={eventDetails}
           refreshAction={() => {
             history.push('/dashboard');
           }}
         />
-        <CandidateList eventID={eventID} profileOpenHandler={handleOpenCandidateProfile} />
+        <CandidateList
+          candidateIDList={candidateIDList}
+          profileOpenHandler={handleOpenCandidateProfile}
+        />
       </Box>
       <CandidateProfile
+        admin={admin}
         open={profileVisible}
         candidateID={profileCandidateID}
         closeHandler={() => setProfileVisible(false)}
+        eventRefresh={loadEventDetails}
       />
     </Container>
   );

@@ -17,20 +17,35 @@ import { useParams } from 'react-router-dom';
 import {
   getMember, promoteMember, demoteMember, removeMember,
 } from '../api/members';
+import { isAdmin } from '../api/events';
 
 const UserEntry = ({
-  memberID, canDelete, promotable, refreshFunction,
+  memberID, canDelete, promotable, refreshFunction, memberCount,
 }) => {
   const [userName, setUserName] = useState('');
+  const [admin, setAdmin] = useState(false);
+  const [organizerEnabled, setOrganizerEnabled] = useState(false);
   const { eventID } = useParams();
 
   const getUserData = async () => {
     if (memberID === undefined || !memberID.length) return;
     const memberObj = await getMember(memberID);
     setUserName(memberObj.displayName);
+    const adminStatus = await isAdmin(eventID);
+    setAdmin(adminStatus);
+  };
+
+  const updateOrganizerEnabled = () => {
+    // I.e. if only 1 organizer is left
+    if (memberCount <= 1 && !promotable) {
+      setOrganizerEnabled(false);
+    } else {
+      setOrganizerEnabled(true);
+    }
   };
 
   useEffect(getUserData, [memberID]);
+  useEffect(updateOrganizerEnabled, [memberCount]);
 
   return (
     <ListItem>
@@ -42,7 +57,7 @@ const UserEntry = ({
       <ListItemText
         primary={userName}
       />
-      {promotable && (
+      {promotable && admin && (
         <IconButton
           edge="end"
           aria-label="promote"
@@ -58,7 +73,7 @@ const UserEntry = ({
           <ArrowUpwardIcon />
         </IconButton>
       )}
-      {!promotable && (
+      {!promotable && admin && organizerEnabled && (
         <IconButton
           edge="end"
           aria-label="demote"
@@ -74,14 +89,14 @@ const UserEntry = ({
           <ArrowDownwardIcon />
         </IconButton>
       )}
-      {canDelete && (
+      {canDelete && admin && organizerEnabled && (
         <IconButton
           edge="end"
           aria-label="delete"
           onClick={async () => {
             const removeSuccess = await removeMember(memberID, eventID);
             if (!removeSuccess) {
-              alert('Failed to remove member from event!');
+              alert('You are not allowed to remove member from event!');
             } else {
               refreshFunction();
             }
@@ -104,6 +119,7 @@ function generate(memberIDList, refreshFunction, canDelete = true, promotable = 
         canDelete={canDelete}
         promotable={promotable}
         refreshFunction={refreshFunction}
+        memberCount={memberIDList.length}
       />
     ),
   );

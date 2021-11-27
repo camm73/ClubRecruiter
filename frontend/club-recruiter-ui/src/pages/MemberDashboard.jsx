@@ -47,7 +47,7 @@ const MemberDashboard = () => {
         <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateEvent}>Create New Event</Button>
       </div>
       <div className="dashboard">
-        <Header pageName="Member Dashboard" />
+        <Header pageName="Member Dashboard" authRoute />
         <div className="join-event">
           <div className="event-code-wrapper">
             <TextField className="event-code-field" fullWidth id="outlined-basic" value={memberCode} label="Member Code" variant="outlined" onChange={(e) => setMemberCode(e.target.value)} />

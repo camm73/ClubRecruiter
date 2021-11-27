@@ -7,7 +7,7 @@ import { getMember } from '../api/members';
 import { getComment, deleteComment } from '../api/comments';
 import ConfirmationDialog from './ConfirmationDialog';
 
-const CommentBubble = ({ commentID, refreshCommentList }) => {
+const CommentBubble = ({ admin, commentID, refreshCommentList }) => {
   const [commentText, setCommentText] = useState('');
   const [commentMemberID, setCommentMemberID] = useState('');
   const [memberName, setMemberName] = useState('');
@@ -60,17 +60,19 @@ const CommentBubble = ({ commentID, refreshCommentList }) => {
       <Typography variant="body2" sx={{ paddingRight: '20px' }}>
         {commentText}
       </Typography>
-      <IconButton onClick={() => {
-        setConfirmationAction(() => () => {
-          deleteComment(commentID).then(() => {
-            refreshCommentList();
+      {admin ? (
+        <IconButton onClick={() => {
+          setConfirmationAction(() => () => {
+            deleteComment(commentID).then(() => {
+              refreshCommentList();
+            });
           });
-        });
-        setConfirmationOpen(true);
-      }}
-      >
-        <DeleteIcon />
-      </IconButton>
+          setConfirmationOpen(true);
+        }}
+        >
+          <DeleteIcon />
+        </IconButton>
+      ) : <div />}
     </div>
   );
 };
