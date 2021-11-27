@@ -7,12 +7,21 @@ jobs:
   test:
     name: API tests
     runs-on: ubuntu-latest
+    env: FIREBASE_EMULATORS_PATH: ${{ github.workspace }}/emulator-cache
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
       - name: Install packages
         working-directory: ./backend/functions
         run: npm i
+      - name: Cache firebase emulators
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.FIREBASE_EMULATORS_PATH }}
+          key:
+            ${{ runner.os }}-firebase-emulators-${{
+            hashFiles('emulator-cache/**') }}
+        continue-on-error: true
       - name: Run setup
         working-directory: ./backend/functions
         run: |
