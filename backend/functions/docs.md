@@ -1,6 +1,15 @@
 ## Functions
 
 <dl>
+<dt><a href="#validateCandidateCode">validateCandidateCode(candidate_code)</a> ⇒ <code>boolean</code></dt>
+<dd><p>Validates a candidate_code</p>
+</dd>
+<dt><a href="#isAdmin">isAdmin(member_id, event_id)</a> ⇒ <code>boolean</code></dt>
+<dd><p>Checkes whether or not a member is the admin of an event</p>
+</dd>
+<dt><a href="#deleteFile">deleteFile(filename)</a> ⇒ <code>void</code></dt>
+<dd><p>Deletes a file from Cloud Storage buckets</p>
+</dd>
 <dt><a href="#GET/candidate/validate">GET/candidate/validate(candidate_code)</a> ⇒ <code>Object</code></dt>
 <dd><p>Validates a candidate_code submitted to our backend</p>
 </dd>
@@ -33,14 +42,17 @@ Candidates database</p>
 <dt><a href="#DELETE/comment/delete">DELETE/comment/delete(comment_id)</a> ⇒ <code>string</code></dt>
 <dd><p>Deletes a comment from comments database</p>
 </dd>
+<dt><a href="#POST/email">POST/email(member_id, email_subject, email_body, event_id, candidate_ids)</a> ⇒ <code>Object</code></dt>
+<dd><p>Sends a basic email to the given candidate</p>
+</dd>
+<dt><a href="#GET/event/is_admin">GET/event/is_admin(member_id, event_id)</a> ⇒ <code>boolean</code></dt>
+<dd><p>Checks whether or not the current member is an admin of the given event</p>
+</dd>
 <dt><a href="#GET/event/by_member">GET/event/by_member(member_id)</a> ⇒ <code>Array.&lt;string&gt;</code></dt>
 <dd><p>Lists all events a ClubMember is a member of</p>
 </dd>
 <dt><a href="#GET/event/_event_id">GET/event/:event_id(event_id)</a> ⇒ <code>Object</code></dt>
 <dd><p>Retrieves full detail of an event given an event_id</p>
-</dd>
-<dt><a href="#GET/event/is_admin">GET/event/is_admin(member_id, event_id)</a> ⇒ <code>boolean</code></dt>
-<dd><p>Checks whether or not the current member is an admin of the given event</p>
 </dd>
 <dt><a href="#POST/event/create">POST/event/create(member_id, event_name, event_description, event_cover_pic_id)</a> ⇒ <code>Object</code></dt>
 <dd><p>Adds an event to the events database, and updates the candidates database</p>
@@ -73,6 +85,44 @@ Candidates database</p>
 <dd><p>Deletes a member from an event</p>
 </dd>
 </dl>
+
+<a name="validateCandidateCode"></a>
+
+## validateCandidateCode(candidate_code) ⇒ <code>boolean</code>
+Validates a candidate_code
+
+**Kind**: global function  
+**Returns**: <code>boolean</code> - true if the candidate code is valid, false otherwise  
+
+| Param | Type |
+| --- | --- |
+| candidate_code | <code>string</code> | 
+
+<a name="isAdmin"></a>
+
+## isAdmin(member_id, event_id) ⇒ <code>boolean</code>
+Checkes whether or not a member is the admin of an event
+
+**Kind**: global function  
+**Returns**: <code>boolean</code> - true if member_id is an admin of event_id, false
+otherwise  
+
+| Param | Type |
+| --- | --- |
+| member_id | <code>string</code> | 
+| event_id | <code>string</code> | 
+
+<a name="deleteFile"></a>
+
+## deleteFile(filename) ⇒ <code>void</code>
+Deletes a file from Cloud Storage buckets
+
+**Kind**: global function  
+**Returns**: <code>void</code> - Nothing  
+
+| Param | Type |
+| --- | --- |
+| filename | <code>string</code> | 
 
 <a name="GET/candidate/validate"></a>
 
@@ -211,6 +261,36 @@ successfully, an error message otherwise
 | --- | --- |
 | comment_id | <code>string</code> | 
 
+<a name="POST/email"></a>
+
+## POST/email(member_id, email_subject, email_body, event_id, candidate_ids) ⇒ <code>Object</code>
+Sends a basic email to the given candidate
+
+**Kind**: global function  
+**Returns**: <code>Object</code> - member detail with member_id  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| member_id | <code>string</code> | for validation purposes only |
+| email_subject | <code>string</code> | The title of the email |
+| email_body | <code>string</code> | The body of the meail. Completely optional, if not present, will use the default EMAIL_TEMPLATE |
+| event_id | <code>string</code> | the event_id that is sending out the acceptance/rejection emails |
+| candidate_ids | <code>Array.&lt;string&gt;</code> | the list of candidate_ids that we're sending out emails to |
+
+<a name="GET/event/is_admin"></a>
+
+## GET/event/is\_admin(member_id, event_id) ⇒ <code>boolean</code>
+Checks whether or not the current member is an admin of the given event
+
+**Kind**: global function  
+**Returns**: <code>boolean</code> - true if the current member is an admin of event_id,
+false otherwise  
+
+| Param | Type |
+| --- | --- |
+| member_id | <code>string</code> | 
+| event_id | <code>string</code> | 
+
 <a name="GET/event/by_member"></a>
 
 ## GET/event/by\_member(member_id) ⇒ <code>Array.&lt;string&gt;</code>
@@ -235,20 +315,6 @@ list[candidates]
 
 | Param | Type |
 | --- | --- |
-| event_id | <code>string</code> | 
-
-<a name="GET/event/is_admin"></a>
-
-## GET/event/is\_admin(member_id, event_id) ⇒ <code>boolean</code>
-Checks whether or not the current member is an admin of the given event
-
-**Kind**: global function  
-**Returns**: <code>boolean</code> - true if the current member is an admin of event_id,
-false otherwise  
-
-| Param | Type |
-| --- | --- |
-| member_id | <code>string</code> | 
 | event_id | <code>string</code> | 
 
 <a name="POST/event/create"></a>
