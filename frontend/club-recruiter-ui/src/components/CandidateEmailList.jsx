@@ -49,15 +49,17 @@ const CandidateEmailList = ({
 
   const filterCandidates = () => {
     const tmpArr = [];
+    const idList = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const cand of candidateObjList) {
       console.log(`${cand.application_status}  vs.  ${filter}`);
       if (filter === '' || cand.application_status === filter) {
         tmpArr.push(cand);
+        idList.push(cand.candidate_id);
       }
     }
     setFilteredCandidates(tmpArr);
-    refreshEmailList(tmpArr);
+    refreshEmailList(idList);
   };
 
   useEffect(loadCandidates, [candidateIDList]);

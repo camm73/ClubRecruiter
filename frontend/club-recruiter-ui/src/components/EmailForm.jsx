@@ -1,14 +1,28 @@
-import { Container, Button } from '@mui/material';
-import React from 'react';
+/* eslint-disable no-restricted-syntax */
+import { Container, Button, CircularProgress } from '@mui/material';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useParams, useHistory } from 'react-router-dom';
 import FormTextField from './FormTextField';
 
-const EmailForm = () => {
-  // todo: form needs to take in information of the target candidates
+import { sendEmail } from '../api/emails';
+
+const EmailForm = ({ filteredEmailList }) => {
+  const [emailSent, setEmailSent] = useState(false);
   const { control, handleSubmit } = useForm();
-  const onSubmit = (data) => {
-    // todo: call the API endpoint
-    console.log(data);
+  const { eventID } = useParams();
+  const history = useHistory();
+
+  const onSubmit = async (data) => {
+    setEmailSent(true);
+    const emailStatus = await sendEmail(data.title, data.content, eventID, filteredEmailList);
+    setEmailSent(false);
+    if (emailStatus) {
+      alert('Successfully sent email!');
+      history.push(`/event/${eventID}`);
+    } else {
+      alert('Failed to send email!');
+    }
   };
 
   return (
@@ -20,12 +34,14 @@ const EmailForm = () => {
         >
           <FormTextField name="title" label="Email title" control={control} required width={1} />
           <FormTextField name="content" label="Email content" control={control} required multiline width={1} />
-          <Button
-            variant="contained"
-            type="submit"
-          >
-            Send
-          </Button>
+          {!emailSent ? (
+            <Button
+              variant="contained"
+              type="submit"
+            >
+              Send
+            </Button>
+          ) : <CircularProgress />}
         </Container>
       </form>
 
