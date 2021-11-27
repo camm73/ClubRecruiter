@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import {
-  Dialog, Card, CardContent, Typography, Button, CardActions, TextField,
+  Dialog, Card, CardContent, Typography, Button, CardActions, TextField, IconButton,
 } from '@mui/material';
 
 import '../styles/CandidateProfile.css';
@@ -9,13 +9,18 @@ import { DialogContent } from '@material-ui/core';
 import Close from '@mui/icons-material/Close';
 import { useParams } from 'react-router-dom';
 
-import { getCandidate, acceptCandidate, rejectCandidate } from '../api/candidate';
+import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  getCandidate, acceptCandidate, rejectCandidate, deleteCandidate,
+} from '../api/candidate';
 import { getCommentList, postComment } from '../api/comments';
 import { getResumeLink } from '../api/firebase';
 import CommentBubble from './CommentBubble';
 import ConfirmationDialog from './ConfirmationDialog';
 
-const CandidateProfile = ({ open, candidateID, closeHandler }) => {
+const CandidateProfile = ({
+  admin, open, candidateID, closeHandler, eventRefresh,
+}) => {
   const [candidateName, setCandidateName] = useState('');
   const [candidatePhoneNumber, setCandidatePhoneNumber] = useState('');
   const [candidateEmail, setCandidateEmail] = useState('');
@@ -31,6 +36,7 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
   const MAX_COMMENT_LENGTH = 200;
 
   const updateCommentList = async () => {
+    if (candidateID === undefined) return;
     const commentList = await getCommentList(candidateID);
     setCommentIDList(commentList);
   };
@@ -101,36 +107,40 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
         >
           View Resume
         </Button>
-        <Button
-          size="small"
-          style={{
-            minHeight: '30px', backgroundColor: 'red', borderRadius: '10px', padding: '10px',
-          }}
-          onClick={() => {
-            setConfirmationAction(() => () => {
-              rejectCandidate(candidateID);
-              return 'rejected';
-            });
-            setConfirmationOpen(true);
-          }}
-        >
-          Reject Candidate
-        </Button>
-        <Button
-          size="small"
-          style={{
-            minHeight: '30px', backgroundColor: 'green', borderRadius: '10px', padding: '10px',
-          }}
-          onClick={() => {
-            setConfirmationAction(() => () => {
-              acceptCandidate(candidateID);
-              return 'accepted';
-            });
-            setConfirmationOpen(true);
-          }}
-        >
-          Accept Candidate
-        </Button>
+        {admin ? (
+          <Button
+            size="small"
+            style={{
+              minHeight: '30px', backgroundColor: 'red', borderRadius: '10px', padding: '10px',
+            }}
+            onClick={() => {
+              setConfirmationAction(() => () => {
+                rejectCandidate(candidateID);
+                return 'rejected';
+              });
+              setConfirmationOpen(true);
+            }}
+          >
+            Reject Candidate
+          </Button>
+        ) : <div />}
+        {admin ? (
+          <Button
+            size="small"
+            style={{
+              minHeight: '30px', backgroundColor: 'green', borderRadius: '10px', padding: '10px',
+            }}
+            onClick={() => {
+              setConfirmationAction(() => () => {
+                acceptCandidate(candidateID);
+                return 'accepted';
+              });
+              setConfirmationOpen(true);
+            }}
+          >
+            Accept Candidate
+          </Button>
+        ) : <div />}
       </CardActions>
     </Card>
   );
@@ -171,6 +181,24 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
           <Typography variant="h5" sx={{ padding: 1 }}>
             {candidateName}
           </Typography>
+          {admin ? (
+            <div style={{ position: 'absolute', right: '20px' }}>
+              <IconButton
+                onClick={async () => {
+                  const deleteSuccess = await deleteCandidate(candidateID);
+                  if (!deleteSuccess) {
+                    alert('You are not allowed to delete this candidate.');
+                    return;
+                  }
+                  await eventRefresh();
+                  closeHandler();
+                  resetModal();
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </div>
+          ) : <div />}
         </div>
         <DialogContent>
           <DetailCard />
@@ -181,13 +209,14 @@ const CandidateProfile = ({ open, candidateID, closeHandler }) => {
             overflowX: 'hidden', overflowY: 'auto', height: '200px', paddingTop: '5px',
           }}
           >
-            {commentIDList.map((currID) => (
+            {commentIDList !== undefined ? commentIDList.map((currID) => (
               <CommentBubble
+                admin={admin}
                 key={currID}
                 commentID={currID}
                 refreshCommentList={updateCommentList}
               />
-            ))}
+            )) : <div />}
           </div>
           <div style={{
             display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px',
