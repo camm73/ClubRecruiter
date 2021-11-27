@@ -25,19 +25,25 @@ function formatEmail(email_template, candidate_name, event_name, application_sta
 
 const processBody = (body) => {
   const sentenceArr = body.split('\n');
-  const htmlStr = [];
+  const htmlArr = [];
 
   for (const sentence of sentenceArr) {
     // Need to escape end tag characters
     const sanitizedSentence = sentence.replace('<', '').replace('>', '');
     if (sanitizedSentence.length > 0) {
-      htmlStr.push(`<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">${sanitizedSentence}</p>`);
+      htmlArr.push(`<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">${sanitizedSentence}</p>`);
     } else {
-      htmlStr.push('<br>');
+      htmlArr.push('<br>');
     }
   }
 
-  return htmlStr;
+  let finalBody = EMAIL_TEMPLATE_TOP;
+  for (const htmlStr of htmlArr) {
+    finalBody += `${htmlStr}\n`;
+  }
+  finalBody += EMAIL_TEMPLATE_BOTTOM;
+
+  return finalBody;
 };
 
 /**
@@ -55,25 +61,20 @@ const processBody = (body) => {
  * @returns { Object } member detail with member_id
  *
  */
-app.post('/', validateFirebaseIdToken, async function (req, res) {
-  var member_id = req.user.uid;
+// app.post('/', validateFirebaseIdToken, async function (req, res) {
+//   var member_id = req.user.uid;
+app.post('/', async function (req, res) {
   var { email_subject, email_body, event_id, candidate_ids } = req.body;
 
-  let htmlArr = processBody(email_body);
+  // if (!(await isAdmin(member_id, event_id))) {
+  //   res.status(404).send('Non-admins cannot send mass emails!');
+  //   return;
+  // }
 
-  let template_top = EMAIL_TEMPLATE_TOP;
-  let template_bottom = EMAIL_TEMPLATE_BOTTOM;
-
-  let finalBody = template_top;
-  for (const htmlStr of htmlArr) {
-    finalBody += `${htmlStr}\n`;
-  }
-  finalBody += template_bottom;
-
-  if (!(await isAdmin(member_id, event_id))) {
-    res.status(404).send('Non-admins cannot send mass emails!');
-    return;
-  }
+  if (email_body)
+    email_body = processBody(email_body);
+  else
+    email_body = EMAIL_TEMPLATE_TOP + EMAIL_TEMPLATE_BOTTOM;
 
   try {
     var db = firestore();
