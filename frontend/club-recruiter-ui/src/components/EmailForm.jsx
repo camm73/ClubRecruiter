@@ -13,26 +13,9 @@ const EmailForm = ({ filteredEmailList }) => {
   const { eventID } = useParams();
   const history = useHistory();
 
-  const processBody = (body) => {
-    const sentenceArr = body.split('\n');
-    const htmlStr = [];
-
-    for (const sentence of sentenceArr) {
-      const sanitizedSentence = sentence.replace('<', '').replace('>', '');
-      if (sanitizedSentence.length > 0) {
-        htmlStr.push(`<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">${sanitizedSentence}</p>`);
-      } else {
-        htmlStr.push('<br>');
-      }
-    }
-
-    return htmlStr;
-  };
-
   const onSubmit = async (data) => {
     setEmailSent(true);
-    const htmlBody = processBody(data.content);
-    const emailStatus = await sendEmail(data.title, htmlBody, eventID, filteredEmailList);
+    const emailStatus = await sendEmail(data.title, data.content, eventID, filteredEmailList);
     setEmailSent(false);
     if (emailStatus) {
       alert('Successfully sent email!');

@@ -3,7 +3,7 @@ const functions = require('firebase-functions');
 const { firestore } = require('firebase-admin');
 const { validateFirebaseIdToken } = require('../auth');
 const nodemailer = require('nodemailer');
-const { CANDIDATES_COLLECTION, FROM_EMAIL, EMAIL_TEMPLATE, EVENTS_COLLECTION } = require('../constants');
+const { CANDIDATES_COLLECTION, FROM_EMAIL, EVENTS_COLLECTION, EMAIL_TEMPLATE_TOP, EMAIL_TEMPLATE_BOTTOM } = require('../constants');
 const { isAdmin } = require('../util');
 
 var transporter = nodemailer.createTransport({
@@ -22,6 +22,23 @@ function formatEmail(email_template, candidate_name, event_name, application_sta
   s = s.replace(/__{application_status}__/g, application_status);
   return s;
 }
+
+const processBody = (body) => {
+  const sentenceArr = body.split('\n');
+  const htmlStr = [];
+
+  for (const sentence of sentenceArr) {
+    // Need to escape end tag characters
+    const sanitizedSentence = sentence.replace('<', '').replace('>', '');
+    if (sanitizedSentence.length > 0) {
+      htmlStr.push(`<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">${sanitizedSentence}</p>`);
+    } else {
+      htmlStr.push('<br>');
+    }
+  }
+
+  return htmlStr;
+};
 
 /**
  * Sends a basic email to the given candidate
@@ -42,8 +59,16 @@ app.post('/', validateFirebaseIdToken, async function (req, res) {
   var member_id = req.user.uid;
   var { email_subject, email_body, event_id, candidate_ids } = req.body;
 
-  if (!email_body)
-    email_body = EMAIL_TEMPLATE;
+  let htmlArr = processBody(email_body);
+
+  let template_top = EMAIL_TEMPLATE_TOP;
+  let template_bottom = EMAIL_TEMPLATE_BOTTOM;
+
+  let finalBody = template_top;
+  for (const htmlStr of htmlArr) {
+    finalBody += `${htmlStr}\n`;
+  }
+  finalBody += template_bottom;
 
   if (!(await isAdmin(member_id, event_id))) {
     res.status(404).send('Non-admins cannot send mass emails!');
@@ -65,7 +90,7 @@ app.post('/', validateFirebaseIdToken, async function (req, res) {
         .doc(event_id)
         .get();
 
-      var email_html = formatEmail(email_body, candidateRef.data().name, eventRef.data().name, candidateRef.data().application_status)
+      var email_html = formatEmail(finalBody, candidateRef.data().name, eventRef.data().name, candidateRef.data().application_status)
 
       const mail_options = {
         from: FROM_EMAIL,
