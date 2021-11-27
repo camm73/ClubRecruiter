@@ -26,11 +26,6 @@ jobs:
         working-directory: ./backend/functions
         run: |
           npm run setup
-      - name: Print logs
-        working-directory: ./backend/functions
-        if: always()
-        run: |
-          cat /home/runner/.npm/_logs/*-debug.log
       - name: Run tests
         working-directory: ./backend/functions
         run: |
