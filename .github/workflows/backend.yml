@@ -13,13 +13,13 @@ jobs:
       - name: Install packages
         working-directory: ./backend/functions
         run: npm i
-      - name: Run setup
-        working-directory: ./backend/functions
-        run: |
-          npm run setup
-      - name: Run tests
-        working-directory: ./backend/functions
-        run: |
-          npm run serve &
-          sleep 60
-          npm test
+#      - name: Run setup
+#        working-directory: ./backend/functions
+#        run: |
+#          npm run setup
+#      - name: Run tests
+#        working-directory: ./backend/functions
+#        run: |
+#          npm run serve &
+#          sleep 60
+#          npm test
