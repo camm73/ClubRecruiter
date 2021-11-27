@@ -14,14 +14,6 @@ jobs:
       - name: Install packages
         working-directory: ./backend/functions
         run: npm i
-      - name: Cache firebase emulators
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.FIREBASE_EMULATORS_PATH }}
-          key:
-            ${{ runner.os }}-firebase-emulators-${{
-            hashFiles('emulator-cache/**') }}
-        continue-on-error: true
       - name: Run setup
         working-directory: ./backend/functions
         run: |
