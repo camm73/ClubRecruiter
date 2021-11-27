@@ -109,7 +109,7 @@ app.get('/:event_id', async (req, res) => {
  * @param {string} event_name
  * @param {string } event_description
  * @param {string} event_cover_pic_id
- * @returns { [string, string] } candidate_code and member_code to the frontend to
+ * @returns { Object } candidate_code and member_code to the frontend to
  * be distributed to ClubMembers as well as Candidates
  */
 app.post('/create', validateFirebaseIdToken, async (req, res) => {
