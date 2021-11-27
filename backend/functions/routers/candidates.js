@@ -13,9 +13,9 @@ const { validateCandidateCode, deleteFile, isAdmin } = require('../util');
  * Validates a candidate_code submitted to our backend
  * @name GET/candidate/validate
  * @function
- * @param { string } candidate_code
- * @returns { Object } True if the candidate code is valid, False otherwise
- * 
+ * @param { string } candidate_code candidate_code of an event
+ * @returns { Object } 200 success message containing valid field taking on 
+ * value based on validity of candidate_code. Returns 404 with error message otherwise.
  */
 app.get('/validate', async function (req, res) {
   var { candidate_code } = req.query;
@@ -45,8 +45,8 @@ app.get('/:candidate_id', async function (req, res) {
   try {
     var db = firestore();
     const candidateRes = await db.collection(CANDIDATES_COLLECTION).doc(candidate_id).get();
-    
-    if (candidateRes.data() == undefined) {
+
+    if (!candidateRes.exists) {
       res.status(404).send(`Error retrieving candidate: ${candidate_id}`);
     } else {
       res.status(200).send(candidateRes.data());
