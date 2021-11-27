@@ -133,6 +133,7 @@ module.exports.EMAIL_TEMPLATE_TOP = `<!doctype html>
                       <tr>
                         <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
 `
+
 module.exports.EMAIL_TEMPLATE_BOTTOM = `
                         </td>
                       </tr>

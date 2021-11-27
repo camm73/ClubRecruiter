@@ -23,8 +23,8 @@ function formatEmail(email_template, candidate_name, event_name, application_sta
   return s;
 }
 
-const processBody = (body) => {
-  const sentenceArr = body.split('\n');
+function processBody(body) {
+  const sentenceArr = body.split(/[\r\n]+/); // splits new lines
   const htmlArr = [];
 
   for (const sentence of sentenceArr) {
@@ -44,7 +44,7 @@ const processBody = (body) => {
   finalBody += EMAIL_TEMPLATE_BOTTOM;
 
   return finalBody;
-};
+}
 
 /**
  * Sends a basic email to the given candidate
@@ -61,37 +61,50 @@ const processBody = (body) => {
  * @returns { Object } member detail with member_id
  *
  */
-// app.post('/', validateFirebaseIdToken, async function (req, res) {
-//   var member_id = req.user.uid;
-app.post('/', async function (req, res) {
+app.post('/', validateFirebaseIdToken, async function (req, res) {
+  var member_id = req.user.uid;
   var { email_subject, email_body, event_id, candidate_ids } = req.body;
 
-  // if (!(await isAdmin(member_id, event_id))) {
-  //   res.status(404).send('Non-admins cannot send mass emails!');
-  //   return;
-  // }
+  if (!(await isAdmin(member_id, event_id))) {
+    res.status(404).send('Non-admins cannot send mass emails!');
+    return;
+  }
 
-  if (email_body)
-    email_body = processBody(email_body);
-  else
-    email_body = EMAIL_TEMPLATE_TOP + EMAIL_TEMPLATE_BOTTOM;
+  if (!email_body) {
+    res.status(404).send("No email body was provided!");
+    return;
+  }
+  email_body = processBody(email_body);
 
   try {
     var db = firestore();
+
+    var eventRef = await db
+      .collection(EVENTS_COLLECTION)
+      .doc(event_id)
+      .get();
+
+    if (!eventRef.exists) {
+      res.status(404).send(`Event with id ${event_id} doesn't exist!`);
+      return;
+    }
 
     candidate_ids.forEach(async (candidate_id) => {
       var candidateRef = await db
         .collection(CANDIDATES_COLLECTION)
         .doc(candidate_id)
         .get();
+
+      if (!candidateRef.exists) {
+        res.status(404).send(`Candidate with id ${candidate_id} doesn't exist!`);
+        return;
+      }
+
+
       var target_email = candidateRef.data().email;
 
-      var eventRef = await db
-        .collection(EVENTS_COLLECTION)
-        .doc(event_id)
-        .get();
-
-      var email_html = formatEmail(finalBody, candidateRef.data().name, eventRef.data().name, candidateRef.data().application_status)
+      var email_html = formatEmail(email_body, candidateRef.data().name,
+        eventRef.data().name, candidateRef.data().application_status)
 
       const mail_options = {
         from: FROM_EMAIL,
