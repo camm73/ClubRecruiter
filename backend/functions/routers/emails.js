@@ -1,19 +1,18 @@
 const app = require("../express_generator")();
+const functions = require('firebase-functions');
 const { firestore } = require('firebase-admin');
 const { validateFirebaseIdToken } = require('../auth');
 const nodemailer = require('nodemailer');
 const { CANDIDATES_COLLECTION, FROM_EMAIL, EMAIL_TEMPLATE, EVENTS_COLLECTION } = require('../constants');
 const { isAdmin } = require('../util');
 
-require('dotenv').config();
-
 var transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
   secure: true,
   auth: {
-    user: process.env.EMAIL_ID,
-    pass: process.env.EMAIL_PASS
+    user: functions.config().email.email_id,
+    pass: functions.config().email.email_pass
   }
 });
 
@@ -39,7 +38,7 @@ function formatEmail(email_template, candidate_name, event_name, application_sta
  * @returns { Object } member detail with member_id
  *
  */
-router.post('/', validateFirebaseIdToken, async function (req, res) {
+app.post('/', validateFirebaseIdToken, async function (req, res) {
   var member_id = req.user.uid;
   var { email_subject, email_body, event_id, candidate_ids } = req.body;
 
