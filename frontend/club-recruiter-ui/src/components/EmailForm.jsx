@@ -1,14 +1,24 @@
 import { Container, Button } from '@mui/material';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { useParams, useHistory } from 'react-router-dom';
 import FormTextField from './FormTextField';
 
-const EmailForm = () => {
-  // todo: form needs to take in information of the target candidates
+import { sendEmail } from '../api/emails';
+
+const EmailForm = ({ filteredEmailList }) => {
   const { control, handleSubmit } = useForm();
-  const onSubmit = (data) => {
-    // todo: call the API endpoint
-    console.log(data);
+  const { eventID } = useParams();
+  const history = useHistory();
+
+  const onSubmit = async (data) => {
+    const emailStatus = await sendEmail(data.title, data.content, eventID, filteredEmailList);
+    if (emailStatus) {
+      alert('Successfully sent email!');
+      history.push(`/event/${eventID}`);
+    } else {
+      alert('Failed to send email!');
+    }
   };
 
   return (
