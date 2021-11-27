@@ -210,6 +210,14 @@ describe('Candidates', () => {
                     .end((err, res) => {
                         expect(res.statusCode).to.equal(200);
                         expect(res.body).to.have.property('name', 'Candy Date');
+                        expect(res.body).to.have.property('biography', 'I am a candy date');
+                        expect(res.body).to.have.property('event_id', existing_event_id);
+                        expect(res.body).to.have.property('profile_pic_id', 811);
+                        expect(res.body).to.have.property('candidate_code', existing_candidate_code);
+                        expect(res.body).to.have.property('email', 'candy@date.com');
+                        expect(res.body).to.have.property('resume_id', 999);
+                        expect(res.body).to.have.property('comments');
+                        expect(res.body).to.have.property('application_status');
                         if (err) {
                             done(err)
                         } else {

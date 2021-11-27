@@ -15,6 +15,7 @@ describe('Members', () => {
     let existing_member_code = null;
     const uid1 = 'test-uid-1';
     const uid2 = 'test-uid-2';
+    const uid3 = 'randomMember'
     let idToken1 = null;
     let idToken2 = null;
     before(async () => {
@@ -151,6 +152,28 @@ describe('Members', () => {
                     });
             });
 
+            it('it should add member to event', (done) => {
+
+                let body = {
+                    event_id: existing_event_id,
+                    target_id: uid3
+                }
+
+                chai.request(DEV_API_ENDPOINT)
+                    .post('/member/add')
+                    .set('Authorization', 'Bearer ' + idToken1)
+                    .set('content-type', 'application/json')
+                    .send(body)
+                    .end((err, res) => {
+                        expect(res.statusCode).to.equal(200);
+                        if (err) {
+                            done(err)
+                        } else {
+                            done()
+                        }
+                    });
+            });
+
             it('it should delete member from event', (done) => {
 
                 let body = {
@@ -158,7 +181,7 @@ describe('Members', () => {
                 }
 
                 chai.request(DEV_API_ENDPOINT)
-                    .post(`/member/delete/${uid2}`)
+                    .post(`/member/delete/${uid3}`)
                     .set('Authorization', 'Bearer ' + idToken1)
                     .set('content-type', 'application/json')
                     .send(body)

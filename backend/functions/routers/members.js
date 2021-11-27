@@ -120,15 +120,15 @@ app.post('/demote', validateFirebaseIdToken, async (req, res) => {
  * @name POST/member/add
  * @function
  * @param { string } member_id 
+ * @param { string } target_id id of member to add to event
  * @param { string } event_id
  * @returns { string } a success message if member is successfully added, an
  * error message otherwise
  */
 app.post('/add', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
-  var { event_id } = req.params;
+  var { event_id, target_id } = req.body;
   var db = firestore();
-
   try {
     if (!(await isAdmin(member_id, event_id))) {
       res.status(404).send(`Current user is not authorized to add members!`);
@@ -140,14 +140,14 @@ app.post('/add', validateFirebaseIdToken, async (req, res) => {
     if (eventDocRef.exists) {
       console.log(EVENT_MEMBERS_COLLECTION);
       await db.collection(EVENT_MEMBERS_COLLECTION).add({
-        member_id: member_id,
+        member_id: target_id,
         event_id: event_id
       },
         // the merge: true option essentially specifies the table to add the
         // relationship if it doesn't exist in the collection already
         { merge: true });
 
-      res.status(200).send(`Member with id ${member_id} added to even with id: ${event_id}`);
+      res.status(200).send(`Member with id ${target_id} added to even with id: ${event_id}`);
     } else {
       res.status(404).send(`Event with id ${event_id} doesn't exist!`)
     }

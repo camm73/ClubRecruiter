@@ -78,7 +78,7 @@ Candidates database</p>
 <dt><a href="#POST/member/demote">POST/member/demote(member_id, target_id, event_id)</a> ⇒</dt>
 <dd><p>This function demotes an existing member of an event to regular member</p>
 </dd>
-<dt><a href="#POST/member/add">POST/member/add(member_id, event_id)</a> ⇒ <code>string</code></dt>
+<dt><a href="#POST/member/add">POST/member/add(member_id, target_id, event_id)</a> ⇒ <code>string</code></dt>
 <dd><p>Adds a member to an event</p>
 </dd>
 <dt><a href="#POST/member/_target_id">POST/member/:target_id(member_id, target_id, event_id)</a> ⇒</dt>
@@ -434,17 +434,18 @@ error message otherwise
 
 <a name="POST/member/add"></a>
 
-## POST/member/add(member_id, event_id) ⇒ <code>string</code>
+## POST/member/add(member_id, target_id, event_id) ⇒ <code>string</code>
 Adds a member to an event
 
 **Kind**: global function  
 **Returns**: <code>string</code> - a success message if member is successfully added, an
 error message otherwise  
 
-| Param | Type |
-| --- | --- |
-| member_id | <code>string</code> | 
-| event_id | <code>string</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| member_id | <code>string</code> |  |
+| target_id | <code>string</code> | id of member to add to event |
+| event_id | <code>string</code> |  |
 
 <a name="POST/member/_target_id"></a>
 
