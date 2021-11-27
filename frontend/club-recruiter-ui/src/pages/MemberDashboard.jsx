@@ -77,6 +77,7 @@ const MemberDashboard = () => {
                   key={eventID}
                   eventID={eventID}
                   refreshAction={loadEvents}
+                  hideDescription
                 />
               ),
             )
