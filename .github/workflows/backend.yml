@@ -25,7 +25,6 @@ jobs:
       - name: Run setup
         working-directory: ./backend/functions
         run: |
-          npm install -g firebase-tools
           npm run setup
       - name: Print logs
         working-directory: ./backend/functions
