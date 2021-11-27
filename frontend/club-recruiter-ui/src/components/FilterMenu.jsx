@@ -52,7 +52,7 @@ const FilterMenu = ({ filter, handleChange }) => {
         }}
       >
         {Object.entries(stateMap).map(([k, v]) => (
-          <MenuItem value={k} key={k} sx={{ color: v.color }}>
+          <MenuItem value={k} key={k} style={{ color: v.color }}>
             {v.text}
           </MenuItem>
         ))}
