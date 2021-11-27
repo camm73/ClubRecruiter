@@ -1,5 +1,4 @@
-const express = require('express');
-const admin = require('firebase-admin');
+const app = require("../express_generator")();
 const { firestore } = require('firebase-admin');
 const { validateFirebaseIdToken } = require('../auth');
 const nodemailer = require('nodemailer');
@@ -7,8 +6,6 @@ const { CANDIDATES_COLLECTION, FROM_EMAIL, EMAIL_TEMPLATE, EVENTS_COLLECTION } =
 const { isAdmin } = require('../util');
 
 require('dotenv').config();
-
-var router = express.Router();
 
 var transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
@@ -21,9 +18,9 @@ var transporter = nodemailer.createTransport({
 });
 
 function formatEmail(email_template, candidate_name, event_name, application_status) {
-  var s = email_template.replace("__{candidate_name}__", candidate_name);
-  s = s.replace("__{event_name}__", event_name);
-  s = s.replace("__{application_status}__", application_status);
+  var s = email_template.replace(/__{candidate_name}__/g, candidate_name);
+  s = s.replace(/__{event_name}__/g, event_name);
+  s = s.replace(/__{application_status}__/g, application_status);
   return s;
 }
 
@@ -32,10 +29,13 @@ function formatEmail(email_template, candidate_name, event_name, application_sta
  * @name POST/email
  * @function
  * @param { string } member_id for validation purposes only
- * @param { string } email_subject
- * @param { string } email_body
- * @param { string } event_id
- * @param { string[] } candidate_ids
+ * @param { string } email_subject The title of the email
+ * @param { string } email_body The body of the meail. Completely optional, if
+ * not present, will use the default EMAIL_TEMPLATE
+ * @param { string } event_id the event_id that is sending out the
+ * acceptance/rejection emails
+ * @param { string[] } candidate_ids the list of candidate_ids that we're
+ * sending out emails to
  * @returns { Object } member detail with member_id
  *
  */
@@ -63,7 +63,7 @@ router.post('/', validateFirebaseIdToken, async function (req, res) {
 
       var eventRef = await db
         .collection(EVENTS_COLLECTION)
-        .doc(candidateRef.data().event_id)
+        .doc(event_id)
         .get();
 
       var email_html = formatEmail(email_body, candidateRef.data().name, eventRef.data().name, candidateRef.data().application_status)
@@ -84,12 +84,10 @@ router.post('/', validateFirebaseIdToken, async function (req, res) {
         console.log("Sent!")
       });
     })
-    res.status(200);
+    res.status(200).send("Successfully sent emails!");
   } catch (err) {
     res.status(404).send(err);
   }
-
-
 });
 
-module.exports = router;
+module.exports = app;
