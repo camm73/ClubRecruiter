@@ -19,7 +19,7 @@ import CommentBubble from './CommentBubble';
 import ConfirmationDialog from './ConfirmationDialog';
 
 const CandidateProfile = ({
-  open, candidateID, closeHandler, eventRefresh,
+  admin, open, candidateID, closeHandler, eventRefresh,
 }) => {
   const [candidateName, setCandidateName] = useState('');
   const [candidatePhoneNumber, setCandidatePhoneNumber] = useState('');
@@ -107,36 +107,40 @@ const CandidateProfile = ({
         >
           View Resume
         </Button>
-        <Button
-          size="small"
-          style={{
-            minHeight: '30px', backgroundColor: 'red', borderRadius: '10px', padding: '10px',
-          }}
-          onClick={() => {
-            setConfirmationAction(() => () => {
-              rejectCandidate(candidateID);
-              return 'rejected';
-            });
-            setConfirmationOpen(true);
-          }}
-        >
-          Reject Candidate
-        </Button>
-        <Button
-          size="small"
-          style={{
-            minHeight: '30px', backgroundColor: 'green', borderRadius: '10px', padding: '10px',
-          }}
-          onClick={() => {
-            setConfirmationAction(() => () => {
-              acceptCandidate(candidateID);
-              return 'accepted';
-            });
-            setConfirmationOpen(true);
-          }}
-        >
-          Accept Candidate
-        </Button>
+        {admin ? (
+          <Button
+            size="small"
+            style={{
+              minHeight: '30px', backgroundColor: 'red', borderRadius: '10px', padding: '10px',
+            }}
+            onClick={() => {
+              setConfirmationAction(() => () => {
+                rejectCandidate(candidateID);
+                return 'rejected';
+              });
+              setConfirmationOpen(true);
+            }}
+          >
+            Reject Candidate
+          </Button>
+        ) : <div />}
+        {admin ? (
+          <Button
+            size="small"
+            style={{
+              minHeight: '30px', backgroundColor: 'green', borderRadius: '10px', padding: '10px',
+            }}
+            onClick={() => {
+              setConfirmationAction(() => () => {
+                acceptCandidate(candidateID);
+                return 'accepted';
+              });
+              setConfirmationOpen(true);
+            }}
+          >
+            Accept Candidate
+          </Button>
+        ) : <div />}
       </CardActions>
     </Card>
   );
@@ -177,22 +181,24 @@ const CandidateProfile = ({
           <Typography variant="h5" sx={{ padding: 1 }}>
             {candidateName}
           </Typography>
-          <div style={{ position: 'absolute', right: '20px' }}>
-            <IconButton
-              onClick={async () => {
-                const deleteSuccess = await deleteCandidate(candidateID);
-                if (!deleteSuccess) {
-                  alert('You are not allowed to delete this candidate.');
-                  return;
-                }
-                await eventRefresh();
-                closeHandler();
-                resetModal();
-              }}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </div>
+          {admin ? (
+            <div style={{ position: 'absolute', right: '20px' }}>
+              <IconButton
+                onClick={async () => {
+                  const deleteSuccess = await deleteCandidate(candidateID);
+                  if (!deleteSuccess) {
+                    alert('You are not allowed to delete this candidate.');
+                    return;
+                  }
+                  await eventRefresh();
+                  closeHandler();
+                  resetModal();
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </div>
+          ) : <div />}
         </div>
         <DialogContent>
           <DetailCard />
@@ -205,6 +211,7 @@ const CandidateProfile = ({
           >
             {commentIDList !== undefined ? commentIDList.map((currID) => (
               <CommentBubble
+                admin={admin}
                 key={currID}
                 commentID={currID}
                 refreshCommentList={updateCommentList}

@@ -14,6 +14,7 @@ import FilterMenu from '../components/FilterMenu';
 import CandidateEmailList from '../components/CandidateEmailList';
 
 import { getEventCandidates } from '../api/candidate';
+import { isAdmin } from '../api/events';
 
 const drawerWidth = 300;
 
@@ -21,6 +22,7 @@ const EmailPage = () => {
   const [filter, setFilter] = useState('');
   const [candidateIDList, setCandidateIDList] = useState([]);
   const [filteredEmailList, setFilteredEmailList] = useState([]);
+  const [admin, setAdmin] = useState(false);
   const { eventID } = useParams();
   const history = useHistory();
 
@@ -35,7 +37,13 @@ const EmailPage = () => {
     setCandidateIDList(idList);
   };
 
+  const checkAdmin = async () => {
+    const adminStatus = await isAdmin(eventID);
+    setAdmin(adminStatus);
+  };
+
   useEffect(loadCandidates, []);
+  useEffect(checkAdmin, []);
 
   return (
     <Container sx={{ display: 'flex' }}>
@@ -56,19 +64,41 @@ const EmailPage = () => {
         </Box>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Toolbar />
-        <Button
-          style={{
-            backgroundColor: 'lightgray', color: 'black', borderRadius: '5px', padding: '10px',
-          }}
-          onClick={() => {
-            history.push(`/event/${eventID}`);
-          }}
-        >
-          Back to Event Overview
-        </Button>
-        <EventCard eventID={eventID} />
-        <EmailForm filteredEmailList={filteredEmailList} />
+        {admin ? (
+          <div>
+            <Toolbar />
+            <Button
+              style={{
+                backgroundColor: 'lightgray', color: 'black', borderRadius: '5px', padding: '10px',
+              }}
+              onClick={() => {
+                history.push(`/event/${eventID}`);
+              }}
+            >
+              Back to Event Overview
+            </Button>
+            <EventCard eventID={eventID} />
+            <EmailForm filteredEmailList={filteredEmailList} />
+          </div>
+        )
+          : (
+            <div style={{
+              display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center', alignItems: 'center',
+            }}
+            >
+              <h2 style={{ marginTop: '100px' }}>You do not have permissions to email candidates.</h2>
+              <Button
+                style={{
+                  backgroundColor: 'lightgray', color: 'black', maxWidth: '200px', marginTop: '10px',
+                }}
+                onClick={() => {
+                  history.push(`/event/${eventID}`);
+                }}
+              >
+                Back to Event Overview
+              </Button>
+            </div>
+          )}
       </Box>
     </Container>
   );
