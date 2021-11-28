@@ -10,7 +10,7 @@ const { isAdmin } = require('../util');
  * @name GET/member/:member_id
  * @function
  * @param { string } member_id unique id of member in event
- * @returns { Object } 200 success message containing 
+ * @returns { Object } 200 success message with object containing 
  * member details obtained from authentication framework (Google). 
  * Returns 404 with error message otherwise.
  */
@@ -33,7 +33,7 @@ app.get('/:member_id', async function (req, res) {
  * @param { string } member_id unique id of member in event
  * @param { string } target_id unique id of the member to promote
  * @param {string } event_id unique id of event
- * @returns 200 success message if member is successfully promoted. 
+ * @returns { string } 200 success message if member is successfully promoted. 
  * Returns 404 with error message otherwise.
  */
 app.post('/promote', validateFirebaseIdToken, async (req, res) => {
@@ -78,7 +78,7 @@ app.post('/promote', validateFirebaseIdToken, async (req, res) => {
  * @param { string } member_id unique id of member in event
  * @param { string } target_id unique id of the member to demote
  * @param {string } event_id unique id of event
- * @returns 200 success message if member is successfully demoted. 
+ * @returns { string } 200 success message if member is successfully demoted. 
  * Returns 404 with error message otherwise.
  */
 app.post('/demote', validateFirebaseIdToken, async (req, res) => {
@@ -165,7 +165,7 @@ app.post('/add', validateFirebaseIdToken, async (req, res) => {
  * @param { string } member_id unique id of member in event
  * @param { string } target_id id of member to delete from event
  * @param { string } event_id unique id of event
- * @returns 200 success message if member is successfully deleted.
+ * @returns { string } 200 success message if member is successfully deleted.
  * Returns 404 with error message otherwise.
  */
 app.post('/delete/:target_id', validateFirebaseIdToken, async (req, res) => {
