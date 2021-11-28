@@ -9,9 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
       - name: Install packages
         working-directory: ./backend/functions
         run: npm i
+      - name: Setup
+        working-directory: ./backend/functions
+        run: npm run setup
       - name: Run tests
         working-directory: ./backend/functions
         env: 
