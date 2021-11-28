@@ -143,11 +143,13 @@ value based on validity of candidate_code. Returns 404 with error message otherw
 Gets a candidate's detail given its id
 
 **Kind**: global function  
-**Returns**: <code>Object</code> - candidate detail with candidate_id  
+**Returns**: <code>Object</code> - 200 success message containing the following candidate details if
+candidate_id is valid: name, biography, event_id, profile_pic_id, candidate_code, email, 
+resume_id, comments and application_status. Returns 404 with error message otherwise.  
 
-| Param | Type |
-| --- | --- |
-| candidate_id | <code>string</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| candidate_id | <code>string</code> | the unique id of the candidate |
 
 <a name="POST/candidate/apply"></a>
 
@@ -156,18 +158,18 @@ A new event candidate applies to an event, backend adds the candidate to the
 the candidates database along with their basic information
 
 **Kind**: global function  
-**Returns**: <code>string</code> - unique candidate ID if the new candidate is inserted
-properly, an error message otherwise  
+**Returns**: <code>string</code> - 200 success message containing unique candidate ID if the new 
+candidate is inserted properly. Returns 404 with error message otherwise.  
 
-| Param | Type |
-| --- | --- |
-| candidate_code | <code>string</code> | 
-| email | <code>string</code> | 
-| name | <code>string</code> | 
-| phone_number | <code>string</code> | 
-| biography | <code>string</code> | 
-| resume_id | <code>string</code> | 
-| profile_pic_id | <code>string</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| candidate_code | <code>string</code> | candidate_code for the event |
+| email | <code>string</code> | email of candidate |
+| name | <code>string</code> | name of candidate |
+| phone_number | <code>string</code> | phone number of candidate |
+| biography | <code>string</code> | biography of candidate |
+| resume_id | <code>string</code> | id of resume uploaded by candidate |
+| profile_pic_id | <code>string</code> | id of profile picture uploaded by candidate |
 
 <a name="POST/candidate/status"></a>
 
@@ -175,12 +177,13 @@ properly, an error message otherwise
 Updates a candidate's status to either "accepted", "rejected", or "pending"
 
 **Kind**: global function  
-**Returns**: <code>string</code> - Status 200 success if update is successful, 404 otherwise  
+**Returns**: <code>string</code> - 200 success message if update is successful. 
+Returns 404 with error message otherwise.  
 
-| Param | Type |
-| --- | --- |
-| status | <code>string</code> | 
-| candidate_id | <code>string</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| status | <code>string</code> | status to set candidate's application to |
+| candidate_id | <code>string</code> | unique id of candidate |
 
 <a name="GET/by_event/_event_id"></a>
 
@@ -189,11 +192,13 @@ This endpoint retrieves a list of candidate IDs from the
 Candidates database
 
 **Kind**: global function  
-**Returns**: <code>Array.&lt;string&gt;</code> - candidates for an event_id  
+**Returns**: <code>Array.&lt;string&gt;</code> - 200 success message with field candidate_ids, an array of 
+candidate_ids corresponding to candidates of the event. Returns 404 with error message 
+otherwise.  
 
-| Param | Type |
-| --- | --- |
-| event_id | <code>string</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| event_id | <code>string</code> | unique id of the event |
 
 <a name="DELETE/candidate/delete"></a>
 
@@ -201,12 +206,13 @@ Candidates database
 Deletes a candidate given their candidate_id
 
 **Kind**: global function  
-**Returns**: <code>string</code> - Status 200 success if delete is successful, 404 otherwise  
+**Returns**: <code>string</code> - 200 success message if delete is successful. 
+Returns 404 with error message otherwise.  
 
-| Param | Type |
-| --- | --- |
-| candidate_id | <code>string</code> | 
-| member_id | <code>string</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| candidate_id | <code>string</code> | unique id of candidate |
+| member_id | <code>string</code> | unique id of member in the event |
 
 <a name="GET/comment/by_candidate/_candidate_id"></a>
 
