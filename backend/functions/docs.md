@@ -30,7 +30,7 @@ Candidates database</p>
 <dt><a href="#DELETE/candidate/delete">DELETE/candidate/delete(candidate_id, member_id)</a> ⇒ <code>string</code></dt>
 <dd><p>Deletes a candidate given their candidate_id</p>
 </dd>
-<dt><a href="#GET/comment/by_candidate/_candidate_id">GET/comment/by_candidate/:candidate_id(candidate_id)</a> ⇒ <code>Array.&lt;Object&gt;</code></dt>
+<dt><a href="#GET/comment/by_candidate/_candidate_id">GET/comment/by_candidate/:candidate_id(candidate_id)</a> ⇒ <code>Object</code></dt>
 <dd><p>Lists all the comments associated with a candidate for a particular event</p>
 </dd>
 <dt><a href="#GET/comment/_comment_id">GET/comment/:comment_id(comment_id)</a> ⇒ <code>Object</code></dt>
@@ -216,15 +216,16 @@ Returns 404 with error message otherwise.
 
 <a name="GET/comment/by_candidate/_candidate_id"></a>
 
-## GET/comment/by\_candidate/:candidate\_id(candidate_id) ⇒ <code>Array.&lt;Object&gt;</code>
+## GET/comment/by\_candidate/:candidate\_id(candidate_id) ⇒ <code>Object</code>
 Lists all the comments associated with a candidate for a particular event
 
 **Kind**: global function  
-**Returns**: <code>Array.&lt;Object&gt;</code> - a list of all comments for candidateID  
+**Returns**: <code>Object</code> - 200 success message containing comment_ids field which is an array of 
+ids corresponding to each comment on a candidate. Returns 404 with error message otherwise.  
 
-| Param | Type |
-| --- | --- |
-| candidate_id | <code>string</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| candidate_id | <code>string</code> | unique id of candidate |
 
 <a name="GET/comment/_comment_id"></a>
 
@@ -232,11 +233,13 @@ Lists all the comments associated with a candidate for a particular event
 Gets a comment's detail given its id
 
 **Kind**: global function  
-**Returns**: <code>Object</code> - comment detail with comment_id  
+**Returns**: <code>Object</code> - 200 success message containing the fields comment, member_id, 
+candidate_id, event_id, timestamp if comment_id is valid. Returns 404 with error message 
+otherwise.  
 
-| Param | Type |
-| --- | --- |
-| comment_id | <code>string</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| comment_id | <code>string</code> | unique id of a comment on a candidate |
 
 <a name="POST/comment/add"></a>
 
@@ -244,15 +247,15 @@ Gets a comment's detail given its id
 Adds a comment to a candidate for a particular event
 
 **Kind**: global function  
-**Returns**: <code>string</code> - unique comment ID if the new comment is inserted
-properly, an error message otherwise  
+**Returns**: <code>string</code> - 200 success message containing a comment_id if the comment is properly 
+inserted. Returns 404 with error message otherwise.  
 
-| Param | Type |
-| --- | --- |
-| member_id | <code>string</code> | 
-| candidate_id | <code>string</code> | 
-| event_id | <code>string</code> | 
-| comment | <code>string</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| member_id | <code>string</code> | unique id of a member of the event |
+| candidate_id | <code>string</code> | unique id of candidate of that event |
+| event_id | <code>string</code> | unique id of the event |
+| comment | <code>string</code> | comment to add to candidate specified by candidate_id |
 
 <a name="DELETE/comment/delete"></a>
 
@@ -260,12 +263,12 @@ properly, an error message otherwise
 Deletes a comment from comments database
 
 **Kind**: global function  
-**Returns**: <code>string</code> - a success status message if the comment is deleted
-successfully, an error message otherwise  
+**Returns**: <code>string</code> - 200 success message if comment is successfully deleted. Returns 404 
+with error message otherwise.  
 
-| Param | Type |
-| --- | --- |
-| comment_id | <code>string</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| comment_id | <code>string</code> | unique id of comment |
 
 <a name="POST/email"></a>
 
