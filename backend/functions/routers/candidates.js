@@ -35,9 +35,10 @@ app.get('/validate', async function (req, res) {
  * Gets a candidate's detail given its id
  * @name GET/candidate/:candidate_id
  * @function
- * @param { string } candidate_id
- * @returns { Object } candidate detail with candidate_id
- * 
+ * @param { string } candidate_id the unique id of the candidate
+ * @returns { Object } 200 success message containing the following candidate details if
+ * candidate_id is valid: name, biography, event_id, profile_pic_id, candidate_code, email, 
+ * resume_id, comments and application_status. Returns 404 with error message otherwise.
  */
 app.get('/:candidate_id', async function (req, res) {
   var { candidate_id } = req.params;
@@ -61,15 +62,15 @@ app.get('/:candidate_id', async function (req, res) {
  * the candidates database along with their basic information
  * @name POST/candidate/apply
  * @function
- * @param { string } candidate_code
- * @param { string } email
- * @param { string } name
- * @param { string } phone_number
- * @param { string } biography
- * @param { string } resume_id
- * @param { string } profile_pic_id
- * @returns { string } unique candidate ID if the new candidate is inserted
- * properly, an error message otherwise
+ * @param { string } candidate_code candidate_code for the event
+ * @param { string } email email of candidate
+ * @param { string } name name of candidate
+ * @param { string } phone_number phone number of candidate
+ * @param { string } biography biography of candidate
+ * @param { string } resume_id id of resume uploaded by candidate
+ * @param { string } profile_pic_id id of profile picture uploaded by candidate
+ * @returns { string } 200 success message containing unique candidate ID if the new 
+ * candidate is inserted properly. Returns 404 with error message otherwise.
  */
 app.post('/apply', async (req, res) => {
   var {
@@ -130,10 +131,10 @@ app.post('/apply', async (req, res) => {
  * Updates a candidate's status to either "accepted", "rejected", or "pending"
  * @name POST/candidate/status
  * @function
- * @param { string } status
- * @param { string } candidate_id
- * @returns { string } Status 200 success if update is successful, 404 otherwise
- * 
+ * @param { string } status status to set candidate's application to
+ * @param { string } candidate_id unique id of candidate
+ * @returns { string } 200 success message if update is successful. 
+ * Returns 404 with error message otherwise.
  */
 app.post('/status', async function (req, res) {
   var { candidate_id, status } = req.body;
@@ -161,8 +162,10 @@ app.post('/status', async function (req, res) {
  * Candidates database
  * @name GET/by_event/:event_id
  * @function
- * @param {string} event_id
- * @returns {string[]} candidates for an event_id
+ * @param {string} event_id unique id of the event
+ * @returns {string[]} 200 success message with field candidate_ids, an array of 
+ * candidate_ids corresponding to candidates of the event. Returns 404 with error message 
+ * otherwise.
  */
 app.get('/by_event/:event_id', async (req, res) => {
   var { event_id } = req.params;
@@ -183,10 +186,10 @@ app.get('/by_event/:event_id', async (req, res) => {
  * Deletes a candidate given their candidate_id
  * @name DELETE/candidate/delete
  * @function
- * @param { string } candidate_id
- * @param { string } member_id
- * @returns { string } Status 200 success if delete is successful, 404 otherwise
- * 
+ * @param { string } candidate_id unique id of candidate
+ * @param { string } member_id unique id of member in the event
+ * @returns { string } 200 success message if delete is successful. 
+ * Returns 404 with error message otherwise.
  */
 app.delete('/delete', validateFirebaseIdToken, async function (req, res) {
   var member_id = req.user.uid;
