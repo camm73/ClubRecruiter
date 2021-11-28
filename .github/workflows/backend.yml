@@ -27,6 +27,4 @@ jobs:
         run: |
           echo "{\"email\": {}}" > $(pwd)/.runtimeconfig.json &
           cat $(pwd)/.runtimeconfig.json &
-          npm run serve &
-          sleep 60
-          npm test
+          npm run ci

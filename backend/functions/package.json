@@ -9,7 +9,8 @@
     "logs": "firebase functions:log",
     "test": "mocha --reporter spec --parallel",
     "doc": "jsdoc2md --files *.js routers/*.js > docs.md",
-    "setup": "firebase functions:config:get > .runtimeconfig.json"
+    "setup": "firebase functions:config:get > .runtimeconfig.json",
+    "ci": "firebase emulators:exec 'npm test'"
   },
   "engines": {
     "node": "14"
