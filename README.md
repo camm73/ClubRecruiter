@@ -13,7 +13,21 @@ npm test
 
 ## Run Frontend
 
-The following is the directory structure of RecruitMe:
+To run the RecruitMe React app in development mode run:
+```
+yarn  # To install dependencies
+yarn start
+```
+
+To build the React app for production, run:
+```
+yarn build
+```
+
+To run the linter on the frontend codebase, run:
+```
+yarn lint
+```
 
 ## frontend/club-recruiter-ui
 This is base directory for the RecruitMe React app.
