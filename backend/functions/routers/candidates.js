@@ -14,7 +14,7 @@ const { validateCandidateCode, deleteFile, isAdmin } = require('../util');
  * @name GET/candidate/validate
  * @function
  * @param { string } candidate_code candidate_code of an event
- * @returns { Object } 200 success message containing valid field taking on 
+ * @returns { Object } 200 success message with object containing valid field taking on 
  * value based on validity of candidate_code. Returns 404 with error message otherwise.
  */
 app.get('/validate', async function (req, res) {
@@ -69,7 +69,7 @@ app.get('/:candidate_id', async function (req, res) {
  * @param { string } biography biography of candidate
  * @param { string } resume_id id of resume uploaded by candidate
  * @param { string } profile_pic_id id of profile picture uploaded by candidate
- * @returns { string } 200 success message containing unique candidate ID if the new 
+ * @returns { Object } 200 success message with object containing unique candidate ID if the new 
  * candidate is inserted properly. Returns 404 with error message otherwise.
  */
 app.post('/apply', async (req, res) => {
@@ -163,7 +163,7 @@ app.post('/status', async function (req, res) {
  * @name GET/by_event/:event_id
  * @function
  * @param {string} event_id unique id of the event
- * @returns {string[]} 200 success message with field candidate_ids, an array of 
+ * @returns {Object} 200 success message containing object with field candidate_ids, an array of 
  * candidate_ids corresponding to candidates of the event. Returns 404 with error message 
  * otherwise.
  */
