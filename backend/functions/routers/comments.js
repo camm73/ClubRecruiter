@@ -12,9 +12,9 @@ const { isAdmin } = require("../util");
  * Lists all the comments associated with a candidate for a particular event
  * @name GET/comment/by_candidate/:candidate_id
  * @function
- * @param { string } candidate_id
- * @returns { Object[] } a list of all comments for candidateID 
- * 
+ * @param { string } candidate_id unique id of candidate
+ * @returns { Object } 200 success message containing comment_ids field which is an array of 
+ * ids corresponding to each comment on a candidate. Returns 404 with error message otherwise.
  */
 app.get('/by_candidate/:candidate_id', async function (req, res) {
   var { candidate_id } = req.params;
@@ -54,9 +54,10 @@ app.get('/by_candidate/:candidate_id', async function (req, res) {
  * Gets a comment's detail given its id
  * @name GET/comment/:comment_id
  * @function
- * @param { string } comment_id
- * @returns { Object } comment detail with comment_id
- * 
+ * @param { string } comment_id unique id of a comment on a candidate
+ * @returns { Object } 200 success message containing the fields comment, member_id, 
+ * candidate_id, event_id, timestamp if comment_id is valid. Returns 404 with error message 
+ * otherwise.
  */
 app.get('/:comment_id', async function (req, res) {
   var { comment_id } = req.params;
@@ -77,12 +78,12 @@ app.get('/:comment_id', async function (req, res) {
  * Adds a comment to a candidate for a particular event
  * @name POST/comment/add
  * @function
- * @param { string } member_id
- * @param { string } candidate_id
- * @param { string } event_id
- * @param { string } comment
- * @returns { string } unique comment ID if the new comment is inserted
- * properly, an error message otherwise
+ * @param { string } member_id unique id of a member of the event
+ * @param { string } candidate_id unique id of candidate of that event
+ * @param { string } event_id unique id of the event
+ * @param { string } comment comment to add to candidate specified by candidate_id
+ * @returns { string } 200 success message containing a comment_id if the comment is properly 
+ * inserted. Returns 404 with error message otherwise.
  */
 app.post('/add', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
@@ -114,9 +115,9 @@ app.post('/add', validateFirebaseIdToken, async (req, res) => {
  * Deletes a comment from comments database
  * @name DELETE/comment/delete
  * @function
- * @param { string } comment_id
- * @returns { string } a success status message if the comment is deleted
- * successfully, an error message otherwise
+ * @param { string } comment_id unique id of comment
+ * @returns { string } 200 success message if comment is successfully deleted. Returns 404 
+ * with error message otherwise.
  */
 app.post('/delete', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
