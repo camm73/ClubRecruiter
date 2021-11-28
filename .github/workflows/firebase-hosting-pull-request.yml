@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install dependencies
+        working-directory: ./frontend/club-recruiter-ui/
+        run: yarn
       - name: Build frontend
         working-directory: ./frontend/club-recruiter-ui/
         run: yarn build
