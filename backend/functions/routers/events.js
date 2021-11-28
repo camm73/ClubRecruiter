@@ -25,9 +25,11 @@ async function getEventMembers(event_id, is_admin) {
  * Checks whether or not the current member is an admin of the given event
  * @name GET/event/is_admin
  * @function
- * @param {string} member_id
- * @param {string} event_id
- * @returns { boolean } true if the current member is an admin of event_id,
+ * @param {string} member_id unique id of member in event
+ * @param {string} event_id unique id of event
+ * @returns { Object } 200 success message with object containing boolean is_admin field.
+ * is_admin takes on value based on whether user is an event of given event.
+ * Retursn 404 with error message otherwise.
  * false otherwise
  */
 app.get('/is_admin', validateFirebaseIdToken, async (req, res) => {
@@ -45,8 +47,10 @@ app.get('/is_admin', validateFirebaseIdToken, async (req, res) => {
  * Lists all events a ClubMember is a member of
  * @name GET/event/by_member
  * @function
- * @param {string} member_id
- * @returns { string[] } a list of event_id's the ClubMember is a member or admin of
+ * @param {string} member_id unique id of member in event
+ * @returns { Object } 200 success message with object containing a list of 
+ * event_id's the ClubMember is a member or admin of. 
+ * Returns 404 with error message otherwise.
  */
 app.get('/by_member', validateFirebaseIdToken, async function (req, res) {
   try {
@@ -77,10 +81,12 @@ app.get('/by_member', validateFirebaseIdToken, async function (req, res) {
  * Retrieves full detail of an event given an event_id
  * @name GET/event/:event_id
  * @function
- * @param {string} event_id
- * @returns { Object } event details containing eventName, eventDescription,
- * eventCoverPictureUrl, eventCode, accessCode, list[members], list[organizers],
- * list[candidates]
+ * @param {string} event_id unique id of event
+ * @returns { Object } 200 success message with object containing the following event details:
+ * eventName, eventDescription,
+ * eventCoverPictureUrl, eventCode, accessCode, list of members, list of organizers,
+ * list of candidates.
+ * Returns 404 with error message otherwise.
  */
 app.get('/:event_id', async (req, res) => {
   var { event_id } = req.params;
@@ -105,12 +111,13 @@ app.get('/:event_id', async (req, res) => {
  * Adds an event to the events database, and updates the candidates database
  * @name POST/event/create
  * @function
- * @param { string } member_id
- * @param {string} event_name
- * @param {string } event_description
- * @param {string} event_cover_pic_id
- * @returns { Object } candidate_code and member_code to the frontend to
- * be distributed to ClubMembers as well as Candidates
+ * @param { string } member_id unique id of member in event
+ * @param {string} event_name name of event
+ * @param {string } event_description description of event
+ * @param {string} event_cover_pic_id id of uploaded event cover picture
+ * @returns { Object } 200 success message with object containing the following fields:
+ * event name, event id, member code, candidate code.
+ * Returns 404 with error message otherwise.
  */
 app.post('/create', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
@@ -164,10 +171,10 @@ app.post('/create', validateFirebaseIdToken, async (req, res) => {
  * A member joins an event given the member_code
  * @name POST/event/member_join
  * @function
- * @param { string } member_id 
- * @param { string } member_code
- * @returns { string } the candidate code of the event if successful, an
- * error message otherwise
+ * @param { string } member_id unique id of member in event
+ * @param { string } member_code member code of the target event to join
+ * @returns { Object } 200 success message with object containing id of the joined event.
+ * Returns 404 with error message otherwise.
  */
 app.post('/member_join', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
@@ -221,11 +228,11 @@ app.post('/member_join', validateFirebaseIdToken, async (req, res) => {
  * Admin adds member to a given event
  * @name POST/event/member_add
  * @function
- * @param { string } member_id 
- * @param { string } event_id
- * @param { string } target_id
- * @returns { string } the candidate code of the event if successful, an
- * error message otherwise
+ * @param { string } member_id unique id of member in event
+ * @param { string } event_id unique id of event
+ * @param { string } target_id id of member to be added to event
+ * @returns { Object } 200 success message with object containing id of event that member
+ * has been added to. Returns 404 with error message otherwise.
  */
 app.post('/member_add', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
@@ -268,18 +275,14 @@ app.post('/member_add', validateFirebaseIdToken, async (req, res) => {
   }
 });
 
-
-
-
-
 /**
  * Deletes a member from an event
  * @name DELETE/event/delete_member
  * @function
- * @param { string } target_id is the member_id that we wish to delete
- * @param { string } event_id
- * @returns a success message if member is successfully deleted, an
- * error message otherwise
+ * @param { string } target_id id of member to be deleted from event
+ * @param { string } event_id unique id of event
+ * @returns { string } 200 success message if member is successfully deleted.
+ * Returns 404 with error message otherwise.
  */
 app.delete('/delete_member', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;
@@ -306,16 +309,14 @@ app.delete('/delete_member', validateFirebaseIdToken, async (req, res) => {
 
 });
 
-
-
 /**
  * Deletes an event from Events database
  * @name DELETE/event/delete
  * @function
- * @param { string } member_id and 
- * @param {string} event_id
- * @returns { string } a success message if the event delete is successful, an
- * error message otherwise
+ * @param { string } member_id unique id of member in event 
+ * @param {string} event_id unique id of event
+ * @returns { string } 200 success message if the event delete is successful.
+ * Returns 404 with error message otherwise
  */
 app.delete('/delete', validateFirebaseIdToken, async (req, res) => {
   var member_id = req.user.uid;

@@ -58,7 +58,8 @@ function processBody(body) {
  * acceptance/rejection emails
  * @param { string[] } candidate_ids the list of candidate_ids that we're
  * sending out emails to
- * @returns { Object } member detail with member_id
+ * @returns { Object } 200 success message if email sending succeeds.
+ * Returns 404 with error message otherwise.
  *
  */
 app.post('/', validateFirebaseIdToken, async function (req, res) {
