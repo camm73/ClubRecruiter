@@ -51,7 +51,7 @@ const Home = () => {
             tracking.
           </p>
           <h3>Features</h3>
-          <ul>
+          <ul style={{ textAlign: 'left' }}>
             <li className="feature-item">Collect applications from prospective members</li>
             <li className="feature-item">
               Collaboratively contribute information to candidate profiles
@@ -67,7 +67,10 @@ const Home = () => {
       <div className="get-started">
         <h1>Get Started</h1>
       </div>
-      <div className="login-apply">
+      <div style={{
+        display: 'flex', flexDirection: 'row', height: '400px', justifyContent: 'center',
+      }}
+      >
         <div className="column left-column">
           <h2>Candidate Application Portal</h2>
           <p>Interested in joining a student organization? Enter your Candidate Code below.</p>
