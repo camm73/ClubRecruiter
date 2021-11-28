@@ -18,6 +18,7 @@ jobs:
         working-directory: ./frontend/club-recruiter-ui/
         run: CI=false yarn build
       - uses: FirebaseExtended/action-hosting-deploy@v0
+        working-directory: ./frontend/club-recruiter-ui/
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_RECRUITME_4B479 }}'
