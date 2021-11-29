@@ -25,6 +25,7 @@ const CandidateProfile = ({
   const [candidatePhoneNumber, setCandidatePhoneNumber] = useState('');
   const [candidateEmail, setCandidateEmail] = useState('');
   const [candidateApplicationStatus, setCandidateApplicationStatus] = useState('');
+  const [candidateBiography, setCandidateBiography] = useState('');
   const [candidateResumeID, setCandidateResumeID] = useState('');
   const [commentIDList, setCommentIDList] = useState([]);
   const [commentText, setCommentText] = useState('');
@@ -64,6 +65,7 @@ const CandidateProfile = ({
     setCandidateEmail(currentCandidate.email);
     setCandidateApplicationStatus(currentCandidate.application_status);
     setCandidateResumeID(currentCandidate.resume_id);
+    setCandidateBiography(currentCandidate.biography);
     await updateCommentList();
   }, [candidateID]);
 
@@ -91,6 +93,12 @@ const CandidateProfile = ({
             Application Status:
             {' '}
             {candidateApplicationStatus}
+          </Typography>
+          <Typography variant="subtitle1">
+            Biography:
+          </Typography>
+          <Typography variant="subtitle1">
+            {candidateBiography}
           </Typography>
         </div>
       </CardContent>
