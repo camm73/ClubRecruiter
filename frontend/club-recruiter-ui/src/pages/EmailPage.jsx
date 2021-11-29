@@ -12,6 +12,7 @@ import EventCard from '../components/EventCard';
 import EmailForm from '../components/EmailForm';
 import FilterMenu from '../components/FilterMenu';
 import CandidateEmailList from '../components/CandidateEmailList';
+import EmailHints from '../components/EmailHints';
 
 import { getEventCandidates } from '../api/candidate';
 import { isAdmin } from '../api/events';
@@ -23,6 +24,7 @@ const EmailPage = () => {
   const [candidateIDList, setCandidateIDList] = useState([]);
   const [filteredEmailList, setFilteredEmailList] = useState([]);
   const [admin, setAdmin] = useState(false);
+  const [hintsOpen, setHintsOpen] = useState(false);
   const { eventID } = useParams();
   const history = useHistory();
 
@@ -65,11 +67,14 @@ const EmailPage = () => {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         {admin ? (
-          <div>
+          <div style={{
+            display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center',
+          }}
+          >
             <Toolbar />
             <Button
               style={{
-                backgroundColor: 'lightgray', color: 'black', borderRadius: '5px', padding: '10px',
+                backgroundColor: 'lightgray', color: 'black', borderRadius: '5px', padding: '10px', maxWidth: '250px',
               }}
               onClick={() => {
                 history.push(`/event/${eventID}`);
@@ -78,6 +83,17 @@ const EmailPage = () => {
               Back to Event Overview
             </Button>
             <EventCard eventID={eventID} hideDescription />
+            <EmailHints open={hintsOpen} handleClose={() => setHintsOpen(false)} />
+            <Button
+              style={{
+                backgroundColor: 'lightgray', color: 'black', borderRadius: '5px', padding: '10px',
+              }}
+              onClick={() => {
+                setHintsOpen(true);
+              }}
+            >
+              View Email Variables
+            </Button>
             <EmailForm filteredEmailList={filteredEmailList} />
           </div>
         )
