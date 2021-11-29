@@ -32,7 +32,7 @@ const CandidateApply = () => {
 
   return (
     <Container sx={{ display: 'flex', flexDirection: 'column', padding: 10 }}>
-      <Header pageName="Club Application Page" />
+      <Header pageName="Candidate Application Page" />
       <form onSubmit={handleSubmit(onSubmit)}>
         <Container sx={{
           display: 'flex', flexDirection: 'column', padding: 5, alignItems: 'center',

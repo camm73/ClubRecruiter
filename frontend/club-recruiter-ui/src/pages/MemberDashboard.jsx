@@ -16,14 +16,14 @@ const MemberDashboard = () => {
   const [memberCode, setMemberCode] = useState('');
   const [events, setEvents] = useState([]);
   const [filterChecked, setFilterChecked] = useState(false);
-  const [organizingEvents, setOrganizingEvents] = useState();
+  const [organizingEvents, setOrganizingEvents] = useState([]);
   const history = useHistory();
 
   const loadEvents = async () => {
     const memberEvents = await listMemberEvents();
-    setEvents(memberEvents);
     const orgEvents = [];
     if (memberEvents === undefined) return;
+    setEvents(memberEvents);
     // eslint-disable-next-line no-restricted-syntax
     for (const eventID of memberEvents) {
       const adminStatus = await isAdmin(eventID);
